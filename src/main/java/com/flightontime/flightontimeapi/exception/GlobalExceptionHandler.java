@@ -13,20 +13,6 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     // 1️⃣ VALIDACIÓN DTO (@Valid)
-    /*@ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationError(
-            MethodArgumentNotValidException ex
-    ) {
-        String mensaje = ex.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensaje, 400));
-    }*/
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationError(
             MethodArgumentNotValidException ex

@@ -1,33 +1,33 @@
 package com.flightontime.flightontimeapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
 public class FlightRequestDTO {
 
-    @NotBlank(message = "Campo 'aerolinea' es obligatorio")
-    @Size(min = 2, max = 2, message = "El código de aerolínea debe tener exactamente 2 letras (IATA)")
+    @NotBlank(message = "Asegúrate de incluir el código de la aerolínea")
+    @Size(min = 2, max = 2, message = "Formato inválido: El código de aerolínea debe tener exactamente 2 letras mayúsculas (IATA)")
     private String aerolinea;
 
-    @NotBlank(message = "Campo 'origen' es obligatorio")
-    @Size(min = 3, max = 3, message = "El código de origen debe tener exactamente 3 letras (IATA)")
+    @NotBlank(message = "Asegúrate de incluir el código del aeropuerto de origen")
+    @Size(min = 3, max = 3, message = "Formato inválido: El código de aeropuerto debe tener exactamente 3 letras mayúsculas (IATA)")
     private String origen;
 
-    @NotBlank(message = "Campo 'destino' es obligatorio")
-    @Size(min = 3, max = 3, message = "El código de destino debe tener exactamente 3 letras (IATA)")
+    @NotBlank(message = "Asegúrate de incluir el código del aeropuerto de destino")
+    @Size(min = 3, max = 3, message = "Formato inválido: El código de aeropuerto debe tener exactamente 3 letras mayúsculas (IATA)")
     private String destino;
 
-    @NotNull(message = "Campo 'fecha_partida' es obligatorio")
+    @NotNull(message = "Asegúrate de incluir la fecha de vuelo")
+    @Future(message = "Fecha inválida: No se pueden realizar predicciones para vuelos que ya han ocurrido")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
-    @NotNull(message = "Campo 'distancia_km' es obligatorio")
-    @Positive(message = "Campo 'distancia_km' debe ser positivo")
+    @NotNull(message = "Asegúrate de incluir la distancia en km")
+    @Positive(message = "La distancia debe ser un valor positivo y coherente con el trayecto")
     @JsonProperty("distancia_km")
     private Integer distanciaKm;
 
