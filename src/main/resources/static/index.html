@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>FlightOnTime – Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        input, button {
+            width: 100%;
+            margin: 8px 0;
+            padding: 8px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>FlightOnTime – Predicción de Retrasos</h2>
+
+<input id="aerolinea" placeholder="Aerolínea (AZ)" />
+<input id="origen" placeholder="Origen (GIG)" />
+<input id="destino" placeholder="Destino (GRU)" />
+<input id="fecha" type="datetime-local" />
+<input id="distancia" type="number" placeholder="Distancia (km)" />
+
+<button onclick="predecir()">Predecir</button>
+
+<h3>Resultado</h3>
+<pre id="resultado">---</pre>
+
+<script>
+    function predecir() {
+        const data = {
+            aerolinea: document.getElementById("aerolinea").value,
+            origen: document.getElementById("origen").value,
+            destino: document.getElementById("destino").value,
+            fecha_partida: document.getElementById("fecha").value,
+            distancia_km: Number(document.getElementById("distancia").value)
+        };
+
+        fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(json => {
+                document.getElementById("resultado").textContent =
+                    JSON.stringify(json, null, 2);
+            })
+            .catch(err => {
+                document.getElementById("resultado").textContent =
+                    "Error al conectar con la API";
+            });
+    }
+</script>
+
+</body>
+</html>
