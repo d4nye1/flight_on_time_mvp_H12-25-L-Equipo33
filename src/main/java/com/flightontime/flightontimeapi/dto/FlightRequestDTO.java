@@ -4,18 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
 public class FlightRequestDTO {
 
     @NotBlank(message = "Campo 'aerolinea' es obligatorio")
+    @Size(min = 2, max = 2, message = "El código de aerolínea debe tener exactamente 2 letras (IATA)")
     private String aerolinea;
 
     @NotBlank(message = "Campo 'origen' es obligatorio")
+    @Size(min = 3, max = 3, message = "El código de origen debe tener exactamente 3 letras (IATA)")
     private String origen;
 
     @NotBlank(message = "Campo 'destino' es obligatorio")
+    @Size(min = 3, max = 3, message = "El código de destino debe tener exactamente 3 letras (IATA)")
     private String destino;
 
     @NotNull(message = "Campo 'fecha_partida' es obligatorio")
