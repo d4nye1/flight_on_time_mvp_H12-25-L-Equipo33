@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -15,14 +17,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleValidationError(
             MethodArgumentNotValidException ex
     ) {
-        String mensaje = ex.getBindingResult()
+        // 1. Recolectar todos los mensajes de error de los campos
+        String mensajes = ex.getBindingResult()
                 .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+                .stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.joining(", ")); // Los une con coma y espacio
 
+        // 2. Devolver el DTO con la lista completa de problemas
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensaje, 400));
+                .body(new ErrorResponseDTO(mensajes, 400));
     }
 
     // 2️⃣ ERRORES DE ENTRADA MANUALES
