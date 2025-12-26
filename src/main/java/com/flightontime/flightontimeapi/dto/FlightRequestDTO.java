@@ -1,29 +1,33 @@
 package com.flightontime.flightontimeapi.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
 public class FlightRequestDTO {
 
-    @NotBlank(message = "Campo 'aerolinea' es obligatorio")
+    @NotBlank(message = "Asegúrate de completar todos los campos")
+    @Size(min = 2, max = 2, message = "Dato incorrecto agregue las 2 letras del código de aerolínea en formato IATA")
     private String aerolinea;
 
-    @NotBlank(message = "Campo 'origen' es obligatorio")
+    @NotBlank(message = "Asegúrate de completar todos los campos")
+    @Size(min = 3, max = 3, message = "Dato incorrecto agregue las 3 letras del aeropuerto origen en formato IATA")
     private String origen;
 
-    @NotBlank(message = "Campo 'destino' es obligatorio")
+    @NotBlank(message = "Asegúrate de completar todos los campos")
+    @Size(min = 3, max = 3, message = "Dato incorrecto agregue las 3 letras del aeropuerto destino en formato IATA")
     private String destino;
 
-    @NotNull(message = "Campo 'fecha_partida' es obligatorio")
+    @NotNull(message = "Asegúrate de completar todos los campos")
+    @Future(message = "Fecha inválida: No se pueden realizar predicciones para vuelos que ya han ocurrido")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
-    @NotNull(message = "Campo 'distancia_km' es obligatorio")
-    @Positive(message = "Campo 'distancia_km' debe ser positivo")
+    @NotNull(message = "Asegúrate de completar todos los campos")
+    @Positive(message = "La distancia debe ser un valor positivo")
     @JsonProperty("distancia_km")
     private Integer distanciaKm;
 
