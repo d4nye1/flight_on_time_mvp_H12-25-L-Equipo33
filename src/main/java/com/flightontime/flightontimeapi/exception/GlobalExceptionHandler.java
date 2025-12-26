@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
                 .get(0)
                 .getDefaultMessage();
 
-        // 2. Devolver el DTO con la lista completa de problemas
+        // 2. Devolver el DTO con el problema detectado
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDTO(mensaje, 400));

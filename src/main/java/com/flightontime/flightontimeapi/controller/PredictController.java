@@ -1,7 +1,8 @@
 package com.flightontime.flightontimeapi.controller;
 
+import com.flightontime.flightontimeapi.dto.ValidacionGrupos;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
 import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
@@ -19,7 +20,7 @@ public class PredictController {
 
     @PostMapping
     public FlightPredictionDTO predict(
-            @Valid @RequestBody FlightRequestDTO request) {
+            @Validated(ValidacionGrupos.SecuenciaOrdenada.class) @RequestBody FlightRequestDTO request) {
 
         return service.predecirVuelo(request);
     }
