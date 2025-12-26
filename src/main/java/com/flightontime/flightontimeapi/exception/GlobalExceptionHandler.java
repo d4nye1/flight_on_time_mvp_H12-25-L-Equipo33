@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.stream.Collectors;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -15,11 +17,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDTO> handleValidationError(
             MethodArgumentNotValidException ex
     ) {
+        // 1. Recolectar todos los mensajes de error de los campos
         String mensaje = ex.getBindingResult()
                 .getFieldErrors()
                 .get(0)
                 .getDefaultMessage();
 
+        // 2. Devolver el DTO con el problema detectado
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDTO(mensaje, 400));
