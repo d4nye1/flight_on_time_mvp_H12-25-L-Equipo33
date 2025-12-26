@@ -97,3 +97,105 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 4. Revisar y aprobar PR.  
 5. Mergear cambios y borrar la rama feature.  
 6. Al final del sprint, mergear `develop` → `main`.
+
+
+## Semana 3 — Integración con Data Science ##
+
+**Objetivo de la semana**
+
+Integrar el **modelo real de Data Science** al backend, garantizando:
+
+- Desacoplamiento de capas
+- Manejo de errores externos
+- Resiliencia del sistema
+- Estabilidad del endpoint /predict **sin modificar el controller**
+-----
+**Cambios clave respecto a Semana 2**
+
+|**Aspecto**|**Semana 2**|**Semana 3**|
+| :-: | :-: | :-: |
+|Fuente de predicción|Mock|Modelo real|
+|Comunicación|Interna|HTTP REST|
+|Manejo de fallos DS|No aplica|Error controlado|
+|Controller|Mock|Sin cambios|
+|Arquitectura|Básica|Desacoplada|
+
+-----
+**Arquitectura de integración**
+
+Controller
+
+`   `↓
+
+Service
+
+`   `↓
+
+ModelClient (HTTP)
+
+`   `↓
+
+FlightOnTime Data Science Service (FastAPI)
+
+- El controller **no conoce el origen de la predicción**.
+- El cliente de Data Science está **completamente aislado**.
+- La arquitectura permite **volver a un mock** sin cambios estructurales.
+-----
+**Servicio de Data Science**
+
+- Implementado en **FastAPI**
+- Modelo cargado desde **joblib**
+- Endpoint expuesto:
+  - POST /predict
+
+**Respuesta del servicio**
+
+- Predicción real del modelo
+- Probabilidad calculada por el modelo de Machine Learning
+-----
+**Manejo de errores externos**
+
+Cuando el servicio de Data Science:
+
+- Está caído
+- No responde
+- Retorna un error inesperado
+
+-El backend **NO expone stacktrace**\
+-Retorna un **error funcional y controlado**
+
+**Ejemplo de respuesta de error**
+
+{
+
+`  `"message": "Servicio de predicción no disponible",
+
+`  `"status": "ERROR"
+
+}
+
+-----
+**Pruebas realizadas**
+
+**Casos funcionales probados**
+
+- Vuelo puntual
+- Vuelo retrasado
+- Error del servicio de Data Science
+
+**Herramientas utilizadas**
+
+- Postman
+- cURL
+- Pruebas manuales end-to-end
+-----
+**Cómo levantar el entorno**
+
+**Servicio Data Science**
+
+uvicorn flightontime\_microservicio\_ds:app --reload
+
+**Backend Spring Boot**
+
+mvn spring-boot:run
+
