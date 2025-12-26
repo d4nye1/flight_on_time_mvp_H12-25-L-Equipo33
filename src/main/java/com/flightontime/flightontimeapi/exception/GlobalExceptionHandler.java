@@ -18,16 +18,15 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException ex
     ) {
         // 1. Recolectar todos los mensajes de error de los campos
-        String mensajes = ex.getBindingResult()
+        String mensaje = ex.getBindingResult()
                 .getFieldErrors()
-                .stream()
-                .map(error -> error.getDefaultMessage())
-                .collect(Collectors.joining(", ")); // Los une con coma y espacio
+                .get(0)
+                .getDefaultMessage();
 
         // 2. Devolver el DTO con la lista completa de problemas
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensajes, 400));
+                .body(new ErrorResponseDTO(mensaje, 400));
     }
 
     // 2️⃣ ERRORES DE ENTRADA MANUALES
