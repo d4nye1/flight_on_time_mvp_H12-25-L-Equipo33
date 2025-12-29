@@ -12,7 +12,7 @@ public class Prediction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String aerolinea;
-    private String origen;
+    private String origenVuelo;
     private String destino;
     private  String prevision;
     private Double probabilidad;
