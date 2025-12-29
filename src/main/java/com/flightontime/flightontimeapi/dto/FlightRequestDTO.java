@@ -1,34 +1,30 @@
 package com.flightontime.flightontimeapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.*;
 
 public class FlightRequestDTO {
 
-    @NotBlank(message = "Campo 'aerolinea' es obligatorio")
+    @NotBlank(message = "Asegúrate de incluir el código de la aerolínea")
+    @Pattern(
+            regexp = "^[A-Z0-9]{2}$",
+            message = "Formato inválido: El código de aerolínea debe tener 2 caracteres alfanuméricos en mayúsculas (IATA)"
+    )
     private String aerolinea;
 
-    @NotBlank(message = "Campo 'origen' es obligatorio")
+    @NotBlank(message = "Asegúrate de incluir el código del aeropuerto de origen")
+    @Size(min = 3, max = 3, message = "Formato inválido: El código de aeropuerto debe tener exactamente 3 letras mayúsculas (IATA)")
     private String origen;
 
-    @NotBlank(message = "Campo 'destino' es obligatorio")
+    @NotBlank(message = "Asegúrate de incluir el código del aeropuerto de destino")
+    @Size(min = 3, max = 3, message = "Formato inválido: El código de aeropuerto debe tener exactamente 3 letras mayúsculas (IATA)")
     private String destino;
 
-    @NotNull(message = "Campo 'fecha_partida' es obligatorio")
+    @NotBlank(message = "Asegúrate de incluir la fecha de vuelo")
     @JsonProperty("fecha_partida")
-    private LocalDateTime fechaPartida;
-
-    @NotNull(message = "Campo 'distancia_km' es obligatorio")
-    @Positive(message = "Campo 'distancia_km' debe ser positivo")
-    @JsonProperty("distancia_km")
-    private Integer distanciaKm;
+    private String fecha_partida;
 
     // Getters y setters
-
     public String getAerolinea() {
         return aerolinea;
     }
@@ -53,19 +49,11 @@ public class FlightRequestDTO {
         this.destino = destino;
     }
 
-    public LocalDateTime getFechaPartida() {
-        return fechaPartida;
+    public String getFecha_partida() {
+        return fecha_partida;
     }
 
-    public void setFechaPartida(LocalDateTime fechaPartida) {
-        this.fechaPartida = fechaPartida;
-    }
-
-    public Integer getDistanciaKm() {
-        return distanciaKm;
-    }
-
-    public void setDistanciaKm(Integer distanciaKm) {
-        this.distanciaKm = distanciaKm;
+    public void setFecha_partida(String fecha_partida) {
+        this.fecha_partida = fecha_partida;
     }
 }
