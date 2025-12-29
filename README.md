@@ -145,7 +145,6 @@ FlightOnTime Data Science Service (FastAPI)
 - Implementado en **FastAPI**
 - Modelo cargado desde **joblib**
 - Endpoint expuesto:
-    - POST /predict
 
 **Respuesta del servicio**
 
