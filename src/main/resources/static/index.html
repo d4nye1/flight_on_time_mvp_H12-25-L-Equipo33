@@ -28,7 +28,7 @@
 <input id="origen" placeholder="Origen (GIG)" />
 <input id="destino" placeholder="Destino (GRU)" />
 <input id="fecha" type="datetime-local" />
-<input id="distancia" type="number" placeholder="Distancia (km)" />
+<!--<input id="distancia" type="number" placeholder="Distancia (km)" /> -->
 
 <button onclick="predecir()">Predecir</button>
 
@@ -42,10 +42,10 @@
             origen: document.getElementById("origen").value,
             destino: document.getElementById("destino").value,
             fecha_partida: document.getElementById("fecha").value,
-            distancia_km: Number(document.getElementById("distancia").value)
+            //distancia_km: Number(document.getElementById("distancia").value)
         };
 
-        fetch("/predict", {
+        fetch(/*"/predict"*/"/api/flights/predict", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)

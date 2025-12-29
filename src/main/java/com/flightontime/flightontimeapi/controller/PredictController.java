@@ -7,8 +7,10 @@ import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
 import com.flightontime.flightontimeapi.service.FlightPredictionService;
 
+//@RestController
+//@RequestMapping("/predict")
 @RestController
-@RequestMapping("/predict")
+@RequestMapping("/api/flights")
 public class PredictController {
 
     private final FlightPredictionService service;
@@ -17,7 +19,8 @@ public class PredictController {
         this.service = service;
     }
 
-    @PostMapping
+    //@PostMapping
+    @PostMapping("/predict")
     public FlightPredictionDTO predict(
             @Valid @RequestBody FlightRequestDTO request) {
 
