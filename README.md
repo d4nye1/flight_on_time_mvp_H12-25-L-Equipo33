@@ -98,7 +98,6 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 5. Mergear cambios y borrar la rama feature.  
 6. Al final del sprint, mergear `develop` → `main`.
 
-
 ## Semana 3 — Integración con Data Science ##
 
 **Objetivo de la semana**
@@ -146,7 +145,6 @@ FlightOnTime Data Science Service (FastAPI)
 - Implementado en **FastAPI**
 - Modelo cargado desde **joblib**
 - Endpoint expuesto:
-  - POST /predict
 
 **Respuesta del servicio**
 

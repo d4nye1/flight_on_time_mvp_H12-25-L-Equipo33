@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 1️⃣ VALIDACIÓN DTO (@Valid)
+    // ERRORES DE VALIDACIÓN (@Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDTO> handleValidationError(
             MethodArgumentNotValidException ex
@@ -22,20 +22,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensaje, 400));
+                .body(new ErrorResponseDTO(mensaje));
     }
 
-    // 2️⃣ ERRORES DE ENTRADA MANUALES
+    // ERRORES DE ENTRADA MANUALES
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(
             IllegalArgumentException ex
     ) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(ex.getMessage(), 400));
+                .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
-    // 3️⃣ ERRORES GENERALES (AL FINAL)
+    // ERRORES GENERALES (fallback)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericError(
             Exception ex
@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponseDTO(
-                        "Modelo de predicción no disponible", 500));
+                        "Servicio de predicción no disponible"
+                ));
     }
 }
