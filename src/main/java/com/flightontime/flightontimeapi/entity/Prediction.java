@@ -11,11 +11,14 @@ public class Prediction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String aerolinea;
     private String origen;
     private String destino;
     private  String prevision;
     private Double probabilidad;
+
+    private String estado;
     private LocalDateTime fechaConsulta;
 
     public Long getId() {
@@ -65,6 +68,10 @@ public class Prediction {
     public void setProbabilidad(Double probabilidad) {
         this.probabilidad = probabilidad;
     }
+
+    public String getEstado() { return estado; }
+
+    public void setEstado(String estado) { this.estado = estado; }
 
     public LocalDateTime getFechaConsulta() {
         return fechaConsulta;
