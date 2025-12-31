@@ -2,19 +2,19 @@ package com.flightontime.flightontimeapi.dto;
 
 public class ErrorResponseDTO {
 
-    private String error;
-    private Integer codigo;
+    private String status;
+    private String message;
 
-    public ErrorResponseDTO(String error, Integer codigo) {
-        this.error = error;
-        this.codigo = codigo;
+    public ErrorResponseDTO(String message) {
+        this.status = "ERROR";
+        this.message = message;
     }
 
-    public String getError() {
-        return error;
+    public String getStatus() {
+        return status;
     }
 
-    public Integer getCodigo() {
-        return codigo;
+    public String getMessage() {
+        return message;
     }
 }
