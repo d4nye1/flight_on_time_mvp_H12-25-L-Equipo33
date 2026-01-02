@@ -1,0 +1,114 @@
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --bg-light: #f0f7ff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 8%;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.logo {
+    color: var(--primary);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.container {
+    display: flex;
+    padding: 2% 8%;
+    gap: 50px;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.hero { flex: 1; }
+
+.badge {
+    background: #dbeafe;
+    color: var(--primary);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+h1 { font-size: 3.5rem; margin: 20px 0; line-height: 1.1; }
+.highlight { color: var(--primary); }
+
+.hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 450px;
+    line-height: 1.6;
+}
+
+.stats { display: flex; gap: 30px; margin-top: 40px; }
+.stat-item strong { display: block; font-size: 1.5rem; color: var(--text-main); }
+.stat-item span { color: var(--text-muted); font-size: 0.9rem; }
+
+/* Tarjeta Formulario */
+.form-container { flex: 1; display: flex; justify-content: flex-end; }
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 450px;
+}
+
+h2 { margin: 0; font-size: 1.5rem; }
+.subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem; }
+
+.input-group { margin-bottom: 20px; }
+.row { display: flex; gap: 15px; }
+.row .input-group { flex: 1; }
+
+label { display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; }
+
+select, input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: var(--text-main);
+    box-sizing: border-box;
+}
+
+.btn-predict {
+    width: 100%;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-predict:hover { background: var(--primary-dark); }
+
+.result-area {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    display: none;
+    text-align: center;
+}

@@ -10,7 +10,7 @@ public class FlightPredictionDTO {
     @JsonProperty("probabilidad")
     private Double probabilidad;
 
-    // ✅ Constructor vacío (Jackson)
+    //  Constructor vacío (Jackson)
     public FlightPredictionDTO() {
     }
 
