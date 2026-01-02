@@ -2,65 +2,85 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>FlightOnTime – Demo</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 40px auto;
-        }
-        input, button {
-            width: 100%;
-            margin: 8px 0;
-            padding: 8px;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlightOnTime - Predicción de Vuelos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<header class="navbar">
+    <div class="logo">✈ FlightOnTime</div>
+    <nav>
+        <span>🕒 Predicción en tiempo real</span>
+        <span>🛡 API Segura</span>
+    </nav>
+</header>
 
-<h2>FlightOnTime – Predicción de Retrasos</h2>
+<main class="container">
+    <section class="hero">
+        <span class="badge">● Sistema de Predicción Activo</span>
+        <h1>¿Tu vuelo llegará <span class="highlight">a tiempo?</span></h1>
+        <p>Utiliza nuestra inteligencia artificial para predecir si tu vuelo llegará puntual o con retraso. Ingresa los datos de tu vuelo y obtén una predicción al instante.</p>
 
-<input id="aerolinea" placeholder="Aerolínea (AZ)" />
-<input id="origen" placeholder="Origen (GIG)" />
-<input id="destino" placeholder="Destino (GRU)" />
-<input id="fecha" type="datetime-local" />
-<!--<input id="distancia" type="number" placeholder="Distancia (km)" /> -->
+        <div class="stats">
+            <div class="stat-item"><strong>+95%</strong><span>Precisión</span></div>
+            <div class="stat-item"><strong>50K+</strong><span>Vuelos analizados</span></div>
+            <div class="stat-item"><strong>&lt;2s</strong><span>Respuesta</span></div>
+        </div>
+    </section>
 
-<button onclick="predecir()">Predecir</button>
+    <section class="form-container">
+        <div class="card">
+            <h2>Consulta tu vuelo</h2>
+            <p class="subtitle">Completa los datos para obtener la predicción</p>
 
-<h3>Resultado</h3>
-<pre id="resultado">---</pre>
+            <form id="predictionForm">
+                <div class="input-group">
+                    <label>Aerolínea</label>
+                    <select id="aerolinea" required>
+                        <option value="">Selecciona una aerolínea</option>
+                        <option value="AA">American Airlines (AA)</option>
+                        <option value="LA">LATAM Airlines (LA)</option>
+                        <option value="IB">Iberia (IB)</option>
+                    </select>
+                </div>
 
-<script>
-    function predecir() {
-        const data = {
-            aerolinea: document.getElementById("aerolinea").value,
-            origen: document.getElementById("origen").value,
-            destino: document.getElementById("destino").value,
-            fecha_partida: document.getElementById("fecha").value + ":00",
-            distancia_km: Number(document.getElementById("distancia").value)
-        };
+                <div class="row">
+                    <div class="input-group">
+                        <label>Origen</label>
+                        <select id="origen" required>
+                            <option value="">Desde</option>
+                            <option value="MEX">MEX - Ciudad de México</option>
+                            <option value="LAX">LAX - Los Ángeles</option>
+                            <option value="JFK">JFK - New York JFK</option>
+                            <option value="MIA">MIA - Miami</option>
+                            <option value="MAD">MAD - Madrid</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Destino</label>
+                        <select id="destino" required>
+                            <option value="">Hacia</option>
+                            <option value="GRU">GRU - Sao Paulo</option>
+                            <option value="CDG">CDG - París</option>
+                            <option value="LHR">LHR - Londres Heathrow</option>
+                            <option value="FCO">FCO - Roma</option>
+                        </select>
+                    </div>
+                </div>
 
-        fetch(/*"/predict"*/"/api/flights/predict", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-            .then(res => res.json())
-            .then(json => {
-                document.getElementById("resultado").textContent =
-                    JSON.stringify(json, null, 2);
-            })
-            .catch(err => {
-                document.getElementById("resultado").textContent =
-                    "Error al conectar con la API";
-            });
-    }
-</script>
+                <div class="input-group">
+                    <label>Fecha y hora de partida</label>
+                    <input type="datetime-local" id="fecha" required>
+                </div>
 
+                <button type="submit" class="btn-predict">✈ Predecir Estado</button>
+            </form>
+
+            <div id="resultado" class="result-area"></div>
+        </div>
+    </section>
+</main>
+
+<script src="script.js"></script>
 </body>
 </html>

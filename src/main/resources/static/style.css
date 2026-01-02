@@ -1,0 +1,203 @@
+/* Variables de color basadas en la interfaz */
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --bg-light: #f0f7ff;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --error: #ef4444;
+    --success: #22c55e;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* --- Navegación --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 8%;
+}
+
+.logo {
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 3.2rem; /* Tamaño aumentado según solicitado */
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* --- Layout Principal --- */
+.container {
+    display: flex;
+    padding: 0 8% 50px 8%;
+    gap: 60px;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.hero { flex: 1; }
+
+.badge {
+    background: #dbeafe;
+    color: var(--primary);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 3.8rem;
+    margin: 25px 0;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.highlight { color: var(--primary); }
+
+.hero p {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 480px;
+    margin-bottom: 40px;
+}
+
+/* Estadísticas */
+.stats { display: flex; gap: 35px; }
+.stat-item strong { display: block; font-size: 1.6rem; color: var(--text-main); }
+.stat-item span { color: var(--text-muted); font-size: 0.9rem; }
+
+/* --- Tarjeta de Formulario --- */
+.form-container { flex: 1; display: flex; justify-content: flex-end; }
+
+.card {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+    width: 100%;
+    max-width: 460px;
+}
+
+h2 { margin: 0 0 10px 0; font-size: 1.6rem; }
+.subtitle { color: var(--text-muted); margin-bottom: 30px; font-size: 0.95rem; }
+
+/* Inputs y Selects */
+.input-group { margin-bottom: 22px; }
+.row { display: flex; gap: 15px; }
+.row .input-group { flex: 1; }
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+select, input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    font-size: 1rem;
+    color: var(--text-main);
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* --- Botón con Animaciones --- */
+.btn-predict {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-predict:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+.btn-predict:active { transform: translateY(0); }
+
+.btn-loading {
+    background: #94a3b8 !important;
+    cursor: not-allowed;
+}
+
+/* --- Área de Resultados --- */
+.result-area {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 16px;
+    display: none;
+    text-align: center;
+    animation: slideUp 0.4s ease-out;
+}
+
+.progress-container {
+    background: rgba(255,255,255,0.5);
+    border-radius: 20px;
+    height: 10px;
+    width: 100%;
+    margin: 15px 0 5px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--success);
+    width: 0%;
+    transition: width 1s ease-in-out;
+}
+
+/* --- Keyframes Animaciones --- */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    font-size: 1.2rem;
+    display: inline-block;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
