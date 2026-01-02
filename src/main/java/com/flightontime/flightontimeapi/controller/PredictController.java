@@ -8,10 +8,8 @@ import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
 import com.flightontime.flightontimeapi.service.FlightPredictionService;
 
-//@RestController
-//@RequestMapping("/predict")
 @RestController
-@RequestMapping("/api/flights")
+@RequestMapping("/predict")
 public class PredictController {
 
     private final FlightPredictionService service;
@@ -20,8 +18,7 @@ public class PredictController {
         this.service = service;
     }
 
-    //@PostMapping
-    @PostMapping("/predict")
+    @PostMapping
     public FlightPredictionDTO predict(
             @Validated(ValidacionGrupos.SecuenciaOrdenada.class) @RequestBody FlightRequestDTO request) {
 
