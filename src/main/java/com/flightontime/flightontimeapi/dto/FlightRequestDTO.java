@@ -30,10 +30,10 @@ public class FlightRequestDTO {
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
-    @NotNull(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
+    /*@NotNull(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
     @Positive(message = "La distancia debe ser un valor positivo", groups = ValidacionGrupos.Segundo.class)
     @JsonProperty("distancia_km")
-    private Integer distanciaKm;
+    private Integer distanciaKm;*/
 
     // Getters y setters
 
@@ -69,11 +69,11 @@ public class FlightRequestDTO {
         this.fechaPartida = fechaPartida;
     }
 
-    public Integer getDistanciaKm() {
+    /*public Integer getDistanciaKm() {
         return distanciaKm;
     }
 
     public void setDistanciaKm(Integer distanciaKm) {
         this.distanciaKm = distanciaKm;
-    }
+    }*/
 }

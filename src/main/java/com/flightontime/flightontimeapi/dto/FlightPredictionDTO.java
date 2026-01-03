@@ -10,13 +10,16 @@ public class FlightPredictionDTO {
     @JsonProperty("probabilidad")
     private Double probabilidad;
 
-    // ✅ Constructor vacío (Jackson)
+    @JsonProperty("distancia") // ✅ Nuevo campo añadido
+    private Double distancia;
+
     public FlightPredictionDTO() {
     }
 
-    public FlightPredictionDTO(String prevision, Double probabilidad) {
+    public FlightPredictionDTO(String prevision, Double probabilidad, Double distancia) {
         this.prevision = prevision;
         this.probabilidad = probabilidad;
+        this.distancia = distancia;
     }
 
     public String getPrevision() {
@@ -33,5 +36,13 @@ public class FlightPredictionDTO {
 
     public void setProbabilidad(Double probabilidad) {
         this.probabilidad = probabilidad;
+    }
+
+    public Double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(Double distancia) {
+        this.distancia = distancia;
     }
 }
