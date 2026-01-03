@@ -46,8 +46,7 @@ public class GlobalExceptionHandler {
     ) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponseDTO(
-                        "Servicio de predicción no disponible"
+                .body(new ErrorResponseDTO("Servicio de predicción no disponible"
                 ));
     }
 }

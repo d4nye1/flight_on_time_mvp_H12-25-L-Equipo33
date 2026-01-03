@@ -4,35 +4,31 @@
     <meta charset="UTF-8">
     <title>FlightOnTime – Demo</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 500px;
-            margin: 40px auto;
-        }
-        input, button {
-            width: 100%;
-            margin: 8px 0;
-            padding: 8px;
-        }
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-        }
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 40px auto; }
+        input, button { width: 100%; margin: 8px 0; padding: 8px; box-sizing: border-box; }
+        pre { background: #f4f4f4; padding: 10px; border: 1px solid #ccc; overflow-x: auto; }
+        .info-card { background: #e7f3ff; padding: 15px; border-radius: 8px; margin: 10px 0; display: none; border: 1px solid #b3d7ff; }
+        .valor-importante { font-size: 1.2em; color: #0056b3; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <h2>FlightOnTime – Predicción de Retrasos</h2>
 
-<input id="aerolinea" placeholder="Aerolínea (AZ)" />
-<input id="origen" placeholder="Origen (GIG)" />
-<input id="destino" placeholder="Destino (GRU)" />
+<input id="aerolinea" placeholder="Aerolínea (Ej: 9E)" />
+<input id="origen" placeholder="Origen (Ej: JFK)" />
+<input id="destino" placeholder="Destino (Ej: DTW)" />
 <input id="fecha" type="datetime-local" />
-<!--<input id="distancia" type="number" placeholder="Distancia (km)" /> -->
 
-<button onclick="predecir()">Predecir</button>
+<button onclick="predecir()">Predecir Vuelo</button>
 
-<h3>Resultado</h3>
+<div id="distancia-card" class="info-card">
+    <strong>Distancia calculada:</strong>
+    <span id="distancia-val" class="valor-importante">0</span>
+    <span class="valor-importante">Km</span>
+</div>
+
+<h3>Respuesta del Servidor (JSON)</h3>
 <pre id="resultado">---</pre>
 
 <script>
@@ -41,23 +37,46 @@
             aerolinea: document.getElementById("aerolinea").value,
             origen: document.getElementById("origen").value,
             destino: document.getElementById("destino").value,
-            fecha_partida: document.getElementById("fecha").value + ":00",
-            distancia_km: Number(document.getElementById("distancia").value)
+            fecha_partida: document.getElementById("fecha").value
         };
 
-        fetch(/*"/predict"*/"/api/flights/predict", {
+        const resultadoMsg = document.getElementById("resultado");
+        const distanciaCard = document.getElementById("distancia-card");
+        const distanciaVal = document.getElementById("distancia-val");
+
+        if(!data.aerolinea || !data.origen || !data.destino || !data.fecha_partida) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
+
+        resultadoMsg.textContent = "Consultando modelos de IA...";
+
+        // Llamada a tu API en Java (8080) que conecta con Python (8000)
+        fetch("http://localhost:8080/api/flights/predict", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error("Error en la respuesta del servidor");
+                return res.json();
+            })
             .then(json => {
-                document.getElementById("resultado").textContent =
-                    JSON.stringify(json, null, 2);
+                // 1. Mostrar JSON limpio en el recuadro gris
+                resultadoMsg.textContent = JSON.stringify(json, null, 2);
+
+                // 2. Actualizar el valor numérico en el card azul
+                if (json.distancia !== undefined) {
+                    // Extraemos solo el número por si el JSON trae texto
+                    const soloNumero = parseFloat(json.distancia);
+                    distanciaVal.textContent = soloNumero.toFixed(2);
+                    distanciaCard.style.display = "block";
+                }
             })
             .catch(err => {
-                document.getElementById("resultado").textContent =
-                    "Error al conectar con la API";
+                resultadoMsg.textContent = "❌ Error: " + err.message;
+                distanciaCard.style.display = "none";
+                console.error(err);
             });
     }
 </script>
