@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Custom Local Config ###
+# Ignorar configuración de Spring Boot con credenciales
+src/main/resources/application.properties
+
+# Ignorar la carpeta de base de datos local H2
+data/
+
+# Ignorar archivos de log o temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
