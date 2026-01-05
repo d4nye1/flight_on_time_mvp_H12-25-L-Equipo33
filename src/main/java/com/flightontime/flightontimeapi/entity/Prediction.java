@@ -17,7 +17,7 @@ public class Prediction {
     private String destino;
     private  String prevision;
     private Double probabilidad;
-
+    private Double distancia;
     private String estado;
     private LocalDateTime fechaConsulta;
 
@@ -67,6 +67,14 @@ public class Prediction {
 
     public void setProbabilidad(Double probabilidad) {
         this.probabilidad = probabilidad;
+    }
+
+    public Double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(Double distancia) {
+        this.distancia = distancia;
     }
 
     public String getEstado() { return estado; }
