@@ -21,7 +21,7 @@ os.environ['PATH'] = os.path.join(os.environ['JAVA_HOME'], 'bin', 'server') + os
 app = FastAPI(title="FlightOnTime DS API")
 
 # =======================
-# EXCEPTION HANDLER (AQUÍ VA)
+# EXCEPTION HANDLER
 # =======================
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -76,7 +76,7 @@ class FlightRequest(BaseModel):
 
         v = v.strip().upper()
 
-        if not re.fullmatch(r"[A-Z]{2}", v):
+        if not re.fullmatch(r"^[A-Z0-9]{2}$", v):
             raise ValueError(
                 "La aerolínea debe ser un código IATA de 2 letras (ej: AA, AV, LA)"
             )
@@ -139,17 +139,17 @@ def predict(request: FlightRequest):
     if request.origen == request.destino:
         raise HTTPException(400, "El origen y el destino no pueden ser iguales")
 
-    distancia_db = obtener_distancia_db(request.origen, request.destino)
-    if distancia_db is None:
-        raise HTTPException(404, "Ruta no encontrada")
+    # distancia_db = obtener_distancia_db(request.origen, request.destino)
+    # if distancia_db is None:
+    #     raise HTTPException(404, "Ruta no encontrada")
 
-    distancia_km = round(distancia_db * 1.60934, 2)
+    # distancia_km = round(distancia_db * 1.60934, 2)
 
     df_input = pd.DataFrame([{
         "aerolinea": request.aerolinea,
         "aeropuerto_origen": request.origen,
         "aeropuerto_destino": request.destino,
-        "distancia": distancia_db,
+        # "distancia": distancia_db,
         "fecha_vuelo": pd.to_datetime(request.fecha_partida)
     }])
 
@@ -159,7 +159,7 @@ def predict(request: FlightRequest):
     return {
         "prevision": resultado,
         "probabilidad": round(float(prob), 2),
-        "distancia": distancia_km
+        # "distancia": distancia_km
     }
 
 if __name__ == "__main__":
