@@ -3,24 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlightOnTime - Predicción de Vuelos</title>
+    <title>Flight OnTime | AI Predictor</title>
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-dark: #2563eb;
-            --bg-light: #f0f7ff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --white: #ffffff;
-            --error-bg: #fef2f2;
-            --error-text: #991b1b;
-            --success-bg: #ecfdf5;
-            --success-text: #166534;
+            --bg-dark: #0a0a0a;
+            --card-bg: #121212;
+            --accent-orange: #ff9800;
+            --accent-cyan: #00e5ff;
+            --text-white: #ffffff;
+            --text-dim: #a0a0a0;
+            --input-bg: #1e1e1e;
+            --error: #ff5252;
         }
 
-        /* Bloqueo total de scroll en pantalla completa */
+        /* Bloqueo de scroll para sensación de Aplicación */
         * { box-sizing: border-box; }
-
         html, body {
             height: 100vh;
             width: 100vw;
@@ -28,145 +25,163 @@
             padding: 0;
             overflow: hidden;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-light);
+            background-color: var(--bg-dark);
+            color: var(--text-white);
             display: flex;
             flex-direction: column;
         }
 
-        /* Navbar: Solo el logo a la izquierda */
+        /* Navbar */
         .navbar {
-            height: 60px;
+            height: 80px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             padding: 0 8%;
-            background: var(--white);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             flex-shrink: 0;
         }
-        .logo { color: var(--primary); font-weight: 800; font-size: 1.4rem; }
+        .logo { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; }
+        .logo span { color: var(--accent-orange); }
 
-        /* Contenedor principal sin desbordes */
+        /* Contenedor Principal */
         .container {
             flex: 1;
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
-            gap: 5%;
-            padding: 0 8%;
+            gap: 8%;
+            padding: 0 8% 40px 8%;
             min-height: 0;
         }
 
-        .hero { max-width: 450px; flex: 1; }
-        .badge { background: #dbeafe; color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        h1 { font-size: clamp(1.8rem, 4.5vh, 2.5rem); margin: 15px 0; line-height: 1.1; font-weight: 800; }
-        .highlight { color: var(--primary); }
-        .hero p { font-size: 0.95rem; color: var(--text-muted); margin: 0; }
+        /* Sección Hero (Izquierda) */
+        .hero { max-width: 500px; flex: 1.2; }
+        h1 { font-size: clamp(2.5rem, 6vh, 4rem); margin: 0 0 20px 0; line-height: 1.1; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-dim); margin-bottom: 30px; line-height: 1.6; }
 
-        /* Card Formulario */
+        /* Card de Formulario */
         .form-card {
-            background: var(--white);
-            padding: clamp(15px, 3vh, 25px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            background: var(--card-bg);
+            padding: clamp(20px, 4vh, 40px);
+            border-radius: 24px;
+            border: 1px solid #222;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.05);
             width: 100%;
-            max-width: 360px;
+            max-width: 420px;
             flex-shrink: 0;
         }
 
-        .form-card h2 { margin: 0 0 5px 0; font-size: 1.2rem; color: var(--text-main); }
-        .subtitle { color: var(--text-muted); margin-bottom: 12px; font-size: 0.75rem; }
+        .form-card h2 { margin: 0 0 5px 0; font-size: 1.5rem; }
+        .subtitle { color: var(--accent-cyan); margin-bottom: 25px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-        .input-group { margin-bottom: 8px; }
-        .row { display: flex; gap: 10px; }
+        .input-group { margin-bottom: 15px; }
+        .row { display: flex; gap: 15px; }
         .row .input-group { flex: 1; }
 
-        label { display: block; margin-bottom: 3px; font-size: 0.7rem; font-weight: 600; color: var(--text-main); }
+        label { display: block; margin-bottom: 8px; font-size: 0.75rem; font-weight: 600; color: var(--text-dim); }
 
-        input {
+        /*  Estilización de Inputs y Selects  */
+        input, select {
             width: 100%;
-            padding: 9px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: #f8fafc;
-            font-size: 0.85rem;
-            transition: border-color 0.2s;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: var(--input-bg);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            /* Fuerza el esquema oscuro en calendarios y menús nativos */
+            color-scheme: dark;
         }
-        input:focus { outline: none; border-color: var(--primary); }
 
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+        }
+
+        /* Personalización del icono del calendario */
+        input::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            filter: invert(1) sepia(100%) saturate(10000%) hue-rotate(150deg); /* Lo vuelve Cian */
+            transition: transform 0.2s;
+        }
+        input::-webkit-calendar-picker-indicator:hover { transform: scale(1.2); }
+
+        /* Botón Naranja */
         .btn-predict {
             width: 100%;
-            padding: 11px;
-            background: var(--primary);
-            color: white;
+            padding: 16px;
+            background: var(--accent-orange);
+            color: #000;
             border: none;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
             cursor: pointer;
-            margin-top: 5px;
-            transition: background-color 0.2s;
+            margin-top: 10px;
+            transition: all 0.3s;
         }
-        .btn-predict:hover { background-color: var(--primary-dark); }
+        .btn-predict:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3); }
 
         /* Resultado */
-        .result-card {
-            border-radius: 12px;
-            padding: 10px;
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 14px;
             text-align: center;
-            margin-top: 12px;
-            border: 2px solid;
             display: none;
-            flex-direction: column;
-            gap: 2px;
-            animation: fadeIn 0.3s ease;
+            border: 1px solid transparent;
+            animation: slideUp 0.4s ease;
         }
 
-        .result-card.rojo { background-color: var(--error-bg); border-color: #f43f5e; color: var(--error-text); }
-        .result-card.verde { background-color: var(--success-bg); border-color: #22c55e; color: var(--success-text); }
+        .res-status { font-size: 2.2rem; font-weight: 900; text-transform: uppercase; margin: 5px 0; }
+        .res-info { font-size: 0.85rem; color: var(--text-dim); }
 
-        .result-card .main-text { font-weight: 700; font-size: 0.85rem; }
-        .result-card .sub-text { font-size: 0.7rem; line-height: 1.2; }
+        .verde { border-color: var(--accent-cyan); background: rgba(0, 229, 255, 0.05); color: var(--accent-cyan); }
+        .rojo { border-color: var(--error); background: rgba(255, 82, 82, 0.05); color: var(--error); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        @media (max-width: 850px) or (max-height: 580px) {
+        /* Responsividad */
+        @media (max-width: 900px) or (max-height: 600px) {
             body, html { overflow-y: auto; height: auto; }
-            .container { flex-direction: column; padding: 40px 5%; }
-            .hero { text-align: center; margin-bottom: 20px; }
+            .container { flex-direction: column; padding: 40px 5%; gap: 30px; }
+            .hero { text-align: center; }
         }
     </style>
 </head>
 <body>
 
 <header class="navbar">
-    <div class="logo">✈ FlightOnTime</div>
+    <div class="logo">✈ Flight <span>OnTime</span></div>
 </header>
 
 <main class="container">
     <section class="hero">
-        <span class="badge">● Sistema de Predicción Activo</span>
-        <h1>¿Tu vuelo llegará <span class="highlight">a tiempo?</span></h1>
-        <p>Utilizamos modelos de IA para analizar la puntualidad de tu ruta en segundos.</p>
+        <h1>Despegue con <span style="color:var(--accent-orange)">Confianza.</span></h1>
+        <p>Utiliza nuestra tecnología de predicción de última generación para anticipar retrasos y optimizar tus tiempos de viaje.</p>
     </section>
 
     <section class="form-card">
         <h2>Consulta tu vuelo</h2>
-        <p class="subtitle">Ingresa códigos IATA oficiales</p>
+        <p class="subtitle">Radar de Predicción Activo</p>
 
         <div class="input-group">
             <label>Aerolínea (IATA)</label>
-            <input id="aerolinea" maxlength="2" placeholder="Ej: AA" />
+            <input id="aerolinea" maxlength="2" placeholder="Ej: AA" oninput="this.value = this.value.toUpperCase()"/>
         </div>
 
         <div class="row">
             <div class="input-group">
                 <label>Origen</label>
-                <input id="origen" maxlength="3" placeholder="Ej: JFK" />
+                <input id="origen" maxlength="3" placeholder="Ej: JFK" oninput="this.value = this.value.toUpperCase()"/>
             </div>
             <div class="input-group">
                 <label>Destino</label>
-                <input id="destino" maxlength="3" placeholder="Ej: MAD" />
+                <input id="destino" maxlength="3" placeholder="Ej: MAD" oninput="this.value = this.value.toUpperCase()"/>
             </div>
         </div>
 
@@ -175,50 +190,44 @@
             <input type="datetime-local" id="fecha" />
         </div>
 
-        <button type="button" class="btn-predict" onclick="predecir()">✈ Predecir Estado</button>
+        <button type="button" class="btn-predict" onclick="predecir()">Analizar Vuelo</button>
 
-        <div id="result-box" class="result-card">
-            <div class="main-text" id="res-titulo"></div>
-            <div class="sub-text" id="res-desc"></div>
+        <div id="result-display" class="result-box">
+            <div id="res-status" class="res-status"></div>
+            <div id="res-info" class="res-info"></div>
         </div>
     </section>
 </main>
 
 <script>
     function predecir() {
-        const aerolinea = document.getElementById("aerolinea").value.trim().toUpperCase();
-        const origen = document.getElementById("origen").value.trim().toUpperCase();
-        const destino = document.getElementById("destino").value.trim().toUpperCase();
+        const aerolinea = document.getElementById("aerolinea").value.trim();
+        const origen = document.getElementById("origen").value.trim();
+        const destino = document.getElementById("destino").value.trim();
         const fechaVal = document.getElementById("fecha").value;
 
-        const resultBox = document.getElementById("result-box");
-        const resTitulo = document.getElementById("res-titulo");
-        const resDesc = document.getElementById("res-desc");
+        const resultBox = document.getElementById("result-display");
+        const resStatus = document.getElementById("res-status");
+        const resInfo = document.getElementById("res-info");
 
-        // Validaciones exactas de tu DTO
+        // Validaciones
         if (!aerolinea || !origen || !destino || !fechaVal) {
-            showMsg("rojo", "Asegúrate de completar todos los campos", "");
-            return;
+            return showMsg("rojo", "CAMPOS VACÍOS", "Por favor completa todos los datos.");
         }
 
-        if (aerolinea.length !== 2) {
-            showMsg("rojo", "Dato incorrecto", "Agregue las 2 letras del código de aerolínea en formato IATA");
-            return;
+        if (aerolinea.length < 2 || origen.length < 3 || destino.length < 3) {
+            return showMsg("rojo", "FORMATO INCORRECTO", "Usa códigos IATA oficiales.");
         }
 
-        if (origen.length !== 3 || destino.length !== 3) {
-            showMsg("rojo", "Dato incorrecto", "Agregue las 3 letras del aeropuerto en formato IATA");
-            return;
+        if (new Date(fechaVal) <= new Date()) {
+            return showMsg("rojo", "FECHA PASADA", "Selecciona un vuelo futuro.");
         }
 
-        const fechaSeleccionada = new Date(fechaVal);
-        const ahora = new Date();
-        if (fechaSeleccionada <= ahora) {
-            showMsg("rojo", "Fecha inválida", "No se pueden realizar predicciones para vuelos que ya han ocurrido");
-            return;
-        }
-
-        showMsg("", "Consultando...", "Analizando datos del vuelo");
+        // Estado de carga
+        resStatus.innerText = "PROCESANDO...";
+        resInfo.innerText = "Consultando con la red neuronal";
+        resultBox.className = "result-box verde";
+        resultBox.style.display = "block";
 
         fetch("http://localhost:8080/api/flights/predict", {
             method: "POST",
@@ -230,28 +239,28 @@
                 fecha_partida: fechaVal
             })
         })
-            .then(async res => {
-                const body = await res.json();
-                if (!res.ok) throw new Error(body.message || "Error en el servidor");
-                return body;
-            })
-            .then(json => {
-                const esPuntual = json.prevision === "Puntual";
-                showMsg(
-                    esPuntual ? "verde" : "rojo",
-                    esPuntual ? "✅ Vuelo Puntual" : "⚠️ Posible Retraso",
-                    `Ruta de ${json.distancia} Km. Confianza: ${(json.probabilidad * 100).toFixed(1)}%`
-                );
-            })
-            .catch(err => {
-                showMsg("rojo", "Error de conexión", err.message);
-            });
+        .then(async res => {
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Error en servidor");
+            return data;
+        })
+        .then(json => {
+            const esPuntual = json.prevision === "Puntual";
+            showMsg(
+                esPuntual ? "verde" : "rojo",
+                esPuntual ? "PUNTUAL" : "RETRASO",
+                `Confianza: ${(json.probabilidad * 100).toFixed(1)}% | ${json.distancia || 0} Km`
+            );
+        })
+        .catch(err => {
+            showMsg("rojo", "SIN CONEXIÓN", err.message);
+        });
 
-        function showMsg(clase, tit, desc) {
-            resultBox.className = "result-card " + clase;
-            resTitulo.textContent = tit;
-            resDesc.textContent = desc;
-            resultBox.style.display = "flex";
+        function showMsg(clase, status, info) {
+            resultBox.className = "result-box " + clase;
+            resStatus.innerText = status;
+            resInfo.innerText = info;
+            resultBox.style.display = "block";
         }
     }
 </script>
