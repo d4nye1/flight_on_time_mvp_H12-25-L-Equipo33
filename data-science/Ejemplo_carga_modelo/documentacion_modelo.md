@@ -240,9 +240,44 @@ Con esta estrategia se logró alcanzar un modelo que alcanzó un AUC-ROC de 0.71
 <img width="994" height="466" alt="imagen3" src="https://github.com/user-attachments/assets/e722d583-0ee6-4d0e-a0d0-c4b3bdcf3c8e" />
 </p>
 
-### **5) Serialización del modelo **
+### **5) Serialización del modelo**
 
-Como etapa final de Data Science, se realizó la serialización del modelo para permitir que éste fuera cargado y consumido desde una aplicación externa (en este caso, un endpoint FastAPI que consume el modelo entrenado, por parte del equipo de Backend)
+Como etapa final de Data Science, se realizó la serialización del modelo para permitir que éste fuera cargado y consumido desde una aplicación externa (en este caso, un endpoint FastAPI que consume el modelo entrenado, por parte del equipo de Backend).
 
+La serialización del modelo consistió en las siguientes actividades:
+
+- Escritura de archivo feature_engineering_functions.py
+- Serialización del modelo entrenado en formato .joblib
+- Generación de archivo requirements.txt
+- Escritura de archivo custom_class.py
+- Generación de notebook "Ejemplo_carga_modelo_ML.ipynb"
+
+#### **5.1) feature_engineering_functions.py**
+
+<p align="justify">
+Archivo de python que contiene las funciones denominadas "calcular_distancia" y "extraer_features_fecha". La primera de ellas realiza la vinculación entre el aeropuerto origen-destino con una distancia, al leer un diccionario previamente guardado y consultarlo. Esta generación de distancia se asigna a una nueva columna creada del dataframe de entrada, que no contiene dicha columna. Esta función para recuperar o generar la distancia es un paso dentro del pipeline definido para el entrenamiento del modelo.
+</p>
+<p align="justify">
+La segunda función, denominada "extraer_features_fecha" lo que realiza es la extracción de características definidas como relevantes para que el modelo prediga con cierto grado de probabilidad. Estas características que extrae de dicho objeto (que es de tipo fecha y hora) son la hora de salida del vuelo, el día de la semana, el mes en el que ocurrió el vuelo y una variable de si el día extraído cayó en fin de semana o entre semana. Luego, la misma función implementa la transformación de dichas características extraídas, que son numéricas, a variables cíclicas. Esto es importante pues de esta forma el carácter temporal se respeta, cosa que se vería perdida, llevando a un modelo inferior, de solamente codificar esas características temporales como números enteros secuenciales. Esta función es el segundo paso dentro del pipeline definido para el entrenamiento del modelo.
+</p>
+
+#### **5.2) Serialización del modelo**
+<p align="justify">
+La serialización del modelo consistió en guardar el modelo entrenado en un archivo .joblib. Para lograr cargar y utilizar el modelo correctamente, es necesario contar con las mismas librerías y el entorno de Python utilizado durante el entrenamiento del modelo. Para asegurar consistencia y evitar errores en la carga del modelo, se generó un archivo denominado "requirements.txt" en el cual se encuentran definidas las versiones de las librerías mínimas a instalar para poder consumir el modelo correctamente. Este archivo, denominado requirements.txt, simplemente debe instalarse en el entorno utilizado para desarrollar la aplicación de FastAPI, lo que puede realizarsem mediante la línea de comandos (pip install -requirements.txt). En este mismo directorio se encuentra el modelo utilizado .joblib, el cual es la versión ajustada en hiperparámetros del modelo para ser cargado por la aplicación (modelo entrenado con hiperparámetros óptimos obtenidos en el archivo DataScience_ModelosML.ipynb".
+</p>
+
+#### **5.3) custom_class.py**
+<p align="justify">
+Finalmente, se decidió "envolver" el modelo serializado en una clase personalizada, la cual puede ser modificada, escalada, o formateada en sus salidas para entregar la información en el formato en el que el equipo considere más adecuado y útil. La clase hace uso de una función .predict que funciona como una forma de sobrecarga de la función original de los modelos de scikit-learn. Dicha función debe recibir el registro o la información del vuelo de la que se pretende determinar o predecir y ésta retorna la predicción ("A tiempo", "Retrasado") del modelo, la probabilidad o la confianza con la que asegura que exista un retraso o no (formato decimal) y a petición del equipo de backend, la distancia, para mostrarla o trabajarla en el frontend o en la API. Cabe mencionar que la probabilidad que muestra el modelo, siempre irá de 0.5-1, 0.5 representando el 50% de probabilidad o la confianza de predecir que un vuelo se retrasará o no y 1 representando el 100%. No puede visuailzarse menos del 50% de probabilidad, pues la etiqueta que se retorna por parte del modelo solamente es la clase elegida por el modelo y por consiguiente, la de mayor probabilidad. En otras palabras, el modelo solo muestra la clase ganadora. La probabilidad asociada no puede ser menor a 0.5 porque, al tratarse de un problema binario, las probabilidades de ambas clases suman 1. El modelo elige como predicción la clase con mayor probabilidad, y esa será siempre ≥ 0.5.
+</p>
+
+<p align="justify">
+En caso de que se requiera producir una explicación de cómo decide el modelo, se proporciona la función explain, la cual recibe el registro a revisar, y regresa, de forma ordenada por importancia, las características que utiliza el modelo como las más relevantes para determinar si un vuelo se retrasa o llega a tiempo. En este primer intento de explicación, se usan los coeficientes shap, los cuales entre más grandes sean, indican una mayor importancia de dicha variable, en una consulta en particular. A mayor coeficiente, mayor relevancia de dicha característica para determinar retrasos. Esta importancia u orden será variable o cambiante entre cada consulta particular, lo que permite realizar una explicación por evento, en lugar de una explicación global o invariante. La función retorna tanto los nombres de las características usadas como los coeficientes shap en un dataframe. Se deja a discreción de los equipos la forma en la que se debe entregar esa información para aprovecharla de mejor manera, si es de utilidad para el análisis o se debería descartar.
+</p>
+
+#### **5.4) Ejemplo de uso y consumo del modelo**
+<p align="justify">
+ En el archivo "Ejemplo_carga_modelo_ML.ipynb" se encuentra la demostración, mediante un ejemplo, de cómo consumir en Python el modelo entrenado. Basta con instalar los requerimientos, importar las librerías de dicho archivo, cargar e importar las clases y funciones definidas, definir uno o varios ejemplos para consultar al modelo, crear un objeto de la clase personalizada a partir del modelo cargado con joblib y llamar a la función de la clase personalizada (ya sea predict o explain) para obtener los resultados del modelo entrenado. Cabe mencionar que el modelo maneja errores en la entrada. Es decir, si la aerolínea, el aeropuerto origen o el aeropuerto destino no existen, los acepta y genera una distancia de 0 por defecto, y los codifica internamente para el modelo como -1. Esto permite manejar errores al predecir incluso con aeropuertos desconocidos, aunque la predicción sería errónea o inexacta, ya que el modelo está desarrollado para usarse con códigos IATA de aeropuertos de USA así como las 15 aerolíneas de USA presentes en la base de datos original.
+</p>
 
 
