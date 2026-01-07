@@ -10,14 +10,19 @@ de la cual fueron filtrados los vuelos solamente del año 2024 por la gran canti
 fuera de este país, sería incorrecto al no contar con datos para desarrollar un modelo predictivo de esta índole correctamente.
 </p>
 
+
 ### **2) Análisis exploratorio de datos**
+<p align="justify">
+Como etapa previa al modelado, se realizó un Análisis Exploratorio de Datos (EDA) con el objetivo de comprender la estructura del dataset, validar coherencia operativa, identificar patrones relevantes y definir un conjunto de variables ex-ante que pudiera ser utilizado en un modelo predictivo sin introducir fuga de información.
+</p>
 
-Como etapa previa al modelado, se realizó un Análisis Exploratorio de Datos (EDA) con el objetivo de **comprender la estructura del dataset**, **validar coherencia operativa**, **identificar patrones relevantes** y **definir un conjunto de variables ex-ante** que pudiera ser utilizado en un modelo predictivo sin introducir fuga de información.
+ <p align="justify">
+El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7 millones de registros y 35 variables. Debido al volumen del dataset, el análisis combinó revisión estadística, validación de formato, y visualizaciones sobre muestras representativas para mantener eficiencia computacional sin perder interpretabilidad.
+</p>
 
-El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7 millones de registros y 35 variables. Debido al volumen del dataset, el análisis combinó **revisión estadística**, **validación de formato**, y **visualizaciones sobre muestras representativas** para mantener eficiencia computacional sin perder interpretabilidad.
 
-### 2.1 Revisión inicial del dataset
-
+ #### 2.1 Revisión inicial del dataset
+ 
 Se generó una **copia de seguridad** del dataframe crudo con el objetivo de preservar el estado original ante posibles errores durante limpieza o transformación de datos.
 
 Como primer paso de exploración, se revisaron:
@@ -29,17 +34,18 @@ Como primer paso de exploración, se revisaron:
 La inspección inicial mostró un consumo de memoria superior a 1.8 GB, lo cual justificó la necesidad de realizar limpieza y optimización antes de procesos intensivos de modelado.
 
 
-### 2.2 Normalización semántica de columnas y diccionario de variables
+#### 2.2 Normalización semántica de columnas y diccionario de variables
 
-Con el objetivo de mejorar la legibilidad y consistencia del análisis, se realizó un **renombrado de columnas** a español, con nombres descriptivos y uniformes (por ejemplo: `origin → aeropuerto_origen`, `dep_delay → retraso_salida`, etc.).
 
-Posteriormente se construyó un **diccionario de datos**, detallando la descripción operativa de cada variable. Esto permitió realizar una “limpieza conceptual”, es decir:
+ <p align="justify">Con el objetivo de mejorar la legibilidad y consistencia del análisis, se realizó un renombrado de columnas a español, con nombres descriptivos y uniformes.</p> 
+<p align="justify">Posteriormente se construyó un diccionario de datos, detallando la descripción operativa de cada variable. Esto permitió realizar una “limpieza conceptual”, es decir:</p>
 
 - comprender el rol de cada columna dentro del proceso real del vuelo,
 - identificar variables conocidas **antes** del despegue vs variables conocidas **después** del evento,
 - evitar eliminar información válida por interpretar erróneamente valores nulos esperados.
 
-### 2.3 Revisión y estandarización de tipos de dato
+
+#### 2.3 Revisión y estandarización de tipos de dato
 
 Durante la exploración se detectaron ajustes necesarios en tipos de datos para reflejar de forma correcta su naturaleza:
 
@@ -50,7 +56,7 @@ Durante la exploración se detectaron ajustes necesarios en tipos de datos para 
 Se ignoraron advertencias de tipo (`DtypeWarning`) en columnas con tipos mixtos que no forman parte del dataset final de modelado.
 
 
-### 2.4 Análisis de valores nulos y consistencia operativa
+#### 2.4 Análisis de valores nulos y consistencia operativa
 
 Se calculó el conteo de valores faltantes por columna. Se observó que los nulos se concentran principalmente en:
 
@@ -66,7 +72,7 @@ Esta distribución fue considerada **esperada**, ya que:
 Esto guió las decisiones de filtrado posteriores, aplicadas únicamente sobre campos críticos para la definición de retraso.
 
 
-### 2.5 Filtrado de vuelos no útiles para el MVP
+#### 2.5 Filtrado de vuelos no útiles para el MVP
 
 Dado que el objetivo es predecir **retrasos en vuelos operados**, se filtraron del análisis aquellos vuelos:
 
@@ -77,7 +83,7 @@ ya que no cuentan con tiempos reales confiables y no representan operaciones com
 
 
 
-### 2.6 Eliminación de variables con fuga de información (data leakage)
+#### 2.6 Eliminación de variables con fuga de información (data leakage)
 
 Se identificaron variables que contienen información posterior al evento o explican directamente el retraso una vez ocurrido, por ejemplo:
 
@@ -87,7 +93,7 @@ Se identificaron variables que contienen información posterior al evento o expl
 Estas variables fueron eliminadas debido a que introducirlas en el modelado causaría **sobreajuste** y rendimiento artificialmente alto, al incluir información que no está disponible en un escenario de predicción previa al despegue.
 
 
-### 2.7 Tratamiento de valores nulos críticos
+#### 2.7 Tratamiento de valores nulos críticos
 
 Para poder definir correctamente la variable objetivo y realizar el análisis de retrasos, se eliminaron registros con valores faltantes en columnas críticas:
 
@@ -99,7 +105,7 @@ Para poder definir correctamente la variable objetivo y realizar el análisis de
 Se eligió eliminación (drop) en lugar de imputación porque estas variables representan resultados operativos que no pueden ser estimados de manera confiable sin introducir sesgo.
 
 
-### 2.8 Definición de la variable objetivo
+#### 2.8 Definición de la variable objetivo
 
 El objetivo del proyecto es predecir retrasos **antes del despegue**, por lo que se definió la variable objetivo en función del retraso de salida.
 
@@ -112,7 +118,7 @@ Este umbral corresponde al criterio estándar de puntualidad utilizado en la ind
 Referencia: https://www.oag.com/airline-on-time-performance-defining-late
 
 
-### 2.9 Ingeniería de variables temporales ex-ante
+#### 2.9 Ingeniería de variables temporales ex-ante
 
 Para representar patrones operativos sin introducir información posterior al evento, se transformó la hora programada de salida (formato HHMM) en componentes interpretables:
 
@@ -129,7 +135,7 @@ Estas transformaciones permiten capturar patrones recurrentes como:
 - ciclos operativos predecibles.
 
 
-### 2.10 Análisis descriptivo de variables numéricas continuas
+#### 2.10 Análisis descriptivo de variables numéricas continuas
 
 Se aplicó `describe()` exclusivamente sobre variables numéricas continuas relevantes para validar rangos, dispersión y coherencia operativa:
 
@@ -147,20 +153,19 @@ Se observó:
 
 Los valores extremos fueron interpretados como eventos operativos reales y se conservaron.
 
-### 2.11 Visualizaciones exploratorias y hallazgos operativos
+#### 2.11 Visualizaciones exploratorias y hallazgos operativos
 
 Para análisis visual se utilizaron muestras representativas (por eficiencia computacional) y se exploraron relaciones relevantes:
 
-- [**Relación  entre retraso de salida vs retraso de llegada:**](https://drive.google.com/file/d/1Io-MHWGqzY7l1GKAnBuI-Az42uDtstQi/view?usp=drive_link)
-relación positiva consistente; evidencia recuperación parcial en algunos vuelos.
-- [**Distribución de la variable objetivo:**]() se confirmó un desbalance moderado (~20% retrasados vs ~80% puntuales).
-- **Retraso por aerolínea (Top 10):** diferencias significativas sugieren patrones operativos aprendibles.
-- **Retraso por hora del día:** tendencia creciente conforme avanza el día, consistente con acumulación de demoras.
-- **Distancia vs retraso:** comparación por boxplot para identificar diferencias estructurales.
-- **Semana vs fin de semana:** diferencias en la tasa de retraso; se confirma que `fin_de_semana` aporta señal útil.
+- [**Relación  entre retraso de salida vs retraso de llegada:**](https://drive.google.com/file/d/1Io-MHWGqzY7l1GKAnBuI-Az42uDtstQi/view?usp=drive_link) relación positiva consistente; evidencia recuperación parcial en algunos vuelos.
+- [**Distribución de la variable objetivo:**](https://drive.google.com/file/d/1DslKOBxsM4jvTXjsHAqrru4LfSHIVTh-/view?usp=drive_link) se confirmó un desbalance moderado (~20% retrasados vs ~80% puntuales).
+- [**Retraso por aerolínea (Top 10):**](https://drive.google.com/file/d/1f3d9KC2xPl4QancXquOihdQrtRZVZRtY/view?usp=drive_link) diferencias significativas sugieren patrones operativos aprendibles.
+- [**Retraso por hora del día:**](https://drive.google.com/file/d/1n5h-Lz506eElY1scOpk3r3E1pqVBnVll/view?usp=drive_link) tendencia creciente conforme avanza el día, consistente con acumulación de demoras.
+- [**Distancia vs retraso:**](https://drive.google.com/file/d/1jVMy76qBFe6Ie_Bh-ZcvDctvCSLcIvTE/view?usp=drive_link) comparación por boxplot para identificar diferencias estructurales.
+- [**Semana vs fin de semana:**](https://drive.google.com/file/d/1iyKux04PRHkQfdsjP8Mo6MW6xDSgjBD9/view?usp=drive_link) diferencias en la tasa de retraso; se confirma que `fin_de_semana` aporta señal útil.
 
 
-### 2.12 Correlación exploratoria con la variable objetivo
+#### 2.12 Correlación exploratoria con la variable objetivo
 
 Se calculó correlación entre variables numéricas ex-ante y la variable objetivo para identificar asociaciones lineales útiles como guía inicial (sin implicar causalidad), incluyendo:
 
@@ -172,7 +177,7 @@ Se calculó correlación entre variables numéricas ex-ante y la variable objeti
 Como es esperable en sistemas operativos complejos, se observaron correlaciones bajas a moderadas. Esto respalda que el modelo debe capturar relaciones **no lineales** y combinaciones de variables (por ejemplo, modelos basados en árboles).
 
 
-### 2.13 Exportación del dataset final y cierre de etapa
+#### 2.13 Exportación del dataset final y cierre de etapa
 
 Como producto de la fase de limpieza y EDA se generó un dataset final para modelado: `df_clean_modelo`, que:
 
@@ -186,7 +191,7 @@ Se conservaron dos variantes:
 
 1. **Dataset para modelado (`df_clean_modelo`)**: contiene únicamente variables permitidas + objetivo.  
 2. **Dataset completo limpio (`df_clean`)**: se conserva opcionalmente para auditoría/EDA, ya que mantiene variables operativas usadas para análisis exploratorio.
-
+</p>
 
 ### **3) Selección de características (features) o variables predictoras**
 
