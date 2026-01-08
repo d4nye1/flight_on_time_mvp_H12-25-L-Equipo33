@@ -1,7 +1,6 @@
 package com.flightontime.flightontimeapi.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,77 +14,37 @@ public class Prediction {
     private String aerolinea;
     private String origen;
     private String destino;
-    private  String prevision;
+    private String prevision;
     private Double probabilidad;
     private Double distancia;
-    private String estado;
+    private LocalDateTime fechaPartida;
     private LocalDateTime fechaConsulta;
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getAerolinea() {
-        return aerolinea;
-    }
+    public String getAerolinea() { return aerolinea; }
+    public void setAerolinea(String aerolinea) { this.aerolinea = aerolinea; }
 
-    public void setAerolinea(String aerolinea) {
-        this.aerolinea = aerolinea;
-    }
+    public String getOrigen() { return origen; }
+    public void setOrigen(String origen) { this.origen = origen; }
 
-    public String getOrigen() {
-        return origen;
-    }
+    public String getDestino() { return destino; }
+    public void setDestino(String destino) { this.destino = destino; }
 
-    public void setOrigen(String origen) {
-        this.origen = origen;
-    }
+    public String getPrevision() { return prevision; }
+    public void setPrevision(String prevision) { this.prevision = prevision; }
 
-    public String getDestino() {
-        return destino;
-    }
+    public Double getProbabilidad() { return probabilidad; }
+    public void setProbabilidad(Double probabilidad) { this.probabilidad = probabilidad; }
 
-    public void setDestino(String destino) {
-        this.destino = destino;
-    }
+    public Double getDistancia() { return distancia; }
+    public void setDistancia(Double distancia) { this.distancia = distancia; }
 
-    public String getPrevision() {
-        return prevision;
-    }
+    public LocalDateTime getFechaPartida() { return fechaPartida; }
+    public void setFechaPartida(LocalDateTime fechaPartida) { this.fechaPartida = fechaPartida; }
 
-    public void setPrevision(String prevision) {
-        this.prevision = prevision;
-    }
-
-    public Double getProbabilidad() {
-        return probabilidad;
-    }
-
-    public void setProbabilidad(Double probabilidad) {
-        this.probabilidad = probabilidad;
-    }
-
-    public Double getDistancia() {
-        return distancia;
-    }
-
-    public void setDistancia(Double distancia) {
-        this.distancia = distancia;
-    }
-
-    public String getEstado() { return estado; }
-
-    public void setEstado(String estado) { this.estado = estado; }
-
-    public LocalDateTime getFechaConsulta() {
-        return fechaConsulta;
-    }
-
-    public void setFechaConsulta(LocalDateTime fechaConsulta) {
-        this.fechaConsulta = fechaConsulta;
-    }
+    public LocalDateTime getFechaConsulta() { return fechaConsulta; }
+    public void setFechaConsulta(LocalDateTime fechaConsulta) { this.fechaConsulta = fechaConsulta; }
 }
