@@ -10,7 +10,7 @@ public class FlightPredictionDTO {
     @JsonProperty("probabilidad")
     private Double probabilidad;
 
-    @JsonProperty("distancia") // ✅ Nuevo campo añadido
+    @JsonProperty("distancia_km")
     private Double distancia;
 
     public FlightPredictionDTO() {
