@@ -5,6 +5,7 @@ import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
 import com.flightontime.flightontimeapi.entity.Prediction;
 import com.flightontime.flightontimeapi.repository.PredictionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -22,22 +23,41 @@ public class FlightPredictionService {
         this.predictionRepository = predictionRepository;
     }
 
+    @Transactional
     public FlightPredictionDTO predecirVuelo(FlightRequestDTO request) {
+
+        LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
+
+        boolean existe = predictionRepository
+                .existsByAerolineaAndOrigenAndDestinoAndFechaPartida(
+                        request.getAerolinea(),
+                        request.getOrigen(),
+                        request.getDestino(),
+                        fechaPartida
+                );
 
         FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
 
-        Prediction pred = new Prediction();
-        pred.setAerolinea(request.getAerolinea());
-        pred.setOrigen(request.getOrigen());
-        pred.setDestino(request.getDestino());
-        pred.setPrevision(respuesta.getPrevision());
-        pred.setProbabilidad(respuesta.getProbabilidad());
-        pred.setDistancia(respuesta.getDistancia());
-        pred.setEstado("EXITOSA");
-        pred.setFechaConsulta(LocalDateTime.now());
+        if (!existe) {
+            Prediction pred = new Prediction();
+            pred.setAerolinea(request.getAerolinea());
+            pred.setOrigen(request.getOrigen());
+            pred.setDestino(request.getDestino());
+            pred.setFechaPartida(fechaPartida);
+            pred.setPrevision(respuesta.getPrevision());
+            pred.setProbabilidad(respuesta.getProbabilidad());
+            pred.setDistancia(respuesta.getDistancia());
+            pred.setFechaConsulta(LocalDateTime.now());
 
-        predictionRepository.save(pred);
-
+            try {
+                predictionRepository.save(pred);
+                System.out.println("Vuelo guardado correctamente.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("El vuelo ya existe en la DB. No se guarda.");
+        }
         return respuesta;
     }
 }
