@@ -157,12 +157,12 @@ Los valores extremos fueron interpretados como eventos operativos reales y se co
 
 Para análisis visual se utilizaron muestras representativas (por eficiencia computacional) y se exploraron relaciones relevantes:
 
-- [**Relación  entre retraso de salida vs retraso de llegada:**](https://drive.google.com/file/d/1Io-MHWGqzY7l1GKAnBuI-Az42uDtstQi/view?usp=drive_link) relación positiva consistente; evidencia recuperación parcial en algunos vuelos.
-- [**Distribución de la variable objetivo:**](https://drive.google.com/file/d/1DslKOBxsM4jvTXjsHAqrru4LfSHIVTh-/view?usp=drive_link) se confirmó un desbalance moderado (~20% retrasados vs ~80% puntuales).
-- [**Retraso por aerolínea (Top 10):**](https://drive.google.com/file/d/1f3d9KC2xPl4QancXquOihdQrtRZVZRtY/view?usp=drive_link) diferencias significativas sugieren patrones operativos aprendibles.
-- [**Retraso por hora del día:**](https://drive.google.com/file/d/1n5h-Lz506eElY1scOpk3r3E1pqVBnVll/view?usp=drive_link) tendencia creciente conforme avanza el día, consistente con acumulación de demoras.
-- [**Distancia vs retraso:**](https://drive.google.com/file/d/1jVMy76qBFe6Ie_Bh-ZcvDctvCSLcIvTE/view?usp=drive_link) comparación por boxplot para identificar diferencias estructurales.
-- [**Semana vs fin de semana:**](https://drive.google.com/file/d/1iyKux04PRHkQfdsjP8Mo6MW6xDSgjBD9/view?usp=drive_link) diferencias en la tasa de retraso; se confirma que `fin_de_semana` aporta señal útil.
+- [**Relación  entre retraso de salida vs retraso de llegada:**](https://drive.google.com/file/d/1Io-MHWGqzY7l1GKAnBuI-Az42uDtstQi/preview?usp=drive_link) relación positiva consistente; evidencia recuperación parcial en algunos vuelos.
+- [**Distribución de la variable objetivo:**](https://drive.google.com/file/d/1DslKOBxsM4jvTXjsHAqrru4LfSHIVTh-/preview?usp=drive_link) se confirmó un desbalance moderado (~20% retrasados vs ~80% puntuales).
+- [**Retraso por aerolínea (Top 10):**](https://drive.google.com/file/d/1f3d9KC2xPl4QancXquOihdQrtRZVZRtY/preview?usp=drive_link) diferencias significativas sugieren patrones operativos aprendibles.
+- [**Retraso por hora del día:**](https://drive.google.com/file/d/1n5h-Lz506eElY1scOpk3r3E1pqVBnVll/preview?usp=drive_link) tendencia creciente conforme avanza el día, consistente con acumulación de demoras.
+- [**Distancia vs retraso:**](https://drive.google.com/file/d/1jVMy76qBFe6Ie_Bh-ZcvDctvCSLcIvTE/preview?usp=drive_link) comparación por boxplot para identificar diferencias estructurales.
+- [**Semana vs fin de semana:**](https://drive.google.com/file/d/1iyKux04PRHkQfdsjP8Mo6MW6xDSgjBD9/preview?usp=drive_link) diferencias en la tasa de retraso; se confirma que `fin_de_semana` aporta señal útil.
 
 
 #### 2.12 Correlación exploratoria con la variable objetivo
