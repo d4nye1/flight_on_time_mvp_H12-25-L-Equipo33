@@ -10,15 +10,71 @@ from pydantic import BaseModel, field_validator
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi import Request
+import __main__
 
-# --- CONFIGURACIÓN AUTOMÁTICA DE JAVA ---
+# --- CONFIGURACIÓN DE ENTORNO ---
 os.environ['JAVA_HOME'] = r'C:\Program Files\Java\jdk-17'
 os.environ['PATH'] = os.path.join(os.environ['JAVA_HOME'], 'bin', 'server') + os.pathsep + os.environ['PATH']
 
+# ===========================
+# 1. FUNCIONES DE INGENIERÍA 
+# ===========================
+def calcular_distancia(df, diccionario=None, default=0):
+    df = df.copy()
+    df['origen-destino'] = df['aeropuerto_origen'] + df['aeropuerto_destino']
+
+    if 'distancia_millas' not in df.columns:
+        df['distancia_millas'] = 0 
+    return df
+
+def extraer_features_fecha(df):
+    df = df.copy()
+    cyclical_columns = ['mes', 'dia_semana', 'hora_salida']
+    df['hora_salida'] = df['fecha_vuelo'].dt.hour
+    df['mes'] = df['fecha_vuelo'].dt.month
+    df['dia_semana'] = df['fecha_vuelo'].dt.weekday + 1
+    df['fin_de_semana'] = df['dia_semana'].isin([6, 7]).astype(bool)
+
+    for column in cyclical_columns:
+        max_val = df[column].max() if not df[column].empty else 1
+        if max_val == 0: max_val = 1
+        df[column + '_sin'] = np.sin(2 * np.pi * df[column] / max_val)
+        df[column + '_cos'] = np.cos(2 * np.pi * df[column] / max_val)
+        df = df.drop(columns=[column])
+    df = df.drop(columns=['fecha_vuelo'])
+    return df
+
+__main__.calcular_distancia = calcular_distancia
+__main__.extraer_features_fecha = extraer_features_fecha
+
+# ==========================================
+# 2. WRAPPER PARA EXTRACCIÓN DE DATOS
+# ==========================================
+class FlightModelWrapper:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
+        self.gen_dist = pipeline.named_steps["gen-dist"]
+
+    def predict_data(self, X):
+        prob = self.pipeline.predict_proba(X)[0][1]
+        
+        X_transformed = self.gen_dist.transform(X)
+        dist_millas = X_transformed['distancia_millas'].iloc[0]
+        
+        return prob, dist_millas
+
 # =======================
-# APP
+# APP Y CONFIGURACIÓN
 # =======================
 app = FastAPI(title="FlightOnTime DS API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # =======================
 # EXCEPTION HANDLER
@@ -34,30 +90,15 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"error": mensaje}
     )
 
-# =======================
-# CORS
-# =======================
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-H2_JAR = r"C:\Users\Edson Castañeda\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar"
-DB_PATH = r"C:\Users\Edson Castañeda\flight_on_time_mvp_H12-25-L-Equipo33\data\flightdb"
-JDBC_URL = f"jdbc:h2:file:{DB_PATH};AUTO_SERVER=TRUE;AUTO_SERVER_PORT=9090"
-USER = "sa"
-PASSWORD = ""
 
 # CARGA DEL MODELO
 try:
-    model = joblib.load("modelo_XGB.joblib")
-    print("✅ Modelo cargado correctamente")
+    raw_pipeline = joblib.load("modelo_XGB.joblib")
+    model = FlightModelWrapper(raw_pipeline)
+    print("✅ Modelo cargado y configurado con éxito")
 except Exception as e:
     model = None
-    print(f"❌ Error al cargar el modelo: {e}")
+    print(f"❌ Error crítico al cargar el modelo: {e}")
 
 # =======================
 # MODELO DE ENTRADA
@@ -104,63 +145,33 @@ class FlightRequest(BaseModel):
         return v
 
 # =======================
-# DB
-# =======================
-def obtener_distancia_db(origen, destino):
-    conn = None
-    try:
-        conn = jaydebeapi.connect(
-            "org.h2.Driver",
-            JDBC_URL,
-            [USER, PASSWORD],
-            H2_JAR
-        )
-        curs = conn.cursor()
-        curs.execute(
-            "SELECT DISTANCIA FROM PREDICTIONS WHERE ORIGEN = ? AND DESTINO = ? LIMIT 1",
-            (origen, destino)
-        )
-        row = curs.fetchone()
-        curs.close()
-        return float(row[0]) if row else None
-    finally:
-        if conn:
-            conn.close()
-
-# =======================
 # ENDPOINT
 # =======================
 @app.post("/predict")
 def predict(request: FlightRequest):
-
     if model is None:
-        raise HTTPException(500, "Modelo de predicción no disponible")
-
-    if request.origen == request.destino:
-        raise HTTPException(400, "El origen y el destino no pueden ser iguales")
-
-    # distancia_db = obtener_distancia_db(request.origen, request.destino)
-    # if distancia_db is None:
-    #     raise HTTPException(404, "Ruta no encontrada")
-
-    # distancia_km = round(distancia_db * 1.60934, 2)
+        raise HTTPException(500, "Modelo no cargado")
 
     df_input = pd.DataFrame([{
-        "aerolinea": request.aerolinea,
         "aeropuerto_origen": request.origen,
         "aeropuerto_destino": request.destino,
-        # "distancia": distancia_db,
+        "aerolinea": request.aerolinea,
         "fecha_vuelo": pd.to_datetime(request.fecha_partida)
     }])
 
-    prob = model.predict_proba(df_input)[0][1]
-    resultado = "Retrasado" if prob >= 0.5 else "Puntual"
+    try:
+        prob, dist_millas = model.predict_data(df_input)
+        
+        dist_km = round(float(dist_millas * 1.60934), 2)
+        resultado = "Retrasado" if prob >= 0.5 else "Puntual"
 
-    return {
-        "prevision": resultado,
-        "probabilidad": round(float(prob), 2),
-        # "distancia": distancia_km
-    }
+        return {
+            "prevision": resultado,
+            "probabilidad": round(float(prob), 2),
+            "distancia": dist_km
+        }
+    except Exception as e:
+        raise HTTPException(500, f"Error en la predicción: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn
