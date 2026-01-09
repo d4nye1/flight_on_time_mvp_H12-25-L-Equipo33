@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //  Validaciones del DTO (FlightRequestDTO)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidFormat(HttpMessageNotReadableException ex) {
         String mensaje = "Fecha inválida: Verifique que la fecha y hora sean correctas";
@@ -35,7 +34,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(mensaje));
     }
 
-    // 2️⃣ Errores de negocio / validación IA
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDTO> handleBadRequest(
             IllegalArgumentException ex
@@ -45,7 +43,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
-    // 3️⃣ Servicio IA no disponible
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErrorResponseDTO> handleServiceUnavailable(
             IllegalStateException ex
@@ -55,7 +52,6 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
-    // 4️⃣ Fallback final
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericError() {
         return ResponseEntity

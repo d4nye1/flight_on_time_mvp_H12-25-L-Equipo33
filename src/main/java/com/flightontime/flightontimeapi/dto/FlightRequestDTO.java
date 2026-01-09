@@ -30,7 +30,6 @@ public class FlightRequestDTO {
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
-
     public String getAerolinea() {
         return aerolinea;
     }
