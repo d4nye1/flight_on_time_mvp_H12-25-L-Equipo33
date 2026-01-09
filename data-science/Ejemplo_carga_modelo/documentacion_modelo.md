@@ -98,7 +98,7 @@ Nota: variables operativas como <code>taxi_salida</code>, <code>taxi_llegada</co
 Para el análisis visual se utilizaron muestras representativas (por eficiencia computacional) y se exploraron relaciones relevantes asociadas a la variable objetivo. A continuación se incluyen gráficas estáticas para consulta rápida y enlaces a las versiones interactivas generadas en Plotly.
 </p>
 
-<p align="justify"><b>• Retraso de salida vs retraso de llegada (dispersión)</b></p>
+<p align="justify"><b>• Dispersión del retraso de salida vs retraso de llegada </b></p>
 <p align="center">
   <img width="1712" height="585" alt="scatter_salida_llegada" src="https://github.com/user-attachments/assets/fc97f1aa-d6fd-4273-a8a2-3e2dc1697a7d" />
 </p>
@@ -114,7 +114,7 @@ Se observa una relación positiva consistente entre retraso de salida y retraso 
   <img width="1641" height="552" alt="dist_objetivo" src="https://github.com/user-attachments/assets/fed4e399-2d53-4dd7-b8ad-e6c3e10e87b5" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1DslKOBxsM4jvTXjsHAqrru4LfSHIVTh-/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/distribucion_variable_objetivo.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 La distribución confirma un desbalance moderado (~20% retrasados vs ~80% puntuales), el cual se considera en la etapa de modelado.
@@ -125,7 +125,7 @@ La distribución confirma un desbalance moderado (~20% retrasados vs ~80% puntua
   <img width="1678" height="580" alt="retraso_aerolinea" src="https://github.com/user-attachments/assets/e4394a0d-6867-4ffb-bff1-7b011ae8f2c2" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1f3d9KC2xPl4QancXquOihdQrtRZVZRtY/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/retraso_por_aerolinea.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 Se aprecian diferencias significativas entre aerolíneas, lo cual sugiere patrones operativos que pueden ser aprendidos por el modelo.
@@ -136,7 +136,7 @@ Se aprecian diferencias significativas entre aerolíneas, lo cual sugiere patron
   <img width="1627" height="577" alt="retraso_hora" src="https://github.com/user-attachments/assets/9ad17db3-22bb-4809-a701-e8f42400a095" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1n5h-Lz506eElY1scOpk3r3E1pqVBnVll/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/retraso_hora_de_salida.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 Se observa una tendencia creciente conforme avanza el día, consistente con la acumulación de demoras operativas.
@@ -147,7 +147,7 @@ Se observa una tendencia creciente conforme avanza el día, consistente con la a
   <img width="1598" height="578" alt="distancia_boxplot" src="https://github.com/user-attachments/assets/9ca8f9af-042a-45f2-868b-eb8325022115" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1jVMy76qBFe6Ie_Bh-ZcvDctvCSLcIvTE/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/distancia_contra_retraso.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 La comparación de distribuciones permite identificar diferencias estructurales entre vuelos puntuales y retrasados.
@@ -158,7 +158,7 @@ La comparación de distribuciones permite identificar diferencias estructurales 
   <img width="1640" height="577" alt="semana_vs_finde" src="https://github.com/user-attachments/assets/0f6ca8ed-d973-4b08-afe4-0ca574b9f277" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1iyKux04PRHkQfdsjP8Mo6MW6xDSgjBD9/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/retraso_semana_vs_fin_de_semana.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 Se observan diferencias en la tasa de retraso entre semana y fin de semana, lo cual confirma que <code>fin_de_semana</code> aporta señal útil y es conocida antes del despegue.
@@ -177,16 +177,27 @@ Se analizó la correlación entre variables numéricas y temporales transformada
 <p align="center">
   <img width="1647" height="552" alt="corr_heatmap" src="https://github.com/user-attachments/assets/7bbee8e0-4c20-4977-94b3-ca4ac182bfa2" />
 </p>
+<p align="center">
+  <a href="https://angelesgladin.github.io/docs_flight_eda/correlacion_variable_objetivo.html"><b>Versión interactiva</b></a>
+</p>
+
 <p align="justify">
 Se observaron correlaciones bajas a moderadas, lo cual respalda que el modelo debe capturar relaciones no lineales y combinaciones de variables para maximizar desempeño predictivo.
 </p>
 
 <p align="justify"><b>• Variables temporales</b></p>
 <p align="justify">
-Dado que las variables temporales presentan comportamiento cíclico, sus coeficientes deben interpretarse como tendencias exploratorias y no como relaciones causales estrictas. Los resultados refuerzan la utilidad de estas variables como señales complementarias, especialmente en enfoques no lineales.
+Dado que las variables temporales presentan comportamiento cíclico, sus coeficientes deben interpretarse como tendencias exploratorias y no como relaciones causales estrictas. 
 </p>
 <p align="center">
   <img width="1685" height="577" alt="corr_temporal" src="https://github.com/user-attachments/assets/a5322846-7fcc-48d0-9d7b-80fbc7aecd62" />
+</p>
+
+<p align="center">
+  <a href="https://angelesgladin.github.io/docs_flight_eda/correlacion_variables_temporales_vs_vuelo_retrasado.html"><b>Versión interactiva</b></a>
+</p>
+<p align="justify">
+Estas correlaciones indican que el momento del día y el tipo de día (semana o fin de semana) influyen en la probabilidad de retraso, aunque no de forma estrictamente lineal. Este resultado refuerza la utilidad de las variables temporales como señales complementarias dentro de un modelo predictivo, especialmente en enfoques no lineales.
 </p>
 
 #### **2.13 Exportación del dataset final y cierre de etapa**
