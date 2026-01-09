@@ -9,33 +9,27 @@ import java.time.LocalDateTime;
 
 public class FlightRequestDTO {
 
-    @NotBlank(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
-    @Size(min = 2, max = 2, message = "Dato incorrecto agregue las 2 letras del código de aerolínea en formato IATA", groups = ValidacionGrupos.Segundo.class)
+    @NotBlank(message = "la aerolinea es obligatoria", groups = ValidacionGrupos.Primero.class)
+    @Size(min = 2, max = 2, message = "La aerolínea debe ser un código IATA de 2 letras (ej: AA, AV, LA)", groups = ValidacionGrupos.Segundo.class)
     @JsonProperty("aerolinea")
     private String aerolinea;
 
-    @NotBlank(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
+    @NotBlank(message = "El origen es obligatorio", groups = ValidacionGrupos.Primero.class)
     @Size(min = 3, max = 3, message = "Dato incorrecto agregue las 3 letras del aeropuerto origen en formato IATA", groups = ValidacionGrupos.Segundo.class)
     @JsonProperty("origen")
     private String origen;
 
-    @NotBlank(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
+    @NotBlank(message = "El destino es obligatorio", groups = ValidacionGrupos.Primero.class)
     @Size(min = 3, max = 3, message = "Dato incorrecto agregue las 3 letras del aeropuerto destino en formato IATA", groups = ValidacionGrupos.Segundo.class)
     @JsonProperty("destino")
     private String destino;
 
-    @NotNull(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
+    @NotNull(message = "La fecha de partida es obligatoria con el siguiente formato: (yyyy-MM-dd / HH:mm)", groups = ValidacionGrupos.Primero.class)
     @Future(message = "Fecha inválida: No se pueden realizar predicciones para vuelos que ya han ocurrido", groups = ValidacionGrupos.Segundo.class)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
-    /*@NotNull(message = "Asegúrate de completar todos los campos", groups = ValidacionGrupos.Primero.class)
-    @Positive(message = "La distancia debe ser un valor positivo", groups = ValidacionGrupos.Segundo.class)
-    @JsonProperty("distancia_km")
-    private Integer distanciaKm;*/
-
-    // Getters y setters
 
     public String getAerolinea() {
         return aerolinea;
@@ -69,11 +63,4 @@ public class FlightRequestDTO {
         this.fechaPartida = fechaPartida;
     }
 
-    /*public Integer getDistanciaKm() {
-        return distanciaKm;
-    }
-
-    public void setDistanciaKm(Integer distanciaKm) {
-        this.distanciaKm = distanciaKm;
-    }*/
 }

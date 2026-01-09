@@ -8,8 +8,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/flights") // Ajustado para que coincida con el fetch del HTML
-@CrossOrigin(origins = "*")    // ¡CRÍTICO! Permite que el HTML se conecte
+@RequestMapping("/api/flights")
+@CrossOrigin(origins = "*")
 public class PredictController {
 
     private final FlightPredictionService service;
@@ -18,7 +18,7 @@ public class PredictController {
         this.service = service;
     }
 
-    @PostMapping("/predict") // Ruta final: /api/flights/predict
+    @PostMapping("/predict")
     public FlightPredictionDTO predict(
             @Validated(ValidacionGrupos.SecuenciaOrdenada.class) @RequestBody FlightRequestDTO request) {
         return service.predecirVuelo(request);
