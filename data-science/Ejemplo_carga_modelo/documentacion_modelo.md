@@ -103,7 +103,7 @@ Para el análisis visual se utilizaron muestras representativas (por eficiencia 
   <img width="1712" height="585" alt="scatter_salida_llegada" src="https://github.com/user-attachments/assets/fc97f1aa-d6fd-4273-a8a2-3e2dc1697a7d" />
 </p>
 <p align="center">
-  <a href="https://drive.google.com/file/d/1Io-MHWGqzY7l1GKAnBuI-Az42uDtstQi/preview?usp=drive_link"><b>Versión interactiva</b></a>
+  <a href="https://angelesgladin.github.io/docs_flight_eda/dispersion_retraso_salida_retraso_llegada.html"><b>Versión interactiva</b></a>
 </p>
 <p align="justify">
 Se observa una relación positiva consistente entre retraso de salida y retraso de llegada, con evidencia de recuperación parcial del tiempo en algunos casos.
