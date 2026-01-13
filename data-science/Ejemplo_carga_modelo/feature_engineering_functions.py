@@ -5,26 +5,23 @@ def calcular_distancia(df, diccionario, default=0):
   df = df.copy()
 
   if 'distancia' not in df.columns:
-    filter_by_distance = pd.Series([False]*len(df))
-  else:
-    filter_by_distance = df['distancia'].notna() 
-    df.loc[filter_by_distance, 'distancia_kms'] = df.loc[filter_by_distance, 'distancia'] * 1.60934
-  
-  df.loc[~filter_by_distance, 'origen-destino'] = (df.loc[~filter_by_distance, 'aeropuerto_origen'] + df.loc[~filter_by_distance, 'aeropuerto_destino'])
-  df.loc[~filter_by_distance, 'distancia_kms'] = df.loc[~filter_by_distance, 'origen-destino'].map(diccionario).fillna(default) * 1.60934
-  
-  try:
-    df = df.drop(columns = ['origen-destino'])
-  except:
-    pass
+    df['distancia'] = np.nan
 
-  return df
+  df['origen-destino'] = df['aeropuerto_origen'] + df['aeropuerto_destino']
+  df['distancia_kms'] = np.nan
+
+  mask = df['distancia'].notna()
+  df.loc[mask, 'distancia_kms'] = df.loc[mask, 'distancia']
+
+  df.loc[~mask, 'distancia_kms'] = (df.loc[~mask, 'origen-destino'].map(diccionario).fillna(default) * 1.60934)
+
+  df['distancia'] = df['distancia_kms']
+
+  return df.drop(columns = ['origen-destino', 'distancia_kms'])
 
 
 def extraer_features_fecha(df):
   df = df.copy()
-
-  cyclical_columns = ['mes', 'dia_semana', 'hora_salida']
 
   df['hora_salida'] = df['fecha_vuelo'].dt.hour
   df['mes'] = df['fecha_vuelo'].dt.month
@@ -32,14 +29,15 @@ def extraer_features_fecha(df):
 
   df['fin_de_semana'] = df['dia_semana'].isin([6, 7]).astype(bool)
 
-  for column in cyclical_columns:
+  fixed_measurements = {'hora_salida': 24, 'mes': 12, 'dia_semana': 7}
 
-    max = df[column].max()
-    df[column + '_sin'] = np.sin( 2 * np.pi * df[column] / max)
-    df[column + '_cos'] = np.cos( 2 * np.pi * df[column] / max)
-    df = df.drop(columns = column)
+  for col, period in fixed_measurements.items():
+    
+    df[f'{col}_sin'] = np.sin( 2 * np.pi * df[col] / period)
+    df[f'{col}_cos'] = np.cos( 2 * np.pi * df[col] / period)
 
-  df = df.drop(columns = ['fecha_vuelo'])
+  df = df.drop(columns = ['fecha_vuelo', 'hora_salida', 'mes', 'dia_semana'])
 
   return df
+
 
