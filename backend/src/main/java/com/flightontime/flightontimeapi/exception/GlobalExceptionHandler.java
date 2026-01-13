@@ -13,7 +13,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidFormat(HttpMessageNotReadableException ex) {
-        String mensaje = "Fecha inválida: Verifique que la fecha y hora sean correctas";
+        //String mensaje = "Fecha inválida: Verifique que la fecha y hora sean correctas";
+
+        // Mensaje base por si el error no es de fecha (ej: mandar letras en un campo numérico)
+        String mensaje = "Error en el formato de la solicitud. Verifique los datos ingresados";
+
+        // Si el error técnico de Jackson menciona LocalDateTime, personalizamos el mensaje
+        if (ex.getMessage() != null && ex.getMessage().contains("java.time.LocalDateTime")) {
+            mensaje = "Fecha inválida: El día ingresado no existe en el calendario o el formato es incorrecto (yyyy-MM-dd'T'HH:mm)";
+        }
+
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)

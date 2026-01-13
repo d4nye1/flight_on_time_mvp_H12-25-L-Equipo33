@@ -26,7 +26,7 @@ public class FlightRequestDTO {
 
     @NotNull(message = "La fecha de partida es obligatoria con el siguiente formato: (yyyy-MM-dd / HH:mm)", groups = ValidacionGrupos.Primero.class)
     @Future(message = "Fecha inválida: No se pueden realizar predicciones para vuelos que ya han ocurrido", groups = ValidacionGrupos.Segundo.class)
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    /*@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") */
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
 
