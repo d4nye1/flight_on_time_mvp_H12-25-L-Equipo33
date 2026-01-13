@@ -37,6 +37,7 @@ public class DataScienceClient {
         body.put("origen", request.getOrigen().trim().toUpperCase());
         body.put("destino", request.getDestino().trim().toUpperCase());
         body.put("fecha_partida", request.getFechaPartida().format(FORMATO_FECHA));
+        body.put("distancia", request.getDistancia());
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
