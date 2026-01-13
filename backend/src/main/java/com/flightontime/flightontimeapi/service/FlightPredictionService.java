@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import com.flightontime.flightontimeapi.exception.RemoteServiceException;
+
 @Service
 public class FlightPredictionService {
 
@@ -36,7 +38,20 @@ public class FlightPredictionService {
                         fechaPartida
                 );
 
-        FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
+        /*FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);*/
+        FlightPredictionDTO respuesta;
+        try {
+            respuesta = dataScienceClient.llamarModelo(request);
+        } catch (Exception e) {
+            String mensajeError = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
+            System.out.println("Error detectado: " + mensajeError); // Para que lo veas en consola
+            if (mensajeError.contains("timeout") || mensajeError.contains("timed out")) {
+                throw new RemoteServiceException("El motor de predicción está tardando demasiado en responder. Por favor, intente nuevamente.");
+            }
+
+            // Si no es un problema de tiempo, asumimos que el servicio está fuera de línea
+            throw new RemoteServiceException("El motor de predicción no responde. Por favor, intente de nuevo en unos minutos.");
+        }
 
         if (!existe) {
             Prediction pred = new Prediction();

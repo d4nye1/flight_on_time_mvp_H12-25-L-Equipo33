@@ -61,12 +61,23 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
+    @ExceptionHandler(RemoteServiceException.class)
+    public ResponseEntity<ErrorResponseDTO> handleRemoteServiceError(RemoteServiceException ex) {
+        // Usamos 503 (SERVICE_UNAVAILABLE) para indicar que el problema es del motor externo
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ErrorResponseDTO(ex.getMessage()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericError() {
+        // Este queda como última red de seguridad para errores desconocidos
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponseDTO(
-                        "Servicio de predicción no disponible"
+                        "Ocurrió un error inesperado en el sistema"
                 ));
     }
+
+
 }
