@@ -3,9 +3,21 @@ import numpy as np
 
 def calcular_distancia(df, diccionario, default=0):
   df = df.copy()
-  df['origen-destino'] = df['aeropuerto_origen'] + df['aeropuerto_destino']
-  df['distancia_millas'] = df['origen-destino'].map(diccionario).fillna(default)
-  df = df.drop(columns = ['origen-destino'])
+
+  if 'distancia' not in df.columns:
+    filter_by_distance = pd.Series([False]*len(df))
+  else:
+    filter_by_distance = df['distancia'].notna() 
+    df.loc[filter_by_distance, 'distancia_kms'] = df.loc[filter_by_distance, 'distancia'] * 1.60934
+  
+  df.loc[~filter_by_distance, 'origen-destino'] = (df.loc[~filter_by_distance, 'aeropuerto_origen'] + df.loc[~filter_by_distance, 'aeropuerto_destino'])
+  df.loc[~filter_by_distance, 'distancia_kms'] = df.loc[~filter_by_distance, 'origen-destino'].map(diccionario).fillna(default) * 1.60934
+  
+  try:
+    df = df.drop(columns = ['origen-destino'])
+  except:
+    pass
+
   return df
 
 
@@ -30,3 +42,4 @@ def extraer_features_fecha(df):
   df = df.drop(columns = ['fecha_vuelo'])
 
   return df
+
