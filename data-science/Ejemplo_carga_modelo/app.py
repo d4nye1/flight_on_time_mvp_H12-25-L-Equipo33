@@ -4,6 +4,7 @@ import joblib
 import re
 import numpy as np
 import shap
+from typing import Optional
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -62,6 +63,7 @@ class FlightRequest(BaseModel):
     origen: str
     destino: str
     fecha_partida: str
+    distancia: Optional[float] = None
 
     @field_validator("aerolinea")
     @classmethod
@@ -120,12 +122,16 @@ def predict(request: FlightRequest):
 
             resultado = datos_prediccion["Predicción"]
             prob = datos_prediccion["Probabilidad de retraso"] / 100
-            dist_km = round(float(datos_prediccion["Distancia"]), 2)
+
+            if request.distancia is not None:
+                distancia_final = request.distancia
+            else:
+                distancia_final = round(float(datos_prediccion["Distancia"]), 2)
 
             return {
                 "prevision": resultado,
                 "probabilidad": round(float(prob), 2),
-                "distancia": dist_km
+                "distancia": distancia_final
             }
     except Exception as e:
             print(f"DEBUG ERROR: {e}")
