@@ -23,9 +23,16 @@ public class FlightPredictionService {
         this.predictionRepository = predictionRepository;
     }
 
+
+
     @Transactional
     public FlightPredictionDTO predecirVuelo(FlightRequestDTO request) {
 
+        if (request.getOrigen().equalsIgnoreCase(request.getDestino())) {
+            throw new IllegalArgumentException(
+                    "El aeropuerto de origen y el de destino no pueden ser el mismo"
+            );
+        }
         LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
 
         boolean existe = predictionRepository
