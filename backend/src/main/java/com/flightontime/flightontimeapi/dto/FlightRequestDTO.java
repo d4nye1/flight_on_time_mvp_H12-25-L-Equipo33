@@ -1,6 +1,5 @@
 package com.flightontime.flightontimeapi.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
@@ -29,6 +28,9 @@ public class FlightRequestDTO {
     /*@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") */
     @JsonProperty("fecha_partida")
     private LocalDateTime fechaPartida;
+
+    @JsonProperty("distancia")
+    private Double distancia;
 
     public String getAerolinea() {
         return aerolinea;
@@ -62,4 +64,11 @@ public class FlightRequestDTO {
         this.fechaPartida = fechaPartida;
     }
 
+    public Double getDistancia() {
+        return distancia;
+    }
+
+    public void setDistancia(Double distancia) {
+        this.distancia = distancia;
+    }
 }
