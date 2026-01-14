@@ -24,12 +24,13 @@ class CustomPrediction:
         probs = self.pipeline.predict_proba(X)
         idx  = np.argmax(probs, axis=1)
         labels = ['A tiempo', 'Retrasado']
-        max_prob = np.round(np.max(probs, axis=1), 2)
+        # max_prob = np.round(np.max(probs, axis=1), 2)
+        max_prob = np.round(probs[:,1] * 100, 2)
         max_prob = max_prob.astype(float)
 
         X_feat = self._transform_until_preprocess(X)
 
-        return [{"Predicción": labels[i], "Probabilidad": p, "Distancia":  X_feat.iloc[j]['distancia_millas']} for j, (i, p) in enumerate(zip(idx, max_prob))]
+        return [{"Predicción": labels[i], "Probabilidad de retraso": p, "Distancia":  X_feat.iloc[j]['distancia']} for j, (i, p) in enumerate(zip(idx, max_prob))]
 
     def explain(self, X):
 
@@ -63,3 +64,4 @@ class CustomPrediction:
         grouped_shap = grouped_shap.sort_values(by='Importancia', ascending=False)
 
         return grouped_shap
+
