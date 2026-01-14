@@ -30,7 +30,7 @@ class CustomPrediction:
 
         X_feat = self._transform_until_preprocess(X)
 
-        return [{"Predicción": labels[i], "Probabilidad de retraso": p, "Distancia":  X_feat.iloc[j]['distancia_kms']} for j, (i, p) in enumerate(zip(idx, max_prob))]
+        return [{"Predicción": labels[i], "Probabilidad de retraso": p, "Distancia":  X_feat.iloc[j]['distancia']} for j, (i, p) in enumerate(zip(idx, max_prob))]
 
     def explain(self, X):
 
@@ -64,3 +64,4 @@ class CustomPrediction:
         grouped_shap = grouped_shap.sort_values(by='Importancia', ascending=False)
 
         return grouped_shap
+
