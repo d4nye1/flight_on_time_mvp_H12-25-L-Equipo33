@@ -17,10 +17,7 @@ public class FlightPredictionService {
     private final DataScienceClient dataScienceClient;
     private final PredictionRepository predictionRepository;
 
-    public FlightPredictionService(
-            DataScienceClient dataScienceClient,
-            PredictionRepository predictionRepository
-    ) {
+    public FlightPredictionService(DataScienceClient dataScienceClient, PredictionRepository predictionRepository) {
         this.dataScienceClient = dataScienceClient;
         this.predictionRepository = predictionRepository;
     }
@@ -30,30 +27,17 @@ public class FlightPredictionService {
 
         LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
 
-        boolean existe = predictionRepository
-                .existsByAerolineaAndOrigenAndDestinoAndFechaPartida(
-                        request.getAerolinea(),
-                        request.getOrigen(),
-                        request.getDestino(),
-                        fechaPartida
-                );
+        return predictionRepository
+                .findByAerolineaAndOrigenAndDestinoAndFechaPartida(
+                        request.getAerolinea(), request.getOrigen(), request.getDestino(), fechaPartida)
+                .map(this::mapToDTO)
+                .orElseGet(() -> consultarYGuardar(request, fechaPartida));
+    }
 
-        /*FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);*/
-        FlightPredictionDTO respuesta;
+    private FlightPredictionDTO consultarYGuardar(FlightRequestDTO request, LocalDateTime fechaPartida) {
         try {
-            respuesta = dataScienceClient.llamarModelo(request);
-        } catch (Exception e) {
-            String mensajeError = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
-            System.out.println("Error detectado: " + mensajeError); // Para que lo veas en consola
-            if (mensajeError.contains("timeout") || mensajeError.contains("timed out")) {
-                throw new RemoteServiceException("El motor de predicción está tardando demasiado en responder. Por favor, intente nuevamente.");
-            }
+            FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
 
-            // Si no es un problema de tiempo, asumimos que el servicio está fuera de línea
-            throw new RemoteServiceException("El motor de predicción no responde. Por favor, intente de nuevo en unos minutos.");
-        }
-
-        if (!existe) {
             Prediction pred = new Prediction();
             pred.setAerolinea(request.getAerolinea());
             pred.setOrigen(request.getOrigen());
@@ -64,15 +48,28 @@ public class FlightPredictionService {
             pred.setDistancia(respuesta.getDistancia());
             pred.setFechaConsulta(LocalDateTime.now());
 
-            try {
-                predictionRepository.save(pred);
-                System.out.println("Vuelo guardado correctamente.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("El vuelo ya existe en la DB. No se guarda.");
+            predictionRepository.save(pred);
+            return respuesta;
+
+        } catch (Exception e) {
+            manejarErrorIA(e);
+            return null;
         }
-        return respuesta;
+    }
+
+    private void manejarErrorIA(Exception e) {
+        String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
+        if (msg.contains("timeout") || msg.contains("timed out")) {
+            throw new RemoteServiceException("El motor de predicción está tardando demasiado. Intente nuevamente.");
+        }
+        throw new RemoteServiceException("El motor de predicción no responde. Intente en unos minutos.");
+    }
+
+    private FlightPredictionDTO mapToDTO(Prediction entity) {
+        FlightPredictionDTO dto = new FlightPredictionDTO();
+        dto.setPrevision(entity.getPrevision());
+        dto.setProbabilidad(entity.getProbabilidad());
+        dto.setDistancia(entity.getDistancia());
+        return dto;
     }
 }
