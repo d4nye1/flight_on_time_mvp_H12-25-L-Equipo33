@@ -1,6 +1,7 @@
 package com.flightontime.flightontimeapi.exception;
 
 import com.flightontime.flightontimeapi.dto.ErrorResponseDTO;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -70,5 +71,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(
                         "Ocurrió un error inesperado en el sistema"
                 ));
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusinessValidation(ValidationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDTO(ex.getMessage()));
     }
 }
