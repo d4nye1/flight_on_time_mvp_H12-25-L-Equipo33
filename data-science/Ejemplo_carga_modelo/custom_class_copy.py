@@ -80,7 +80,10 @@ class CustomPrediction:
                 paragraph_explanations+= f' y{str(col)} ({abs(grouped_shap.loc[col, "Esfuerzo"]):.2f}% de influencia {papel} la estimación de retraso).'
             else:
                 paragraph_explanations+= f'{str(col)} ({abs(grouped_shap.loc[col, "Esfuerzo"]):.2f}% de influencia {papel} la estimación de retraso), \n'
+                
+        paragraph_explanations += f"\nLas características restantes (5) agrupan el resto de las influencias ({100 - grouped_shap['Esfuerzo'].abs().sum():.2f}%)."
 
         return paragraph_explanations
+
 
 
