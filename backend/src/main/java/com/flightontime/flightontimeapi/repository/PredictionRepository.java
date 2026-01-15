@@ -10,13 +10,6 @@ import java.util.Optional;
 @Repository
 public interface PredictionRepository extends JpaRepository<Prediction, Long> {
 
-    boolean existsByAerolineaAndOrigenAndDestinoAndFechaPartida(
-            String aerolinea,
-            String origen,
-            String destino,
-            LocalDateTime fechaPartida
-    );
-
     Optional<Prediction> findByAerolineaAndOrigenAndDestinoAndFechaPartida(
             String aerolinea,
             String origen,
