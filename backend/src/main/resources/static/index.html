@@ -1,59 +1,939 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en-GB">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlightOnTime - Predicción de Vuelos</title>
-    <link rel="stylesheet" href="css/styles.css" />
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    <title>FlightOnTime - Operational Dashboard</title>
+    <style>
+        html {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
 
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-orange: #fb7185;
+            --text-gray: #94a3b8;
+            --white: #f8fafc;
+            --input-bg: #334155;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--white);
+            /* CAMBIO AQUÍ: min-height permite que crezca, overflow: auto permite scroll */
+            min-height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---------- NAVBAR ---------- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid #334155;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 10px; }
+        .logo-icon { color: var(--accent-blue); font-size: 1.5rem; transform: rotate(-15deg); }
+        .dashboard-title { font-weight: 600; letter-spacing: 1px; font-size: 1.1rem; }
+
+        /* ---------- GRID ---------- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.2fr;
+            gap: 15px;
+            padding: 15px;
+            flex: 1;
+            align-items: stretch;
+            /* CAMBIO AQUÍ: Quitar overflow: hidden para que no corte las tarjetas */
+        }
+
+        /* ---------- CARDS ---------- */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            /* CAMBIO AQUÍ: min-height asegura que la tarjeta no se colapse */
+            min-height: 450px;
+            height: 100%;
+        }
+
+
+        .card-header {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 10px;
+        }
+        .card .data-boxes {
+            margin-top: auto; /* Empuja los factores al fondo de la tarjeta */
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ---------- FORM ---------- */
+        .input-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .input-group {
+            margin-bottom: 5px;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            outline: 2px solid var(--accent-blue);
+            border-color: transparent;
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 12px;
+            background: #e11d48;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            margin-top: 10px;
+            transition: opacity 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-predict:hover { opacity: 0.9; }
+        .btn-predict:active { box-shadow: 0 0 0 2px var(--accent-blue); }
+
+        /* ---------- RESULT ---------- */
+        .result-display {
+            display: none;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px dashed var(--accent-blue);
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .res-status-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .res-prob {
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+        }
+
+        /* ---------- STATS ---------- */
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            height: 100%;
+        }
+
+        .circle-stat {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .data-boxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .data-box {
+            background: rgba(15, 23, 42, 0.4);
+            padding: 10px;
+            border-left: 3px solid var(--accent-blue);
+            font-size: 0.75rem;
+        }
+
+        /* ---------- ANALYTICS (GRÁFICA + GRANDE / LISTA + CHICA) ---------- */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 130px !important; /* Gráfica ligeramente más grande */
+            flex-shrink: 0;
+            margin-bottom: 8px;
+        }
+
+        .top-rutas-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px; /* Espacio mínimo entre filas */
+
+            overflow-y: visible;
+            max-height: none;
+            font-size: 0.7rem; /* Letra más chica y normal */
+        }
+
+        .top-rutas-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.4); /* Un toque más sutil */
+            padding: 2px 8px; /* Padding vertical mínimo */
+            border-left: 2px solid var(--accent-orange);
+            border-radius: 4px;
+            font-weight: normal; /* Aseguramos que la letra sea normal */
+        }
+
+        .top-rutas-list span {
+            color: var(--text-gray);
+            font-size: 0.65rem; /* El detalle de vuelos aún más discreto */
+        }
+
+        /* Ajuste de margen para Factores Clave */
+        .card .data-boxes {
+            margin-top: 8px;
+            padding-top: 4px;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width: 1000px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            body { height: auto; }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; padding: 10px; }
+            .input-row { flex-direction: column; gap: 0; }
+            .circle-stat { width: 100px; height: 100px; font-size: 1.3rem; }
+        }
+
+        @media (max-width: 380px) {
+            .data-boxes { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <body>
 
 <header class="navbar">
-    <div class="logo">✈ FlightOnTime</div>
+    <div class="logo-area">
+        <span class="logo-icon">✈</span>
+        <span class="dashboard-title">FLIGHTONTIME - OPERATIONAL DASHBOARD</span>
+    </div>
+    <div class="menu-icon">☰</div>
 </header>
 
-<main class="container">
-    <section class="hero">
-        <span class="badge">● Sistema de Predicción Activo</span>
-        <h1>¿Tu vuelo llegará <span class="highlight">a tiempo?</span></h1>
-        <p>Utilizamos modelos de IA para analizar la puntualidad de tu ruta en segundos.</p>
+<main class="dashboard-grid">
+
+    <!-- Flight Prediction -->
+    <section class="card">
+        <div class="card-header">FLIGHT PREDICTION</div>
+        <div class="input-group">
+            <label>Aerolínea</label>
+            <input id="aerolinea" list="lista-aerolineas" placeholder="Buscar aerolínea..." />
+
+            <datalist id="lista-aerolineas">
+                <option value="9E">Endeavor Air</option>
+                <option value="AA">American Airlines</option>
+                <option value="AS">Alaska Airlines</option>
+                <option value="B6">JetBlue Airways</option>
+                <option value="DL">Delta Air Lines</option>
+                <option value="F9">Frontier Airlines</option>
+                <option value="G4">Allegiant Air</option>
+                <option value="HA">Hawaiian Airlines</option>
+                <option value="MQ">Envoy Air</option>
+                <option value="NK">Spirit Airlines</option>
+                <option value="OH">PSA Airlines</option>
+                <option value="OO">SkyWest Airlines</option>
+                <option value="UA">United Airlines</option>
+                <option value="WN">Southwest Airlines</option>
+                <option value="YX">Republic Airways</option>
+            </datalist>
+        </div>
+        <div style="display: flex; gap:10px">
+            <div class="input-row">
+                <div class="input-row">
+                    <div class="input-row" style="margin-bottom: 8px;">
+                        <div class="input-group" style="flex:1">
+                            <label>Origen</label>
+                            <input id="origen" list="lista-aeropuertos" placeholder="Buscar origen..." />
+                        </div>
+                        <div class="input-group" style="flex:1; margin-left:10px;">
+                            <label>Destino</label>
+                            <input id="destino" list="lista-aeropuertos" placeholder="Buscar destino..." />
+                        </div>
+
+                        <datalist id="lista-aeropuertos">
+                            <option value="ABE">Allentown/Bethlehem/Easton, PA</option>
+                            <option value="ABI">Abilene, TX</option>
+                            <option value="ABQ">Albuquerque, NM</option>
+                            <option value="ABR">Aberdeen, SD</option>
+                            <option value="ABY">Albany, GA</option>
+                            <option value="ACK">Nantucket, MA</option>
+                            <option value="ACT">Waco, TX</option>
+                            <option value="ACV">Arcata/Eureka, CA</option>
+                            <option value="ACY">Atlantic City, NJ</option>
+                            <option value="ADK">Adak Island, AK</option>
+                            <option value="ADQ">Kodiak, AK</option>
+                            <option value="AEX">Alexandria, LA</option>
+                            <option value="AGS">Augusta, GA</option>
+                            <option value="AKN">King Salmon, AK</option>
+                            <option value="ALB">Albany, NY</option>
+                            <option value="ALW">Walla Walla, WA</option>
+                            <option value="AMA">Amarillo, TX</option>
+                            <option value="ANC">Anchorage, AK</option>
+                            <option value="APN">Alpena, MI</option>
+                            <option value="ASE">Aspen, CO</option>
+                            <option value="ATL">Atlanta, GA</option>
+                            <option value="ATW">Appleton, WI</option>
+                            <option value="AUS">Austin, TX</option>
+                            <option value="AVL">Asheville, NC</option>
+                            <option value="AVP">Scranton/Wilkes-Barre, PA</option>
+                            <option value="AZA">Phoenix, AZ</option>
+                            <option value="AZO">Kalamazoo, MI</option>
+                            <option value="BDL">Hartford, CT</option>
+                            <option value="BET">Bethel, AK</option>
+                            <option value="BFF">Scottsbluff, NE</option>
+                            <option value="BFL">Bakersfield, CA</option>
+                            <option value="BGM">Binghamton, NY</option>
+                            <option value="BGR">Bangor, ME</option>
+                            <option value="BHM">Birmingham, AL</option>
+                            <option value="BIH">Bishop, CA</option>
+                            <option value="BIL">Billings, MT</option>
+                            <option value="BIS">Bismarck/Mandan, ND</option>
+                            <option value="BJI">Bemidji, MN</option>
+                            <option value="BLI">Bellingham, WA</option>
+                            <option value="BLV">Belleville, IL</option>
+                            <option value="BMI">Bloomington/Normal, IL</option>
+                            <option value="BNA">Nashville, TN</option>
+                            <option value="BOI">Boise, ID</option>
+                            <option value="BOS">Boston, MA</option>
+                            <option value="BPT">Beaumont/Port Arthur, TX</option>
+                            <option value="BQK">Brunswick, GA</option>
+                            <option value="BQN">Aguadilla, PR</option>
+                            <option value="BRD">Brainerd, MN</option>
+                            <option value="BRO">Brownsville, TX</option>
+                            <option value="BRW">Barrow, AK</option>
+                            <option value="BTM">Butte, MT</option>
+                            <option value="BTR">Baton Rouge, LA</option>
+                            <option value="BTV">Burlington, VT</option>
+                            <option value="BUF">Buffalo, NY</option>
+                            <option value="BUR">Burbank, CA</option>
+                            <option value="BWI">Baltimore, MD</option>
+                            <option value="BZN">Bozeman, MT</option>
+                            <option value="CAE">Columbia, SC</option>
+                            <option value="CAK">Akron, OH</option>
+                            <option value="CDC">Cedar City, UT</option>
+                            <option value="CDV">Cordova, AK</option>
+                            <option value="CHA">Chattanooga, TN</option>
+                            <option value="CHO">Charlottesville, VA</option>
+                            <option value="CHS">Charleston, SC</option>
+                            <option value="CID">Cedar Rapids/Iowa City, IA</option>
+                            <option value="CIU">Sault Ste. Marie, MI</option>
+                            <option value="CKB">Clarksburg/Fairmont, WV</option>
+                            <option value="CLE">Cleveland, OH</option>
+                            <option value="CLL">College Station/Bryan, TX</option>
+                            <option value="CLT">Charlotte, NC</option>
+                            <option value="CMH">Columbus, OH</option>
+                            <option value="CMI">Champaign/Urbana, IL</option>
+                            <option value="CMX">Hancock/Houghton, MI</option>
+                            <option value="CNY">Moab, UT</option>
+                            <option value="COD">Cody, WY</option>
+                            <option value="COS">Colorado Springs, CO</option>
+                            <option value="COU">Columbia, MO</option>
+                            <option value="CPR">Casper, WY</option>
+                            <option value="CRP">Corpus Christi, TX</option>
+                            <option value="CRW">Charleston/Dunbar, WV</option>
+                            <option value="CSG">Columbus, GA</option>
+                            <option value="CVG">Cincinnati, OH</option>
+                            <option value="CWA">Mosinee, WI</option>
+                            <option value="CYS">Cheyenne, WY</option>
+                            <option value="DAB">Daytona Beach, FL</option>
+                            <option value="DAL">Dallas, TX</option>
+                            <option value="DAY">Dayton, OH</option>
+                            <option value="DCA">Washington, DC</option>
+                            <option value="DDC">Dodge City, KS</option>
+                            <option value="DEC">Decatur, IL</option>
+                            <option value="DEN">Denver, CO</option>
+                            <option value="DFW">Dallas/Fort Worth, TX</option>
+                            <option value="DHN">Dothan, AL</option>
+                            <option value="DIK">Dickinson, ND</option>
+                            <option value="DLG">Dillingham, AK</option>
+                            <option value="DLH">Duluth, MN</option>
+                            <option value="DRO">Durango, CO</option>
+                            <option value="DSM">Des Moines, IA</option>
+                            <option value="DTW">Detroit, MI</option>
+                            <option value="DVL">Devils Lake, ND</option>
+                            <option value="EAR">Kearney, NE</option>
+                            <option value="EAU">Eau Claire, WI</option>
+                            <option value="ECP">Panama City, FL</option>
+                            <option value="EGE">Eagle, CO</option>
+                            <option value="EKO">Elko, NV</option>
+                            <option value="ELM">Elmira/Corning, NY</option>
+                            <option value="ELP">El Paso, TX</option>
+                            <option value="ESC">Escanaba, MI</option>
+                            <option value="EUG">Eugene, OR</option>
+                            <option value="EVV">Evansville, IN</option>
+                            <option value="EWN">New Bern/Morehead/Beaufort, NC</option>
+                            <option value="EWR">Newark, NJ</option>
+                            <option value="EYW">Key West, FL</option>
+                            <option value="FAI">Fairbanks, AK</option>
+                            <option value="FAR">Fargo, ND</option>
+                            <option value="FAT">Fresno, CA</option>
+                            <option value="FAY">Fayetteville, NC</option>
+                            <option value="FCA">Kalispell, MT</option>
+                            <option value="FLG">Flagstaff, AZ</option>
+                            <option value="FLL">Fort Lauderdale, FL</option>
+                            <option value="FNT">Flint, MI</option>
+                            <option value="FOD">Fort Dodge, IA</option>
+                            <option value="FSD">Sioux Falls, SD</option>
+                            <option value="FSM">Fort Smith, AR</option>
+                            <option value="FWA">Fort Wayne, IN</option>
+                            <option value="GCC">Gillette, WY</option>
+                            <option value="GCK">Garden City, KS</option>
+                            <option value="GEG">Spokane, WA</option>
+                            <option value="GFK">Grand Forks, ND</option>
+                            <option value="GGG">Longview, TX</option>
+                            <option value="GJT">Grand Junction, CO</option>
+                            <option value="GNV">Gainesville, FL</option>
+                            <option value="GPT">Gulfport/Biloxi, MS</option>
+                            <option value="GRB">Green Bay, WI</option>
+                            <option value="GRI">Grand Island, NE</option>
+                            <option value="GRK">Killeen, TX</option>
+                            <option value="GRR">Grand Rapids, MI</option>
+                            <option value="GSO">Greensboro/High Point, NC</option>
+                            <option value="GSP">Greer, SC</option>
+                            <option value="GST">Gustavus, AK</option>
+                            <option value="GTF">Great Falls, MT</option>
+                            <option value="GTR">Columbus, MS</option>
+                            <option value="GUC">Gunnison, CO</option>
+                            <option value="GUM">Guam, TT</option>
+                            <option value="HDN">Hayden, CO</option>
+                            <option value="HGR">Hagerstown, MD</option>
+                            <option value="HHH">Hilton Head, SC</option>
+                            <option value="HIB">Hibbing, MN</option>
+                            <option value="HLN">Helena, MT</option>
+                            <option value="HNL">Honolulu, HI</option>
+                            <option value="HOB">Hobbs, NM</option>
+                            <option value="HOU">Houston, TX</option>
+                            <option value="HPN">White Plains, NY</option>
+                            <option value="HRL">Harlingen/San Benito, TX</option>
+                            <option value="HSV">Huntsville, AL</option>
+                            <option value="HTS">Ashland, WV</option>
+                            <option value="HYA">Hyannis, MA</option>
+                            <option value="HYS">Hays, KS</option>
+                            <option value="IAD">Washington, DC</option>
+                            <option value="IAG">Niagara Falls, NY</option>
+                            <option value="IAH">Houston, TX</option>
+                            <option value="ICT">Wichita, KS</option>
+                            <option value="IDA">Idaho Falls, ID</option>
+                            <option value="ILM">Wilmington, NC</option>
+                            <option value="IMT">Iron Mountain/Kingsfd, MI</option>
+                            <option value="IND">Indianapolis, IN</option>
+                            <option value="INL">International Falls, MN</option>
+                            <option value="ISP">Islip, NY</option>
+                            <option value="ITH">Ithaca/Cortland, NY</option>
+                            <option value="ITO">Hilo, HI</option>
+                            <option value="JAC">Jackson, WY</option>
+                            <option value="JAN">Jackson/Vicksburg, MS</option>
+                            <option value="JAX">Jacksonville, FL</option>
+                            <option value="JFK">New York, NY</option>
+                            <option value="JLN">Joplin, MO</option>
+                            <option value="JMS">Jamestown, ND</option>
+                            <option value="JNU">Juneau, AK</option>
+                            <option value="JST">Johnstown, PA</option>
+                            <option value="KOA">Kona, HI</option>
+                            <option value="KTN">Ketchikan, AK</option>
+                            <option value="LAN">Lansing, MI</option>
+                            <option value="LAR">Laramie, WY</option>
+                            <option value="LAS">Las Vegas, NV</option>
+                            <option value="LAW">Lawton/Fort Sill, OK</option>
+                            <option value="LAX">Los Angeles, CA</option>
+                            <option value="LBB">Lubbock, TX</option>
+                            <option value="LBE">Latrobe, PA</option>
+                            <option value="LBF">North Platte, NE</option>
+                            <option value="LBL">Liberal, KS</option>
+                            <option value="LCH">Lake Charles, LA</option>
+                            <option value="LCK">Columbus, OH</option>
+                            <option value="LEX">Lexington, KY</option>
+                            <option value="LFT">Lafayette, LA</option>
+                            <option value="LGA">New York, NY</option>
+                            <option value="LGB">Long Beach, CA</option>
+                            <option value="LIH">Lihue, HI</option>
+                            <option value="LIT">Little Rock, AR</option>
+                            <option value="LNK">Lincoln, NE</option>
+                            <option value="LRD">Laredo, TX</option>
+                            <option value="LSE">La Crosse, WI</option>
+                            <option value="LWS">Lewiston, ID</option>
+                            <option value="MAF">Midland/Odessa, TX</option>
+                            <option value="MBS">Saginaw/Bay City/Midland, MI</option>
+                            <option value="MCI">Kansas City, MO</option>
+                            <option value="MCO">Orlando, FL</option>
+                            <option value="MCW">Mason City, IA</option>
+                            <option value="MDT">Harrisburg, PA</option>
+                            <option value="MDW">Chicago, IL</option>
+                            <option value="MEI">Meridian, MS</option>
+                            <option value="MEM">Memphis, TN</option>
+                            <option value="MFE">Mission/McAllen/Edinburg, TX</option>
+                            <option value="MFR">Medford, OR</option>
+                            <option value="MGM">Montgomery, AL</option>
+                            <option value="MGW">Morgantown, WV</option>
+                            <option value="MHK">Manhattan/Ft. Riley, KS</option>
+                            <option value="MHT">Manchester, NH</option>
+                            <option value="MIA">Miami, FL</option>
+                            <option value="MKE">Milwaukee, WI</option>
+                            <option value="MLB">Melbourne, FL</option>
+                            <option value="MLI">Moline, IL</option>
+                            <option value="MLU">Monroe, LA</option>
+                            <option value="MOB">Mobile, AL</option>
+                            <option value="MOT">Minot, ND</option>
+                            <option value="MQT">Marquette, MI</option>
+                            <option value="MRY">Monterey, CA</option>
+                            <option value="MSN">Madison, WI</option>
+                            <option value="MSO">Missoula, MT</option>
+                            <option value="MSP">Minneapolis, MN</option>
+                            <option value="MSY">New Orleans, LA</option>
+                            <option value="MTJ">Montrose/Delta, CO</option>
+                            <option value="MVY">Martha's Vineyard, MA</option>
+                            <option value="MYR">Myrtle Beach, SC</option>
+                            <option value="OAJ">Jacksonville/Camp Lejeune, NC</option>
+                            <option value="OAK">Oakland, CA</option>
+                            <option value="OGG">Kahului, HI</option>
+                            <option value="OKC">Oklahoma City, OK</option>
+                            <option value="OMA">Omaha, NE</option>
+                            <option value="OME">Nome, AK</option>
+                            <option value="ONT">Ontario, CA</option>
+                            <option value="ORD">Chicago, IL</option>
+                            <option value="ORF">Norfolk, VA</option>
+                            <option value="ORH">Worcester, MA</option>
+                            <option value="OTH">North Bend/Coos Bay, OR</option>
+                            <option value="OTZ">Kotzebue, AK</option>
+                            <option value="PAE">Everett, WA</option>
+                            <option value="PBG">Plattsburgh, NY</option>
+                            <option value="PBI">West Palm Beach/Palm Beach, FL</option>
+                            <option value="PDX">Portland, OR</option>
+                            <option value="PGD">Punta Gorda, FL</option>
+                            <option value="PHL">Philadelphia, PA</option>
+                            <option value="PHX">Phoenix, AZ</option>
+                            <option value="PIA">Peoria, IL</option>
+                            <option value="PIB">Hattiesburg/Laurel, MS</option>
+                            <option value="PIE">St. Petersburg, FL</option>
+                            <option value="PIH">Pocatello, ID</option>
+                            <option value="PIT">Pittsburgh, PA</option>
+                            <option value="PLN">Pellston, MI</option>
+                            <option value="PNS">Pensacola, FL</option>
+                            <option value="PPG">Pago Pago, TT</option>
+                            <option value="PQI">Presque Isle/Houlton, ME</option>
+                            <option value="PRC">Prescott, AZ</option>
+                            <option value="PSC">Pasco/Kennewick/Richland, WA</option>
+                            <option value="PSE">Ponce, PR</option>
+                            <option value="PSG">Petersburg, AK</option>
+                            <option value="PSM">Portsmouth, NH</option>
+                            <option value="PSP">Palm Springs, CA</option>
+                            <option value="PVD">Providence, RI</option>
+                            <option value="PVU">Provo, UT</option>
+                            <option value="PWM">Portland, ME</option>
+                            <option value="RAP">Rapid City, SD</option>
+                            <option value="RDD">Redding, CA</option>
+                            <option value="RDM">Bend/Redmond, OR</option>
+                            <option value="RDU">Raleigh/Durham, NC</option>
+                            <option value="RFD">Rockford, IL</option>
+                            <option value="RHI">Rhinelander, WI</option>
+                            <option value="RIC">Richmond, VA</option>
+                            <option value="RIW">Riverton/Lander, WY</option>
+                            <option value="RKS">Rock Springs, WY</option>
+                            <option value="RNO">Reno, NV</option>
+                            <option value="ROA">Roanoke, VA</option>
+                            <option value="ROC">Rochester, NY</option>
+                            <option value="ROW">Roswell, NM</option>
+                            <option value="RST">Rochester, MN</option>
+                            <option value="RSW">Fort Myers, FL</option>
+                            <option value="SAF">Santa Fe, NM</option>
+                            <option value="SAN">San Diego, CA</option>
+                            <option value="SAT">San Antonio, TX</option>
+                            <option value="SAV">Savannah, GA</option>
+                            <option value="SBA">Santa Barbara, CA</option>
+                            <option value="SBN">South Bend, IN</option>
+                            <option value="SBP">San Luis Obispo, CA</option>
+                            <option value="SCC">Deadhorse, AK</option>
+                            <option value="SCE">State College, PA</option>
+                            <option value="SCK">Stockton, CA</option>
+                            <option value="SDF">Louisville, KY</option>
+                            <option value="SEA">Seattle, WA</option>
+                            <option value="SFB">Sanford, FL</option>
+                            <option value="SFO">San Francisco, CA</option>
+                            <option value="SGF">Springfield, MO</option>
+                            <option value="SGU">St. George, UT</option>
+                            <option value="SHR">Sheridan, WY</option>
+                            <option value="SHV">Shreveport, LA</option>
+                            <option value="SIT">Sitka, AK</option>
+                            <option value="SJC">San Jose, CA</option>
+                            <option value="SJT">San Angelo, TX</option>
+                            <option value="SJU">San Juan, PR</option>
+                            <option value="SLC">Salt Lake City, UT</option>
+                            <option value="SLN">Salina, KS</option>
+                            <option value="SMF">Sacramento, CA</option>
+                            <option value="SMX">Santa Maria, CA</option>
+                            <option value="SNA">Santa Ana, CA</option>
+                            <option value="SPI">Springfield, IL</option>
+                            <option value="SPN">Saipan, TT</option>
+                            <option value="SPS">Wichita Falls, TX</option>
+                            <option value="SRQ">Sarasota/Bradenton, FL</option>
+                            <option value="STC">St. Cloud, MN</option>
+                            <option value="STL">St. Louis, MO</option>
+                            <option value="STS">Santa Rosa, CA</option>
+                            <option value="STT">Charlotte Amalie, VI</option>
+                            <option value="STX">Christiansted, VI</option>
+                            <option value="SUN">Sun Valley/Hailey/Ketchum, ID</option>
+                            <option value="SUX">Sioux City, IA</option>
+                            <option value="SWF">Newburgh/Poughkeepsie, NY</option>
+                            <option value="SWO">Stillwater, OK</option>
+                            <option value="SYR">Syracuse, NY</option>
+                            <option value="TLH">Tallahassee, FL</option>
+                            <option value="TOL">Toledo, OH</option>
+                            <option value="TPA">Tampa, FL</option>
+                            <option value="TRI">Bristol/Johnson City/Kingsport, TN</option>
+                            <option value="TTN">Trenton, NJ</option>
+                            <option value="TUL">Tulsa, OK</option>
+                            <option value="TUS">Tucson, AZ</option>
+                            <option value="TVC">Traverse City, MI</option>
+                            <option value="TWF">Twin Falls, ID</option>
+                            <option value="TXK">Texarkana, AR</option>
+                            <option value="TYR">Tyler, TX</option>
+                            <option value="TYS">Knoxville, TN</option>
+                            <option value="USA">Concord, NC</option>
+                            <option value="VCT">Victoria, TX</option>
+                            <option value="VEL">Vernal, UT</option>
+                            <option value="VLD">Valdosta, GA</option>
+                            <option value="VPS">Valparaiso, FL</option>
+                            <option value="WRG">Wrangell, AK</option>
+                            <option value="WYS">West Yellowstone, MT</option>
+                            <option value="XNA">Fayetteville, AR</option>
+                            <option value="XWA">Williston, ND</option>
+                            <option value="YAK">Yakutat, AK</option>
+                            <option value="YUM">Yuma, AZ</option>
+                        </datalist>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="input-group">
+            <label></label>
+            <div class="input-group">
+                <label>Fecha Partida</label>
+                <input type="date" id="fecha" />
+            </div>
+
+            <div class="input-group">
+                <label>Hora Partida (24h)</label>
+                <input
+                    type="text"
+                    id="hora"
+                    placeholder="HH:mm (24h)"
+                    pattern="^([01]\d|2[0-3]):([0-5]\d)$"
+                    />
+            </div>
+        </div>
+        <button type="button" class="btn-predict" onclick="predecir()">PREDICT FLIGHT</button>
+        <div id="result-box" class="result-display">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--text-gray)">PREVISIÓN:</div>
+                <div id="res-titulo" class="res-status-text">--</div>
+                <div id="res-desc" class="res-prob">Probabilidad: --</div>
+            </div>
+            <div style="font-size: 2.5rem; margin-left: auto;">✈</div>
+        </div>
     </section>
 
-    <section class="form-card">
-        <h2>Consulta tu vuelo</h2>
-        <p class="subtitle">Ingresa códigos IATA oficiales</p>
-
-        <div class="input-group">
-            <label>Aerolínea (IATA)</label>
-            <input id="aerolinea" maxlength="2" placeholder="Ej: AA" />
-        </div>
-
-        <div class="row">
-            <div class="input-group">
-                <label>Origen</label>
-                <input id="origen" maxlength="3" placeholder="Ej: JFK" />
+    <!-- Real-time Statistics -->
+    <section class="card">
+        <div class="card-header">REAL-TIME STATISTICS</div>
+        <div class="stats-container">
+            <div class="circle-stat" id="puntualidad-global">--%</div>
+            <div style="font-size: 0.7rem; color: var(--text-gray)">PUNTUALIDAD GLOBAL</div>
+            <div class="data-boxes">
+                <div class="data-box">
+                    TOTAL VUELOS:<br><strong id="total-vuelos">--</strong>
+                </div>
+                <div class="data-box" style="border-color: var(--accent-orange)">
+                    RETRASADOS:<br><strong id="vuelos-retrasados">--</strong>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Destino</label>
-                <input id="destino" maxlength="3" placeholder="Ej: MAD" />
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label>Fecha y hora de partida</label>
-            <input type="datetime-local" id="fecha" />
-        </div>
-
-        <button id="btnPredict" class="btn-predict">✈ Predecir Estado</button>
-
-        <div id="result-box" class="result-card">
-            <div class="main-text" id="res-titulo"></div>
-            <div class="sub-text" id="res-desc"></div>
+            <div style="width: 80px; height: 80px; border-radius: 50%; border: 15px solid var(--accent-blue); border-top-color: var(--accent-orange); margin-top: 20px;"></div>
         </div>
     </section>
+
+    <!-- Analytics & Trends -->
+    <section class="card">
+        <div class="card-header">ANALYTICS & TRENDS</div>
+        <label>Vuelos Consultados por Día</label>
+        <div class="chart-container" style="position: relative; height: 200px; width: 100%;">
+            <canvas id="historico-vuelos"></canvas>
+        </div>
+        <label>Top 5 Rutas con Más Retrasos</label>
+        <ul id="top-rutas" class="top-rutas-list"></ul>
+        <div style="margin-top: 25px;">
+            <div class="card-header" style="font-size: 0.7rem;">FACTORES CLAVE</div>
+            <div id="factores-clave" style="font-size: 0.8rem; color: var(--text-gray)"></div>
+        </div>
+    </section>
+
 </main>
 
-<script type="module" src="javascript/main.js"></script>
+<script>
+    /* ===============================
+       FORMATEO INPUT HORA
+    ================================ */
+    const horaInput = document.getElementById("hora");
+    if (horaInput) {
+        horaInput.addEventListener("input", (e) => {
+            let valor = e.target.value.replace(/\D/g, "");
+            if (valor.length > 4) valor = valor.slice(0, 4);
+            if (valor.length >= 3) valor = valor.slice(0, 2) + ":" + valor.slice(2);
+            e.target.value = valor;
+        });
+    }
+
+    /* ===============================
+       MENSAJES DE RESULTADO
+    ================================ */
+    function showMsg(color, titulo, descripcion) {
+        const box = document.getElementById("result-box");
+        const t = document.getElementById("res-titulo");
+        const d = document.getElementById("res-desc");
+
+        box.style.display = "flex";
+        t.textContent = titulo;
+        d.textContent = descripcion || "";
+        t.style.color = color || "#38bdf8";
+    }
+
+    /* ===============================
+       FUNCIÓN PRINCIPAL
+    ================================ */
+    async function predecir() {
+        const aerolinea = document.getElementById("aerolinea").value.trim().toUpperCase();
+        const origen = document.getElementById("origen").value.trim().toUpperCase();
+        const destino = document.getElementById("destino").value.trim().toUpperCase();
+        const fecha = document.getElementById("fecha").value;
+        const hora = document.getElementById("hora").value.trim();
+
+        if (!aerolinea || !origen || !destino || !fecha || !hora) {
+            showMsg("#fb7185", "CAMPOS INCOMPLETOS", "Llena todos los campos");
+            return;
+        }
+
+        const fechaISO = `${fecha}T${hora}:00`;
+
+        showMsg(null, "CONSULTANDO...", "Analizando historial real...");
+
+        try {
+            const res = await fetch("http://localhost:8080/api/flights/predict-with-stats", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    aerolinea,
+                    origen,
+                    destino,
+                    fecha_partida: fechaISO
+                })
+            });
+
+            const json = await res.json();
+            if (!res.ok) {
+                throw new Error(json.message || "Error en backend");
+            }
+
+            /* ===== PREVISIÓN ===== */
+            const esPuntual = json.prevision.toLowerCase().includes("tiempo");
+            showMsg(
+                esPuntual ? "#4ade80" : "#fb7185",
+                json.prevision.toUpperCase(),
+                ""
+            );
+
+            /* ===== CÍRCULO ===== */
+            const prob = json.porcentajeRetrasosRuta ?? 0;
+            const circulo = document.getElementById("puntualidad-global");
+            circulo.textContent = prob.toFixed(1) + "%";
+
+            if (prob <= 40) circulo.style.borderColor = "#4ade80";
+            else if (prob <= 70) circulo.style.borderColor = "#f97316";
+            else circulo.style.borderColor = "#fb7185";
+
+            /* ===== STATS ===== */
+            document.getElementById("total-vuelos").textContent = json.totalVuelosRuta ?? "--";
+            document.getElementById("vuelos-retrasados").textContent = json.vuelosRetrasadosRuta ?? "--";
+
+            /* ===== FACTORES CLAVE ===== */
+            document.getElementById("factores-clave").innerHTML = `
+            <ul style="padding:0; list-style:none;">
+                <li>Distancia: <strong>${json.distancia ?? "--"} km</strong></li>
+                <li>Ruta: <strong>${origen} → ${destino}</strong></li>
+
+                <li>Probabilidad: <strong>${((json.probabilidad ?? 0) * 100).toFixed(1)}%</strong></li>
+                <li>Historial: ${json.recomendacion ?? "Sin datos suficientes"}</li>
+            </ul>
+        `;
+
+            actualizarGrafica(json);
+            cargarTopRutas();
+
+        } catch (err) {
+            showMsg("#fb7185", "ERROR", err.message);
+            console.error(err);
+        }
+    }
+
+    /* ===============================
+       GRÁFICA LÍNEAS
+    ================================ */
+    function actualizarGrafica(json) {
+        const ctx = document.getElementById("historico-vuelos").getContext("2d");
+        if (window.myChart) window.myChart.destroy();
+
+        const datos = json.historialPuntualidad?.length
+            ? json.historialPuntualidad
+            : [0, 0, 0, json.porcentajeRetrasosRuta ?? 0];
+
+        const etiquetas = json.etiquetasFechas?.length
+            ? json.etiquetasFechas
+            : ["-3", "-2", "-1", "Hoy"];
+
+        window.myChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: etiquetas,
+                datasets: [{
+                    data: datos,
+                    borderColor: "#38bdf8",
+                    backgroundColor: "rgba(56,189,248,0.15)",
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: v => v + "%" }
+                    }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    /* ===============================
+       TOP 5 RUTAS
+    ================================ */
+    async function cargarTopRutas() {
+        try {
+            const res = await fetch("http://localhost:8080/api/stats/top-rutas");
+            if (!res.ok) throw new Error("Error cargando top rutas");
+
+            const data = await res.json();
+            const cont = document.getElementById("top-rutas");
+            cont.innerHTML = "";
+
+            if (!data || data.length === 0) {
+                cont.innerHTML = "<li style='color:#94a3b8;font-size:0.7rem'>Sin datos disponibles</li>";
+                return;
+            }
+
+            data.forEach(r => {
+                cont.innerHTML += `
+                <li>
+                    <strong>${r.nombre}</strong>
+                    <span>${r.cantidad} vuelos retrasados</span>
+                </li>
+            `;
+            });
+
+        } catch (e) {
+            console.error("Top rutas error:", e);
+        }
+    }
+
+
+    /* ===============================
+       STATS INICIALES
+    ================================ */
+    async function cargarStats() {
+        try {
+            const res = await fetch("http://localhost:8080/api/stats/summary");
+            const data = await res.json();
+            document.getElementById("total-vuelos").textContent = data.totalVuelos;
+            document.getElementById("vuelos-retrasados").textContent = data.vuelosRetrasados;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    window.onload = () => {
+        cargarStats();
+        cargarTopRutas();
+    };
+
+</script>
+
 </body>
 </html>
