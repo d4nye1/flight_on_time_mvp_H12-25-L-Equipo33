@@ -56,12 +56,34 @@ class CustomPrediction:
         for group, cols in feature_groups.items():
             grouped_shap[group] = shap_df[cols].sum(axis=1)
             grouped_shap.drop(columns=cols, inplace=True)
-            
-        grouped_shap = grouped_shap.rename(columns=lambda c: c.split('__', 1)[-1])
 
-        grouped_shap = grouped_shap.abs().T
-        grouped_shap.columns = ["Importancia"]
-        grouped_shap = grouped_shap.sort_values(by='Importancia', ascending=False)
+        grouped_shap = grouped_shap.rename(columns=lambda c: c.split('_', 1)[-1].replace('_', ' '))
+        grouped_shap = grouped_shap.T
 
-        return grouped_shap
+        grouped_shap.columns = ['Importancia']
+        grouped_shap['Esfuerzo'] = np.sign(grouped_shap['Importancia']) * ( grouped_shap['Importancia'].abs() / grouped_shap['Importancia'].abs().sum() * 100 )
+        grouped_shap = grouped_shap[['Esfuerzo']]
+        grouped_shap = grouped_shap.sort_values(by='Esfuerzo', key= lambda x: x.abs(), ascending=False)[0:3]
+        
+        paragraph_explanations = "Para esta predicción, el modelo tomó su decisión considerando principalmente: \n"
+
+        etiquetas = ["con tendencia a reducir", "con tendencia a aumentar"]
+
+        for i, col in enumerate(grouped_shap.index):
+
+            if grouped_shap.loc[col, "Esfuerzo"] > 0:
+                papel = etiquetas[1]
+            else:
+                papel = etiquetas[0]
+
+            if i == len(grouped_shap.index) - 1:
+                paragraph_explanations+= f' y{str(col)} ({abs(grouped_shap.loc[col, "Esfuerzo"]):.2f}% de influencia {papel} la estimación de retraso).'
+            else:
+                paragraph_explanations+= f'{str(col)} ({abs(grouped_shap.loc[col, "Esfuerzo"]):.2f}% de influencia {papel} la estimación de retraso), \n'
+                
+        paragraph_explanations += f"\nLas características restantes (5) agrupan el resto de las influencias ({100 - grouped_shap['Esfuerzo'].abs().sum():.2f}%)."
+
+        return paragraph_explanations
+
+
 
