@@ -106,78 +106,76 @@ class FlightRequest(BaseModel):
 @app.get("/metadata")
 def get_metadata():
     """
-    Retorna las aerolíneas y aeropuertos disponibles en el modelo entrenado
+    Retorna las aerolíneas y aeropuertos disponibles en el modelo entrenado.
+    Extrae directamente del OrdinalEncoder del pipeline.
     """
     try:
-        # Intentar diferentes formas de extraer las categorías según la estructura del pipeline
+        # Acceder al paso 'preprocessing' del pipeline
+        preprocessing_step = raw_pipeline.named_steps['preprocessing']
 
-        # Método 1: Acceder directamente al modelo interno si existe
-        if hasattr(model, 'model') and hasattr(model.model, 'feature_names_in_'):
-            print("DEBUG: Usando método 1 - feature_names_in_")
-            feature_names = model.model.feature_names_in_
-            print(f"DEBUG: Features encontradas: {feature_names[:10]}")
+        # Obtener el transformer categórico (OrdinalEncoder)
+        categorical_transformer = preprocessing_step.named_transformers_['categorical']
 
-        # Método 2: Extraer del diccionario de distancias si existe
-        if hasattr(model, 'diccionario_distancias'):
-            print("DEBUG: Extrayendo aeropuertos del diccionario de distancias")
-            dict_dist = model.diccionario_distancias
-            aeropuertos = sorted(list(set([k[0] for k in dict_dist.keys()] + [k[1] for k in dict_dist.keys()])))
-            print(f"DEBUG: {len(aeropuertos)} aeropuertos encontrados")
-        else:
-            aeropuertos = []
+        # Extraer las categorías
+        # categories_[0] = aerolíneas
+        # categories_[1] = aeropuertos origen
+        # categories_[2] = aeropuertos destino
+        aerolineas = categorical_transformer.categories_[0].tolist()
+        aeropuertos_origen = categorical_transformer.categories_[1].tolist()
+        aeropuertos_destino = categorical_transformer.categories_[2].tolist()
 
-        # Método 3: Extraer aerolíneas de los nombres de características one-hot
-        if hasattr(model, 'model'):
-            try:
-                feature_names = model.model.feature_names_in_
-                aerolineas = sorted(list(set([
-                    f.replace('aerolinea_', '')
-                    for f in feature_names
-                    if f.startswith('aerolinea_')
-                ])))
-                print(f"DEBUG: {len(aerolineas)} aerolíneas encontradas")
-            except:
-                aerolineas = []
-        else:
-            aerolineas = []
+        # Combinar aeropuertos y eliminar duplicados
+        aeropuertos = sorted(list(set(aeropuertos_origen + aeropuertos_destino)))
 
-        # Si no se encontraron datos, usar valores de ejemplo amplios
-        if not aerolineas:
-            print("⚠️ No se pudieron extraer aerolíneas del modelo, usando dataset de ejemplo")
-            aerolineas = [
-                "AA", "AS", "B6", "DL", "F9", "G4", "HA", "NK", "UA", "WN",
-                "9E", "MQ", "OH", "OO", "YV", "YX", "EV", "QX", "5X", "CP"
-            ]
-
-        if not aeropuertos:
-            print("⚠️ No se pudieron extraer aeropuertos del modelo, usando dataset de ejemplo")
-            aeropuertos = [
-                "ATL", "ORD", "DFW", "DEN", "LAX", "CLT", "LAS", "PHX", "IAH", "MCO",
-                "MIA", "SEA", "EWR", "MSP", "DTW", "BOS", "JFK", "SLC", "SFO", "BWI",
-                "LGA", "DCA", "SAN", "TPA", "PDX", "STL", "HNL", "AUS", "MDW", "BNA"
-            ]
+        print(f"✅ Metadata extraída exitosamente:")
+        print(f"   📋 {len(aerolineas)} aerolíneas: {aerolineas}")
+        print(f"   📍 {len(aeropuertos)} aeropuertos únicos")
 
         return {
             "aerolineas": sorted(aerolineas),
-            "aeropuertos": sorted(aeropuertos)
+            "aeropuertos": aeropuertos
         }
 
     except Exception as e:
-        print(f"❌ Error crítico en metadata: {e}")
+        print(f"❌ Error extrayendo metadata del modelo: {e}")
         import traceback
         traceback.print_exc()
 
-        # Fallback robusto con aerolíneas y aeropuertos comunes de USA
+        # Fallback con datos reales conocidos del modelo
+        print("⚠️ Usando fallback con datos conocidos del modelo")
         return {
-            "aerolineas": [
-                "AA", "AS", "B6", "DL", "F9", "G4", "HA", "NK", "UA", "WN",
-                "9E", "MQ", "OH", "OO", "YV", "YX", "EV", "QX", "5X", "CP"
-            ],
+            "aerolineas": ['9E', 'AA', 'AS', 'B6', 'DL', 'F9', 'G4', 'HA', 'MQ', 'NK', 'OH', 'OO', 'UA', 'WN', 'YX'],
             "aeropuertos": [
-                "ATL", "ORD", "DFW", "DEN", "LAX", "CLT", "LAS", "PHX", "IAH", "MCO",
-                "MIA", "SEA", "EWR", "MSP", "DTW", "BOS", "JFK", "SLC", "SFO", "BWI",
-                "LGA", "DCA", "SAN", "TPA", "PDX", "STL", "HNL", "AUS", "MDW", "BNA",
-                "DAL", "PHL", "FLL", "RDU", "SJC", "OAK", "SAT", "RSW", "SMF", "PIT"
+                'ABE', 'ABI', 'ABQ', 'ABR', 'ABY', 'ACK', 'ACT', 'ACV', 'ACY', 'ADK',
+                'ADQ', 'AEX', 'AGS', 'AKN', 'ALB', 'ALO', 'AMA', 'ANC', 'APN', 'ASE',
+                'ATL', 'ATW', 'AUS', 'AVL', 'AVP', 'AZO', 'BDL', 'BFL', 'BGM', 'BGR',
+                'BHM', 'BIL', 'BIS', 'BJI', 'BLI', 'BMI', 'BNA', 'BOI', 'BOS', 'BPT',
+                'BQK', 'BQN', 'BRO', 'BRW', 'BTM', 'BTR', 'BTV', 'BUF', 'BUR', 'BWI',
+                'BZN', 'CAE', 'CAK', 'CDC', 'CDV', 'CEC', 'CHA', 'CHO', 'CHS', 'CIC',
+                'CID', 'CLD', 'CLE', 'CLL', 'CLT', 'CMH', 'CMI', 'CMX', 'COD', 'COS',
+                'COU', 'CPR', 'CRP', 'CRW', 'CSG', 'CVG', 'CWA', 'DAB', 'DAL', 'DAY',
+                'DBQ', 'DCA', 'DEN', 'DFW', 'DHN', 'DLG', 'DLH', 'DRO', 'DSM', 'DTW',
+                'EAU', 'ECP', 'EGE', 'EKO', 'ELM', 'ELP', 'ERI', 'ESC', 'EUG', 'EVV',
+                'EWN', 'EWR', 'EYW', 'FAI', 'FAR', 'FAT', 'FAY', 'FCA', 'FLG', 'FLL',
+                'FLO', 'FNT', 'FSD', 'FSM', 'FWA', 'GCC', 'GEG', 'GFK', 'GGG', 'GJT',
+                'GNV', 'GPT', 'GRB', 'GRI', 'GRK', 'GRR', 'GSO', 'GSP', 'GST', 'GTF',
+                'GTR', 'GUC', 'HDN', 'HLN', 'HNL', 'HOU', 'HPN', 'HRL', 'HSV', 'IAD',
+                'IAH', 'ICT', 'IDA', 'ILG', 'ILM', 'IND', 'ISP', 'ITH', 'ITO', 'IYK',
+                'JAC', 'JAN', 'JAX', 'JFK', 'JNU', 'KOA', 'KTN', 'LAN', 'LAS', 'LAX',
+                'LBB', 'LCH', 'LEX', 'LFT', 'LGA', 'LGB', 'LIH', 'LIT', 'LNK', 'LRD',
+                'LSE', 'LWS', 'MAF', 'MBS', 'MCI', 'MCN', 'MCO', 'MDT', 'MDW', 'MEI',
+                'MEM', 'MFE', 'MFR', 'MGM', 'MHT', 'MIA', 'MKE', 'MKG', 'MLB', 'MLI',
+                'MLU', 'MOB', 'MOT', 'MQT', 'MRY', 'MSN', 'MSO', 'MSP', 'MSY', 'MTJ',
+                'MYR', 'OAJ', 'OAK', 'OGG', 'OKC', 'OMA', 'OME', 'ONT', 'ORD', 'ORF',
+                'ORH', 'OTZ', 'OXR', 'PAH', 'PBI', 'PDX', 'PFN', 'PHL', 'PHX', 'PIA',
+                'PIH', 'PIT', 'PLN', 'PMD', 'PNS', 'PPG', 'PSC', 'PSE', 'PSG', 'PSP',
+                'PVD', 'PWM', 'RAP', 'RDD', 'RDM', 'RDU', 'RFD', 'RHI', 'RIC', 'RKS',
+                'RNO', 'ROA', 'ROC', 'ROW', 'RST', 'RSW', 'SAF', 'SAN', 'SAT', 'SAV',
+                'SBA', 'SBN', 'SBP', 'SCC', 'SCE', 'SDF', 'SEA', 'SFO', 'SGF', 'SGU',
+                'SHV', 'SIT', 'SJC', 'SJT', 'SLC', 'SMF', 'SMX', 'SNA', 'SPI', 'SPS',
+                'SRQ', 'STL', 'STT', 'STX', 'SUN', 'SUX', 'SWF', 'SYR', 'TLH', 'TOL',
+                'TPA', 'TRI', 'TUL', 'TUS', 'TVC', 'TWF', 'TXK', 'TYR', 'TYS', 'VLD',
+                'VPS', 'WRG', 'WYS', 'XNA', 'YAK', 'YUM'
             ]
         }
 
