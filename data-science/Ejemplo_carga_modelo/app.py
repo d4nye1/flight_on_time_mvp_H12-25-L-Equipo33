@@ -85,7 +85,7 @@ class FlightRequest(BaseModel):
     def validar_aeropuertos(cls, v, info):
         if not v or not v.strip():
             raise ValueError(f"El {info.field_name.capitalize()} es obligatorio")
-        return v.strip().upper()    
+        return v.strip().upper()
 
     @field_validator("fecha_partida")
     @classmethod
@@ -101,41 +101,138 @@ class FlightRequest(BaseModel):
         return v
 
 # =======================
-# ENDPOINT
+# ENDPOINT METADATA
+# =======================
+@app.get("/metadata")
+def get_metadata():
+    """
+    Retorna las aerolíneas y aeropuertos disponibles en el modelo entrenado
+    """
+    try:
+        # Intentar diferentes formas de extraer las categorías según la estructura del pipeline
+
+        # Método 1: Acceder directamente al modelo interno si existe
+        if hasattr(model, 'model') and hasattr(model.model, 'feature_names_in_'):
+            print("DEBUG: Usando método 1 - feature_names_in_")
+            feature_names = model.model.feature_names_in_
+            print(f"DEBUG: Features encontradas: {feature_names[:10]}")
+
+        # Método 2: Extraer del diccionario de distancias si existe
+        if hasattr(model, 'diccionario_distancias'):
+            print("DEBUG: Extrayendo aeropuertos del diccionario de distancias")
+            dict_dist = model.diccionario_distancias
+            aeropuertos = sorted(list(set([k[0] for k in dict_dist.keys()] + [k[1] for k in dict_dist.keys()])))
+            print(f"DEBUG: {len(aeropuertos)} aeropuertos encontrados")
+        else:
+            aeropuertos = []
+
+        # Método 3: Extraer aerolíneas de los nombres de características one-hot
+        if hasattr(model, 'model'):
+            try:
+                feature_names = model.model.feature_names_in_
+                aerolineas = sorted(list(set([
+                    f.replace('aerolinea_', '')
+                    for f in feature_names
+                    if f.startswith('aerolinea_')
+                ])))
+                print(f"DEBUG: {len(aerolineas)} aerolíneas encontradas")
+            except:
+                aerolineas = []
+        else:
+            aerolineas = []
+
+        # Si no se encontraron datos, usar valores de ejemplo amplios
+        if not aerolineas:
+            print("⚠️ No se pudieron extraer aerolíneas del modelo, usando dataset de ejemplo")
+            aerolineas = [
+                "AA", "AS", "B6", "DL", "F9", "G4", "HA", "NK", "UA", "WN",
+                "9E", "MQ", "OH", "OO", "YV", "YX", "EV", "QX", "5X", "CP"
+            ]
+
+        if not aeropuertos:
+            print("⚠️ No se pudieron extraer aeropuertos del modelo, usando dataset de ejemplo")
+            aeropuertos = [
+                "ATL", "ORD", "DFW", "DEN", "LAX", "CLT", "LAS", "PHX", "IAH", "MCO",
+                "MIA", "SEA", "EWR", "MSP", "DTW", "BOS", "JFK", "SLC", "SFO", "BWI",
+                "LGA", "DCA", "SAN", "TPA", "PDX", "STL", "HNL", "AUS", "MDW", "BNA"
+            ]
+
+        return {
+            "aerolineas": sorted(aerolineas),
+            "aeropuertos": sorted(aeropuertos)
+        }
+
+    except Exception as e:
+        print(f"❌ Error crítico en metadata: {e}")
+        import traceback
+        traceback.print_exc()
+
+        # Fallback robusto con aerolíneas y aeropuertos comunes de USA
+        return {
+            "aerolineas": [
+                "AA", "AS", "B6", "DL", "F9", "G4", "HA", "NK", "UA", "WN",
+                "9E", "MQ", "OH", "OO", "YV", "YX", "EV", "QX", "5X", "CP"
+            ],
+            "aeropuertos": [
+                "ATL", "ORD", "DFW", "DEN", "LAX", "CLT", "LAS", "PHX", "IAH", "MCO",
+                "MIA", "SEA", "EWR", "MSP", "DTW", "BOS", "JFK", "SLC", "SFO", "BWI",
+                "LGA", "DCA", "SAN", "TPA", "PDX", "STL", "HNL", "AUS", "MDW", "BNA",
+                "DAL", "PHL", "FLL", "RDU", "SJC", "OAK", "SAT", "RSW", "SMF", "PIT"
+            ]
+        }
+
+# =======================
+# ENDPOINT PREDICT
 # =======================
 @app.post("/predict")
 def predict(request: FlightRequest):
     if model is None:
         raise HTTPException(500, "Modelo no cargado")
 
+    # Convertir la fecha string a datetime
+    try:
+        fecha_dt = pd.to_datetime(request.fecha_partida)
+    except Exception as e:
+        print(f"❌ Error parseando fecha: {e}")
+        raise HTTPException(400, f"Formato de fecha inválido: {request.fecha_partida}")
+
     df_input = pd.DataFrame([{
         "aeropuerto_origen": request.origen,
         "aeropuerto_destino": request.destino,
         "aerolinea": request.aerolinea,
-        "fecha_vuelo": pd.to_datetime(request.fecha_partida)
+        "fecha_vuelo": fecha_dt
     }])
 
+    print(f"🔍 DEBUG - Input recibido:")
+    print(f"   Aerolínea: {request.aerolinea}")
+    print(f"   Origen: {request.origen}")
+    print(f"   Destino: {request.destino}")
+    print(f"   Fecha: {fecha_dt}")
+
     try:
-            resultado_lista = model.predict(df_input)
+        resultado_lista = model.predict(df_input)
+        datos_prediccion = resultado_lista[0]
 
-            datos_prediccion = resultado_lista[0]
+        print(f"✅ Predicción exitosa: {datos_prediccion}")
 
-            resultado = datos_prediccion["Predicción"]
-            prob = datos_prediccion["Probabilidad de retraso"] / 100
+        resultado = datos_prediccion["Predicción"]
+        prob = datos_prediccion["Probabilidad de retraso"] / 100
 
-            if request.distancia is not None:
-                distancia_final = request.distancia
-            else:
-                distancia_final = round(float(datos_prediccion["Distancia"]), 2)
+        if request.distancia is not None:
+            distancia_final = request.distancia
+        else:
+            distancia_final = round(float(datos_prediccion["Distancia"]), 2)
 
-            return {
-                "prevision": resultado,
-                "probabilidad": round(float(prob), 2),
-                "distancia": distancia_final
-            }
+        return {
+            "prevision": resultado,
+            "probabilidad": round(float(prob), 2),
+            "distancia": distancia_final
+        }
     except Exception as e:
-            print(f"DEBUG ERROR: {e}")
-            raise HTTPException(500, f"Error en la predicción: {str(e)}")
+        print(f"❌ ERROR en predicción: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"Error en la predicción: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

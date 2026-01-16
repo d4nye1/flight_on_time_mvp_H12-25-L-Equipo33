@@ -1,42 +1,55 @@
-import { validarFormulario } from "./validaciones.js";
 import { predecirVuelo } from "./api.js";
-import { mostrarMensaje } from "./ui.js";
+import { mostrarResultado, mostrarError, cargarOpcionesDesdeDS } from "./ui.js";
 
+// ========================================
+// EVENTO DE PREDICCIÓN
+// ========================================
 document.getElementById("btnPredict").addEventListener("click", async () => {
+    const aerolinea = document.getElementById("aerolinea").value.trim();
+    const origen = document.getElementById("origen").value.trim();
+    const destino = document.getElementById("destino").value.trim();
+    const fecha = document.getElementById("fecha").value;
 
-    const data = {
-        aerolinea: document.getElementById("aerolinea").value.trim().toUpperCase(),
-        origen: document.getElementById("origen").value.trim().toUpperCase(),
-        destino: document.getElementById("destino").value.trim().toUpperCase(),
-        fecha_partida: document.getElementById("fecha").value
-    };
-
-    const error = validarFormulario({
-        aerolinea: data.aerolinea,
-        origen: data.origen,
-        destino: data.destino,
-        fecha: data.fecha_partida
-    });
-
-    if (error) {
-        mostrarMensaje("rojo", "Error", error);
+    if (!aerolinea || !origen || !destino || !fecha) {
+        mostrarError("Por favor, completa todos los campos del formulario.");
         return;
     }
 
-    mostrarMensaje("", "Consultando...", "Analizando datos del vuelo");
+    const datosVuelo = {
+        aerolinea: aerolinea.toUpperCase(),
+        origen: origen.toUpperCase(),
+        destino: destino.toUpperCase(),
+        fecha_partida: fecha
+    };
+
+    console.log("🚀 Iniciando predicción con:", datosVuelo);
 
     try {
-        const json = await predecirVuelo(data);
+        const resultado = await predecirVuelo(datosVuelo);
+        mostrarResultado(resultado);
+    } catch (error) {
+        console.error("❌ Error en predicción:", error);
 
-        const puntual = json.prevision === "Puntual";
+        // Mostrar el mensaje de error específico si está disponible
+        let mensajeError = "Error al conectar con el servicio de predicción.";
 
-        mostrarMensaje(
-            puntual ? "verde" : "rojo",
-            puntual ? "✅ Vuelo Puntual" : "⚠️ Posible Retraso",
-            `Ruta de ${json.distancia} Km. Confianza: ${(json.probabilidad * 100).toFixed(1)}%`
-        );
+        if (error.message) {
+            mensajeError = error.message;
+        }
 
-    } catch (err) {
-        mostrarMensaje("rojo", "Error de conexión", err.message);
+        // Si es un error de red
+        if (error.message.includes("Failed to fetch") || error.message.includes("NetworkError")) {
+            mensajeError = "No se pudo conectar con el servidor. Verifica que el backend esté ejecutándose en http://localhost:8080";
+        }
+
+        mostrarError(mensajeError);
     }
+});
+
+// ========================================
+// CARGAR METADATA AL INICIAR
+// ========================================
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("🚀 Iniciando FlightOnTime...");
+    cargarOpcionesDesdeDS();
 });

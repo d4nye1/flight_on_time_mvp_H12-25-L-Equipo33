@@ -24,19 +24,37 @@
         <h2>Consulta tu vuelo</h2>
         <p class="subtitle">Ingresa códigos IATA oficiales</p>
 
-        <div class="input-group">
+        <div class="input-group autocomplete-wrapper">
             <label>Aerolínea (IATA)</label>
-            <input id="aerolinea" maxlength="2" placeholder="Ej: AA" />
+            <input
+                    id="aerolinea"
+                    maxlength="2"
+                    placeholder="Ej: AA"
+                    autocomplete="off"
+            />
+            <div id="suggestions-aerolinea" class="autocomplete-suggestions"></div>
         </div>
 
         <div class="row">
-            <div class="input-group">
+            <div class="input-group autocomplete-wrapper">
                 <label>Origen</label>
-                <input id="origen" maxlength="3" placeholder="Ej: JFK" />
+                <input
+                        id="origen"
+                        maxlength="3"
+                        placeholder="Ej: JFK"
+                        autocomplete="off"
+                />
+                <div id="suggestions-origen" class="autocomplete-suggestions"></div>
             </div>
-            <div class="input-group">
+            <div class="input-group autocomplete-wrapper">
                 <label>Destino</label>
-                <input id="destino" maxlength="3" placeholder="Ej: MAD" />
+                <input
+                        id="destino"
+                        maxlength="3"
+                        placeholder="Ej: MAD"
+                        autocomplete="off"
+                />
+                <div id="suggestions-destino" class="autocomplete-suggestions"></div>
             </div>
         </div>
 
