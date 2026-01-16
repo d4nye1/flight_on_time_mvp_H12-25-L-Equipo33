@@ -1,0 +1,2 @@
+Este es un archivo de prueba para confirmar permisos de push.
+Creado por fer-workspace.
