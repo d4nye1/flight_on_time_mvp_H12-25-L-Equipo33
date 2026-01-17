@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Dependencias de sistema
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    python3-dev \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+
+# Instalamos uvicorn explícitamente y luego el resto
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir uvicorn fastapi && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+# Usamos el comando directo de uvicorn (que ya estará en el PATH)
+# IMPORTANTE: Aquí asumo que tu archivo se llama app.py
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
