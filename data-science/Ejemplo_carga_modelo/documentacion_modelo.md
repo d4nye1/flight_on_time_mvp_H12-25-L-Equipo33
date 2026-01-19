@@ -370,7 +370,7 @@ En caso de que se requiera producir una explicación de cómo decide el modelo, 
 </p>
 
 <p align="center">
-  <img src="../images/custom flight model.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
+  <img src="../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
 </p>
 
 <p align="justify">
