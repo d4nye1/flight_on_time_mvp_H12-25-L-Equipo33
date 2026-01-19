@@ -24,15 +24,8 @@ class CustomPrediction:
         probs = self.pipeline.predict_proba(X)
         idx  = np.argmax(probs, axis=1)
         labels = ['A tiempo', 'Retrasado']
-        # max_prob = np.round(np.max(probs, axis=1), 2)
         max_prob = np.round(probs[:,1] * 100, 2)
         max_prob = max_prob.astype(float)
-
-        X_feat = self._transform_until_preprocess(X)
-
-        return [{"Predicción": labels[i], "Probabilidad de retraso": p, "Distancia":  X_feat.iloc[j]['distancia']} for j, (i, p) in enumerate(zip(idx, max_prob))]
-
-    def explain(self, X):
 
         X_feat = self._transform_until_preprocess(X)
         X_trans = self.prep.transform(X_feat)
@@ -46,9 +39,9 @@ class CustomPrediction:
         
 
         feature_groups = {
-                        "hora de vuelo": [c for c in shap_df.columns if "hora_" in c],
-                        "mes de vuelo": [c for c in shap_df.columns if "mes_" in c],
-                        "día de la semana": [c for c in shap_df.columns if "dia_semana_" in c],
+                        " hora de vuelo": [c for c in shap_df.columns if "hora_" in c],
+                        " mes de vuelo": [c for c in shap_df.columns if "mes_" in c],
+                        " día de la semana": [c for c in shap_df.columns if "dia_semana_" in c],
                     }
 
         grouped_shap = shap_df.copy()
@@ -83,7 +76,8 @@ class CustomPrediction:
                 
         paragraph_explanations += f"\nLas características restantes (5) agrupan el resto de las influencias ({100 - grouped_shap['Esfuerzo'].abs().sum():.2f}%)."
 
-        return paragraph_explanations
+        return [{"Predicción": labels[idx[0]], "Probabilidad de retraso": max_prob[0], "Distancia": X_feat.iloc[0]['distancia'], "Explicabilidad": paragraph_explanations}]
+
 
 
 
