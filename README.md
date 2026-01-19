@@ -153,7 +153,7 @@ FlightOnTime Data Science Service (FastAPI)
 - La arquitectura permite **volver a un mock** sin cambios estructurales.
 
 <p align="center">
-  <img src="images/architecture_integration_week3.png" alt="Arquitectura de Integración - Semana 3" width="100%" />
+  <img src="images/architecture_integration_week3.png" alt="Arquitectura de Integración - Semana 3" width="50%" />
 </p>
 
 -----
