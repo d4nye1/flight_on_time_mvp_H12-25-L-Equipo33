@@ -2,8 +2,8 @@ package com.flightontime.flightontimeapi.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-
 
 import java.time.LocalDateTime;
 
