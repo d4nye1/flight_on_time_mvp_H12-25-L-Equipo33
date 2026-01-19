@@ -48,7 +48,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # CARGA DEL MODELO
 # =================
 try:
-    raw_pipeline = joblib.load("modelo_XGB_V2.joblib")
+    raw_pipeline = joblib.load("modelo_XGB_V2.1.joblib")
     model = cc.CustomPrediction(raw_pipeline)
     print("✅ Modelo cargado y configurado con éxito")
 except Exception as e:

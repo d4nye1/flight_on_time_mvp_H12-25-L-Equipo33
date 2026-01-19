@@ -1,6 +1,7 @@
 package com.flightontime.flightontimeapi.exception;
 
 import com.flightontime.flightontimeapi.dto.ErrorResponseDTO;
+import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,30 +14,25 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidFormat(HttpMessageNotReadableException ex) {
-        //String mensaje = "Fecha inválida: Verifique que la fecha y hora sean correctas";
+        String mensaje = "Error en el formato de la solicitud. Verifique los datos ingresados.";
+        String technicalMessage = ex.getMessage() != null ? ex.getMessage() : "";
 
-        // Mensaje base por si el error no es de fecha (ej: mandar letras en un campo numérico)
-        String mensaje = "Error en el formato de la solicitud. Verifique los datos ingresados";
-
-        // Si el error técnico de Jackson menciona LocalDateTime, personalizamos el mensaje
-        if (ex.getMessage() != null && ex.getMessage().contains("java.time.LocalDateTime")) {
-            mensaje = "Fecha inválida: El día ingresado no existe en el calendario o el formato es incorrecto (yyyy-MM-dd'T'HH:mm)";
+        if (technicalMessage.contains("java.time.LocalDateTime")) {
+            mensaje = "Fecha inválida: El día ingresado no existe o el formato es incorrecto (yyyy-MM-dd'T'HH:mm).";
+        } else if (technicalMessage.contains("Double") || technicalMessage.contains("double")) {
+            mensaje = "La distancia debe ser un valor numérico (ej: 1200.50). No se permiten letras.";
         }
 
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensaje));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(mensaje));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationError(
-            MethodArgumentNotValidException ex
-    ) {
-        String mensaje = ex.getBindingResult()
-                .getFieldErrors()
-                .get(0)
-                .getDefaultMessage();
+    public ResponseEntity<ErrorResponseDTO> handleValidationError(MethodArgumentNotValidException ex) {
+        String mensaje = "Error de validación";
+
+        if (!ex.getBindingResult().getAllErrors().isEmpty()) {
+            mensaje = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        }
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -63,7 +59,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RemoteServiceException.class)
     public ResponseEntity<ErrorResponseDTO> handleRemoteServiceError(RemoteServiceException ex) {
-        // Usamos 503 (SERVICE_UNAVAILABLE) para indicar que el problema es del motor externo
         return ResponseEntity
                 .status(HttpStatus.SERVICE_UNAVAILABLE)
                 .body(new ErrorResponseDTO(ex.getMessage()));
@@ -71,7 +66,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleGenericError() {
-        // Este queda como última red de seguridad para errores desconocidos
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponseDTO(
@@ -79,5 +73,10 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusinessValidation(ValidationException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponseDTO(ex.getMessage()));
+    }
 }

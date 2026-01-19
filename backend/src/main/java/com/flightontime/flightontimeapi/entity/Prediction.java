@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "predictions")
+@Table(name = "predictions", indexes = {
+        @Index(name = "idx_flight_cache", columnList = "aerolinea, origen, destino, fechaPartida")
+})
 public class Prediction {
 
     @Id

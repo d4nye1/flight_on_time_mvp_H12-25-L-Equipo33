@@ -6,6 +6,7 @@ import com.flightontime.flightontimeapi.dto.FlightPredictionWithStatsDTO;
 import com.flightontime.flightontimeapi.entity.Prediction;
 import com.flightontime.flightontimeapi.repository.PredictionRepository;
 import com.flightontime.flightontimeapi.exception.RemoteServiceException;
+import com.flightontime.flightontimeapi.service.DataScienceClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,36 +27,21 @@ public class FlightPredictionService {
 
     @Transactional
     public FlightPredictionDTO predecirVuelo(FlightRequestDTO request) {
-        // 1. Llamada a FastAPI (Modelo Joblib)
-        FlightPredictionDTO respuesta;
-        try {
-            respuesta = dataScienceClient.llamarModelo(request);
-        } catch (Exception e) {
-            throw new RemoteServiceException("El motor de predicción no responde: " + e.getMessage());
-        }
+      
+      LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
 
-        // 2. GUARDADO AUTOMÁTICO (Sin bloqueos de "existe")
-        Prediction pred = new Prediction();
-        pred.setAerolinea(request.getAerolinea());
-        pred.setOrigen(request.getOrigen());
-        pred.setDestino(request.getDestino());
-        pred.setFechaPartida(request.getFechaPartida());
-        pred.setPrevision(respuesta.getPrevision());
-        pred.setProbabilidad(respuesta.getProbabilidad());
-        pred.setDistancia(respuesta.getDistancia());
-        pred.setFechaConsulta(LocalDateTime.now());
-
-        predictionRepository.save(pred);
-
-        return respuesta;
+        return predictionRepository
+                .findByAerolineaAndOrigenAndDestinoAndFechaPartida(
+                        request.getAerolinea(), request.getOrigen(), request.getDestino(), fechaPartida)
+                .map(this::mapToDTO)
+                .orElseGet(() -> consultarYGuardar(request, fechaPartida));
     }
 
     @Transactional
     public FlightPredictionWithStatsDTO predecirVueloConStats(FlightRequestDTO request) {
-        // Ejecuta el guardado y la predicción
-        FlightPredictionDTO prediccion = predecirVuelo(request);
 
-        // Consultas de historial real en DB
+      FlightPredictionDTO prediccion = predecirVuelo(request);
+
         long totalVuelosRuta = predictionRepository.countTotalPorRuta(
                 request.getAerolinea(), request.getOrigen(), request.getDestino(),
                 LocalDateTime.now().minusYears(1), LocalDateTime.now().plusYears(1));
@@ -66,7 +52,6 @@ public class FlightPredictionService {
 
         double porcentajeRetrasos = totalVuelosRuta == 0 ? 0 : (vuelosRetrasadosRuta * 100.0 / totalVuelosRuta);
 
-        // Lógica de gráfica LIMPIA
         List<String> etiquetas = new ArrayList<>();
         List<Double> valores = new ArrayList<>();
 
@@ -79,7 +64,6 @@ public class FlightPredictionService {
                 valores.add(((Number) fila[1]).doubleValue());
             }
         } else {
-            // SI NO HAY HISTORIAL: Solo mostramos el punto actual de FastAPI
             etiquetas.add("Actual");
             valores.add(prediccion.getProbabilidad() * 100);
         }
@@ -95,5 +79,44 @@ public class FlightPredictionService {
                 valores,
                 etiquetas
         );
+    }
+
+    private FlightPredictionDTO consultarYGuardar(FlightRequestDTO request, LocalDateTime fechaPartida) {
+        try {
+            FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
+
+            Prediction pred = new Prediction();
+            pred.setAerolinea(request.getAerolinea());
+            pred.setOrigen(request.getOrigen());
+            pred.setDestino(request.getDestino());
+            pred.setFechaPartida(fechaPartida);
+            pred.setPrevision(respuesta.getPrevision());
+            pred.setProbabilidad(respuesta.getProbabilidad());
+            pred.setDistancia(respuesta.getDistancia());
+            pred.setFechaConsulta(LocalDateTime.now());
+
+            predictionRepository.save(pred);
+            return respuesta;
+
+        } catch (Exception e) {
+            manejarErrorIA(e);
+            return null;
+        }
+    }
+
+    private void manejarErrorIA(Exception e) {
+        String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
+        if (msg.contains("timeout") || msg.contains("timed out")) {
+            throw new RemoteServiceException("El motor de predicción está tardando demasiado. Intente nuevamente.");
+        }
+        throw new RemoteServiceException("El motor de predicción no responde. Intente en unos minutos.");
+    }
+
+    private FlightPredictionDTO mapToDTO(Prediction entity) {
+        FlightPredictionDTO dto = new FlightPredictionDTO();
+        dto.setPrevision(entity.getPrevision());
+        dto.setProbabilidad(entity.getProbabilidad());
+        dto.setDistancia(entity.getDistancia());
+        return dto;
     }
 }
