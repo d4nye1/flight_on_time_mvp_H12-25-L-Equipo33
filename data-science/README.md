@@ -105,15 +105,18 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 
 ---
 
-#### 3. **Criterios (1).ipynb** - Análisis de Criterios de Riesgo
-- Identificación de condiciones que aumentan la probabilidad de retraso
-- Análisis de patrones temporales (horas pico, días críticos)
-- Evaluación de factores de riesgo por aerolínea y ruta
-- Definición de criterios para clasificar vuelos de alto riesgo
-- Insights de negocio sobre cuándo es más probable un retraso
+#### 3. **Criterios (1).ipynb** - Estratificación de Riesgo y Umbrales de Decisión
+- Análisis de deciles de riesgo basados en probabilidades del modelo
+- Cálculo de métricas de Lift para cada segmento de riesgo
+- Definición de umbrales críticos para clasificación operativa:
+  - **Alto Riesgo (P80):** Probabilidad ≥ 0.6209 → Top 20% de vuelos con mayor riesgo (Lift > 1.6)
+  - **Riesgo Medio (P50-P80):** 0.4555 ≤ Probabilidad < 0.6209 → 30% siguiente (Lift ~ 1.0)
+  - **Bajo Riesgo (<P50):** Probabilidad < 0.4555 → Bottom 50% (Lift < 0.8)
+- Recomendaciones de acción por nivel de riesgo (contingencia, monitoreo, operación estándar)
+- Optimización del umbral F1-Score (0.5196 para F1 = 0.4313)
 
 <p align="center">
-  <img src="images/evaluation_criteria.png" alt="Análisis de Criterios de Riesgo de Retrasos" width="100%" />
+  <img src="images/evaluation_criteria.png" alt="Estratificación de Riesgo - Umbrales y Niveles de Decisión" width="100%" />
 </p>
 
 ---
@@ -191,6 +194,33 @@ El EDA completo se encuentra en `DataScience.ipynb` e incluye:
 
 <p align="center">
   <img src="images/final_model_card.png" alt="Ficha Técnica del Modelo Final" width="100%" />
+</p>
+
+### Estratificación de Riesgo Operativo
+
+Una vez entrenado el modelo, se implementó un sistema de **clasificación de riesgo basado en umbrales de probabilidad** para facilitar la toma de decisiones operativas. Este proceso está documentado en `Criterios (1).ipynb`.
+
+#### Proceso de Estratificación:
+
+1. **Análisis de Deciles:** Se segmentó el conjunto de validación (6.9M vuelos) en 10 deciles según la probabilidad predicha
+2. **Cálculo de Lift:** Para cada decil se calculó el Lift (tasa de riesgo del segmento / tasa global)
+3. **Definición de Umbrales:** Se establecieron 3 niveles de riesgo basados en percentiles y Lift
+
+#### Umbrales Críticos Establecidos:
+
+| Nivel de Riesgo | Umbral de Probabilidad | Cobertura | Lift | Acción Recomendada |
+|------------------|------------------------|-----------|------|-------------------|
+| 🔴 **Alto** | P ≥ 0.6209 (P80) | 20% vuelos | > 1.6x | Activar Contingencia / Priorizar Reasignación |
+| 🟡 **Medio** | 0.4555 ≤ P < 0.6209 | 30% vuelos | 1.0-1.6x | Monitoreo Activo |
+| 🟢 **Bajo** | P < 0.4555 (P50) | 50% vuelos | < 0.8x | Operación Estándar |
+
+#### Optimización F1-Score:
+- **Umbral óptimo:** 0.5196
+- **F1-Score máximo:** 0.4313
+- **Validación:** 6,965,266 vuelos reales (2024)
+
+<p align="center">
+  <img src="images/risk_stratification.png" alt="Estratificación de Riesgo Operativo - Niveles y Umbrales" width="100%" />
 </p>
 
 ---
