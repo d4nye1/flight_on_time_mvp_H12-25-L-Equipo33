@@ -10,6 +10,20 @@ de la cual fueron filtrados los vuelos solamente del año 2024 por la gran canti
 fuera de este país, sería incorrecto al no contar con datos para desarrollar un modelo predictivo de esta índole correctamente.
 </p>
 
+---
+
+### **Arquitectura del Sistema**
+
+<p align="center">
+  <img src="../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
+</p>
+
+<p align="justify">
+El diagrama anterior muestra la arquitectura completa del sistema FlightOnTime, desde la ingesta de datos de BTS hasta el despliegue del modelo en producción mediante FastAPI, integrándose con el backend en Spring Boot.
+</p>
+
+---
+
 ### **2) Análisis exploratorio de datos**
 
 <p align="justify">
@@ -18,6 +32,16 @@ Como etapa previa al modelado, se realizó un Análisis Exploratorio de Datos (E
 
 <p align="justify">
 El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7 millones de registros y 35 variables. Debido al volumen del dataset, el análisis combinó revisión estadística, validación de formatos y visualizaciones sobre muestras representativas, para mantener eficiencia computacional sin perder interpretabilidad.
+</p>
+
+#### **Flujo del Pipeline de Datos**
+
+<p align="center">
+  <img src="../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
+</p>
+
+<p align="justify">
+El diagrama muestra las fases principales del procesamiento de datos: desde la extracción de datos crudos de BTS, pasando por la limpieza y validación, ingeniería de características, división train/test con balanceo de clases, hasta el entrenamiento final del modelo XGBoost.
 </p>
 
 #### **2.1 Revisión inicial del dataset**
