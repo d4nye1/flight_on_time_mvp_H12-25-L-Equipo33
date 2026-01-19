@@ -105,30 +105,28 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 
 ---
 
-#### 3. **Criterios (1).ipynb** - Criterios de Evaluación de Modelos
-- Definición de métricas de evaluación (AUC-ROC, F1-Score, Precision, Recall)
-- Justificación de AUC-ROC como métrica primaria
-- Criterios de aceptación para el modelo final
-- Consideraciones de negocio vs. métricas técnicas
+#### 3. **Criterios (1).ipynb** - Análisis de Criterios de Riesgo
+- Identificación de condiciones que aumentan la probabilidad de retraso
+- Análisis de patrones temporales (horas pico, días críticos)
+- Evaluación de factores de riesgo por aerolínea y ruta
+- Definición de criterios para clasificar vuelos de alto riesgo
+- Insights de negocio sobre cuándo es más probable un retraso
 
 <p align="center">
-  <img src="images/evaluation_criteria.png" alt="Criterios de Evaluación de Modelos" width="100%" />
+  <img src="images/evaluation_criteria.png" alt="Análisis de Criterios de Riesgo de Retrasos" width="100%" />
 </p>
 
 ---
 
-#### 4. **Explorando_otros_modelos.ipynb** - Experimentación con Modelos Alternativos
-- Comparación de múltiples algoritmos:
-  - Random Forest
-  - Logistic Regression
-  - XGBoost
-  - LightGBM
-  - Gradient Boosting
-- Evaluación comparativa de desempeño
-- Análisis de trade-offs (precisión vs. tiempo de entrenamiento)
+#### 4. **Explorando_otros_modelos.ipynb** - Implementación CNN + XGBoost
+- Experimentación con enfoque híbrido: CNN + XGBoost
+- Extracción de features usando Redes Neuronales Convolucionales
+- Combinación de features CNN con características tradicionales
+- Entrenamiento de XGBoost sobre representaciones aprendidas
+- Comparación de resultados con enfoque tradicional
 
 <p align="center">
-  <img src="images/model_comparison.png" alt="Comparación de Modelos Alternativos" width="100%" />
+  <img src="images/model_comparison.png" alt="Implementación CNN + XGBoost - Enfoque Alternativo" width="100%" />
 </p>
 
 ---
