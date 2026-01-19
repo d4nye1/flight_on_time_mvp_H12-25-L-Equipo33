@@ -9,6 +9,10 @@ El sistema está pensado para apoyar la toma de decisiones de:
 - Aerolíneas, optimizando su operación.
 - Aeropuertos, mejorando la planificación logística.
 
+<p align="center">
+  <img src="images/project_overview.png" alt="FlightOnTime - Visión General del Proyecto" width="100%" />
+</p>
+
 
 
 ## Objetivo del MVP
@@ -59,6 +63,10 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
   "probabilidad": 0.22
 } 
 
+<p align="center">
+  <img src="images/api_contract.png" alt="Contrato de API - Request/Response" width="100%" />
+</p>
+
 ---
 ## Reglas de colaboración del equipo
 
@@ -97,6 +105,10 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 4. Revisar y aprobar PR.  
 5. Mergear cambios y borrar la rama feature.  
 6. Al final del sprint, mergear `develop` → `main`.
+
+<p align="center">
+  <img src="images/git_workflow.png" alt="Flujo de Trabajo Git" width="100%" />
+</p>
 
 ## Semana 3 — Integración con Data Science ##
 
@@ -139,6 +151,11 @@ FlightOnTime Data Science Service (FastAPI)
 - El controller **no conoce el origen de la predicción**.
 - El cliente de Data Science está **completamente aislado**.
 - La arquitectura permite **volver a un mock** sin cambios estructurales.
+
+<p align="center">
+  <img src="images/architecture_integration_week3.png" alt="Arquitectura de Integración - Semana 3" width="100%" />
+</p>
+
 -----
 **Servicio de Data Science**
 
@@ -171,6 +188,10 @@ Cuando el servicio de Data Science:
 `  `"status": "ERROR"
 
 }
+
+<p align="center">
+  <img src="images/error_handling.png" alt="Manejo de Errores - Flujo de Resiliencia" width="100%" />
+</p>
 
 -----
 **Pruebas realizadas**
