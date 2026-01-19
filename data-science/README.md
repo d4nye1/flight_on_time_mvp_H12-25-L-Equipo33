@@ -88,7 +88,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Definición de la variable objetivo (retraso > 15 min)
 
 <p align="center">
-  <img src="images/eda_overview.png" alt="Panel EDA - Análisis Exploratorio de Datos" width="100%" />
+  <img src="../images/eda_overview.png" alt="Panel EDA - Análisis Exploratorio de Datos" width="100%" />
 </p>
 
 ---
@@ -100,7 +100,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Justificación de encoding cíclico para variables temporales
 
 <p align="center">
-  <img src="images/feature_selection_matrix.png" alt="Matriz de Selección de Features - Correlación y Cramers V" width="100%" />
+  <img src="../images/feature_selection_matrix.png" alt="Matriz de Selección de Features - Correlación y Cramers V" width="100%" />
 </p>
 
 ---
@@ -116,7 +116,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Optimización del umbral F1-Score (0.5196 para F1 = 0.4313)
 
 <p align="center">
-  <img src="images/evaluation_criteria.png" alt="Estratificación de Riesgo - Umbrales y Niveles de Decisión" width="100%" />
+  <img src="../images/evaluation_criteria.png" alt="Estratificación de Riesgo - Umbrales y Niveles de Decisión" width="100%" />
 </p>
 
 ---
@@ -128,7 +128,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Selección del modelo final basada en balance desempeño/eficiencia
 
 <p align="center">
-  <img src="images/model_comparison.png" alt="Comparación de Modelos Evaluados" width="100%" />
+  <img src="../images/model_comparison.png" alt="Comparación de Modelos Evaluados" width="100%" />
 </p>
 
 ---
@@ -142,7 +142,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Serialización del modelo final
 
 <p align="center">
-  <img src="images/xgboost_training_flow.png" alt="Pipeline de Entrenamiento XGBoost" width="100%" />
+  <img src="../images/xgboost_training_flow.png" alt="Pipeline de Entrenamiento XGBoost" width="100%" />
 </p>
 
 ---
@@ -154,7 +154,7 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 - Análisis costo-beneficio de usar más datos
 
 <p align="center">
-  <img src="images/sample_size_analysis.png" alt="Análisis de Tamaño Muestral Óptimo" width="100%" />
+  <img src="../images/sample_size_analysis.png" alt="Análisis de Tamaño Muestral Óptimo" width="100%" />
 </p>
 
 ---
@@ -170,7 +170,7 @@ El EDA completo se encuentra en `DataScience.ipynb` e incluye:
 - **Variables clave identificadas:** aerolínea, origen, destino, hora de salida, distancia, mes, día de semana
 
 <p align="center">
-  <img src="images/data_pipeline_summary.png" alt="Resumen del Pipeline de Datos" width="100%" />
+  <img src="../images/data_pipeline_summary.png" alt="Resumen del Pipeline de Datos" width="100%" />
 </p>
 
 ---
@@ -193,7 +193,7 @@ El EDA completo se encuentra en `DataScience.ipynb` e incluye:
 - **Balanceo:** Random undersampling (50/50)
 
 <p align="center">
-  <img src="images/final_model_card.png" alt="Ficha Técnica del Modelo Final" width="100%" />
+  <img src="../images/final_model_card.png" alt="Ficha Técnica del Modelo Final" width="100%" />
 </p>
 
 ### Estratificación de Riesgo Operativo
@@ -220,7 +220,7 @@ Una vez entrenado el modelo, se implementó un sistema de **clasificación de ri
 - **Validación:** 6,965,266 vuelos reales (2024)
 
 <p align="center">
-  <img src="images/risk_stratification.png" alt="Estratificación de Riesgo Operativo - Niveles y Umbrales" width="100%" />
+  <img src="../images/risk_stratification.png" alt="Estratificación de Riesgo Operativo - Niveles y Umbrales" width="100%" />
 </p>
 
 ---
