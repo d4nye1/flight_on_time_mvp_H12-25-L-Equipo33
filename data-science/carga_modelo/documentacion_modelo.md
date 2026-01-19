@@ -10,6 +10,20 @@ de la cual fueron filtrados los vuelos solamente del año 2024 por la gran canti
 fuera de este país, sería incorrecto al no contar con datos para desarrollar un modelo predictivo de esta índole correctamente.
 </p>
 
+---
+
+### **Arquitectura del Sistema**
+
+<p align="center">
+  <img src="../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
+</p>
+
+<p align="justify">
+El diagrama anterior muestra la arquitectura completa del sistema FlightOnTime, desde la ingesta de datos de BTS hasta el despliegue del modelo en producción mediante FastAPI, integrándose con el backend en Spring Boot.
+</p>
+
+---
+
 ### **2) Análisis exploratorio de datos**
 
 <p align="justify">
@@ -18,6 +32,16 @@ Como etapa previa al modelado, se realizó un Análisis Exploratorio de Datos (E
 
 <p align="justify">
 El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7 millones de registros y 35 variables. Debido al volumen del dataset, el análisis combinó revisión estadística, validación de formatos y visualizaciones sobre muestras representativas, para mantener eficiencia computacional sin perder interpretabilidad.
+</p>
+
+#### **Flujo del Pipeline de Datos**
+
+<p align="center">
+  <img src="../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
+</p>
+
+<p align="justify">
+El diagrama muestra las fases principales del procesamiento de datos: desde la extracción de datos crudos de BTS, pasando por la limpieza y validación, ingeniería de características, división train/test con balanceo de clases, hasta el entrenamiento final del modelo XGBoost.
 </p>
 
 #### **2.1 Revisión inicial del dataset**
@@ -70,6 +94,14 @@ Para definir correctamente la variable objetivo y asegurar consistencia en el an
 
 <p align="justify">
 El objetivo del proyecto es predecir retrasos antes del despegue, por lo que la variable objetivo se definió en función del retraso de salida. Se consideró un vuelo retrasado si <code>retraso_salida &gt; 15</code> minutos, de acuerdo con el criterio estándar de la industria para definir puntualidad operacional. Referencia: https://www.oag.com/airline-on-time-performance-defining-late
+</p>
+
+<p align="center">
+  <img src="../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
+</p>
+
+<p align="justify">
+El diagrama muestra claramente el umbral de 15 minutos que separa vuelos puntuales de retrasados, siguiendo el estándar de la industria aérea (OAG).
 </p>
 
 #### **2.9 Ingeniería de variables temporales ex-ante**
@@ -238,6 +270,14 @@ internos del modelo, de preparación de datos previo al entrenamiento (pipeline)
 imposible de saber a priori por el usuario final.
 </p>
 
+<p align="center">
+  <img src="../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
+</p>
+
+<p align="justify">
+La codificación cíclica (sin/cos) preserva la continuidad temporal, asegurando que la hora 23 esté cerca de la hora 0, a diferencia de la codificación lineal que las trataría como extremos opuestos.
+</p>
+
 ### **4) Selección y entrenamiento del modelo**
 
 <p align="justify">
@@ -252,9 +292,35 @@ o nula aplicabilidad y utilidad un modelo en entornos del mundo real. A pesar de
 entre cada registro, es decir, cada fila; con todos los demás, lo que lo vuelve computacionalmente pesado) por lo que al contar con una gran cantidad de registros, se optó por realizar un submuestreo de la clase mayoritaria (en nuestro caso, vuelos a tiempo) 
 de una manera aleatoria, para igualar la cantidad de ejemplos de la clase minoritaria (vuelos retrasados en nuestra base de datos). Al utilizar esta técnica de submuestreo, se elimina la carga computacional debida a los métodos de remuestreo basados en distancia, y se aseguró una cantidad equiparable de ejemplos para ambas categorías, para asegurar un aprendizaje equilibrado del modelo.
 </p>
+
+<p align="center">
+  <img src="../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
+</p>
+
+<p align="justify">
+El proceso de random undersampling reduce la clase mayoritaria (vuelos puntuales) de 80% a 50%, igualándola con la clase minoritaria (vuelos retrasados) para prevenir sesgo del modelo hacia la clase dominante.
+</p>
+
 <p align="justify">
 Para la parte de preprocesamiento de datos, previo al entrenamiento del modelo, se utilizaron dos estrategias: Standard Scaler y ordinal encoder. La estrategia de escalado estándar fue utilizada para cambiar la escala de las variables numéricas de cualquier escala para normalizarlas a tener una media de cero y una desviación estándar de 1. Esto es útil pues permite evitar que una característica en una escala mucho mayor que otra, domine el entrenamiento, y de cierta forma normaliza su impacto en las predicciones. Además, la gran mayoría de modelos de sklearn (librería seleccionada para realizar el entrenamiento de modelos) requiere datos dentro de cierto rango, y si bien existen modelos invariantes a escalas, se optó por estandarizar este paso y de cualquier forma escalar las entradas numéricas. En lo que respecta a la codificación ordinal, esto fue seleccionado ya que en el paso 3 se observó una gran cantidad de categorías tanto para aeropuertos de origen-destino, como para aerolíneas. Lo ideal habría sido utilizar otra técnica de codificación como One Hot Encoder, pero esto resultaría en un problema de aumento de la dimensionalidad muy problemático, tanto para el tiempo de entrenamiento como para la redundancia y tamaño horizontal (en features) del modelo. Por eso y con la finalidad de mantenerlo simple, se optó por codificar las variables categóricas como ordinales, a pesar de no contar con un orden definido previo.
 </p>
+
+<p align="center">
+  <img src="../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
+</p>
+
+<p align="justify">
+El StandardScaler transforma todas las variables numéricas a una escala común (media=0, desviación estándar=1), evitando que features con rangos grandes dominen el entrenamiento del modelo.
+</p>
+
+<p align="center">
+  <img src="../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
+</p>
+
+<p align="justify">
+El OrdinalEncoder convierte variables categóricas (aerolíneas, aeropuertos) en valores numéricos, evitando la alta dimensionalidad que generaría One-Hot Encoding con 15 aerolíneas y cientos de aeropuertos.
+</p>
+
 <p align="justify">
 Se probaron distintos modelos durante el entrenamiento inicial como candidatos para servir como modelo a mejorar. Estos incluyeron pero no se limitaron, a random forest, regresión logística, XGB Classifier y LGBM Classifier. En la notebook "Optimizando_modelos_NoRNN.ipynb" también se realizaron pruebas con distintas proporciones de datos y modelos. En ella se determinó y se realizó un análisis muestral en el que se determinó que a partir de ciertas muestras, el incremento en el desempeño del modelo dejaba de ser significativamente mejor (350000 registros bastan para entrenar un modelo lo suficientemente potente), alcanzando resultados similares en la métrica primaria definida (Área AUC-ROC) en ambas propuestas. 
 </p>
@@ -301,6 +367,14 @@ Finalmente, se decidió "envolver" el modelo serializado en una clase personaliz
 
 <p align="justify">
 En caso de que se requiera producir una explicación de cómo decide el modelo, se proporciona la función explain, la cual recibe el registro a revisar, y regresa, de forma ordenada por importancia, las características que utiliza el modelo como las más relevantes para determinar si un vuelo se retrasa o llega a tiempo. En este primer intento de explicación, se usan los coeficientes shap, los cuales entre más grandes sean, indican una mayor importancia de dicha variable, en una consulta en particular. A mayor coeficiente, mayor relevancia de dicha característica para determinar retrasos. Esta importancia u orden será variable o cambiante entre cada consulta particular, lo que permite realizar una explicación por evento, en lugar de una explicación global o invariante. La función retorna tanto los nombres de las características usadas como los coeficientes shap en un dataframe. Se deja a discreción de los equipos la forma en la que se debe entregar esa información para aprovecharla de mejor manera, si es de utilidad para el análisis o se debería descartar.
+</p>
+
+<p align="center">
+  <img src="../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
+</p>
+
+<p align="justify">
+El diagrama muestra el flujo completo del Custom Flight Model: desde la entrada de datos del vuelo, pasando por el procesamiento interno (carga del modelo, extracción de features, encoding cíclico, cálculo de distancias), hasta la salida con la predicción, probabilidad y distancia.
 </p>
 
 #### **5.4) Ejemplo de uso y consumo del modelo**
