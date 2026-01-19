@@ -15,7 +15,7 @@ fuera de este país, sería incorrecto al no contar con datos para desarrollar u
 ### **Arquitectura del Sistema**
 
 <p align="center">
-  <img src="../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
+  <img src="../../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
 </p>
 
 <p align="justify">
@@ -37,7 +37,7 @@ El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7
 #### **Flujo del Pipeline de Datos**
 
 <p align="center">
-  <img src="../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
+  <img src="../../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
 </p>
 
 <p align="justify">
@@ -97,7 +97,7 @@ El objetivo del proyecto es predecir retrasos antes del despegue, por lo que la 
 </p>
 
 <p align="center">
-  <img src="../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
+  <img src="../../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
 </p>
 
 <p align="justify">
@@ -271,7 +271,7 @@ imposible de saber a priori por el usuario final.
 </p>
 
 <p align="center">
-  <img src="../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
+  <img src="../../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
 </p>
 
 <p align="justify">
@@ -294,7 +294,7 @@ de una manera aleatoria, para igualar la cantidad de ejemplos de la clase minori
 </p>
 
 <p align="center">
-  <img src="../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
+  <img src="../../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
 </p>
 
 <p align="justify">
@@ -306,7 +306,7 @@ Para la parte de preprocesamiento de datos, previo al entrenamiento del modelo, 
 </p>
 
 <p align="center">
-  <img src="../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
+  <img src="../../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
 </p>
 
 <p align="justify">
@@ -314,7 +314,7 @@ El StandardScaler transforma todas las variables numéricas a una escala común 
 </p>
 
 <p align="center">
-  <img src="../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
+  <img src="../../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
 </p>
 
 <p align="justify">
@@ -370,7 +370,7 @@ En caso de que se requiera producir una explicación de cómo decide el modelo, 
 </p>
 
 <p align="center">
-  <img src="../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
+  <img src="../../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
 </p>
 
 <p align="justify">
