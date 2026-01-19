@@ -118,15 +118,14 @@ El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especi
 
 ---
 
-#### 4. **Explorando_otros_modelos.ipynb** - Implementación CNN + XGBoost
-- Experimentación con enfoque híbrido: CNN + XGBoost
-- Extracción de features usando Redes Neuronales Convolucionales
-- Combinación de features CNN con características tradicionales
-- Entrenamiento de XGBoost sobre representaciones aprendidas
-- Comparación de resultados con enfoque tradicional
+#### 4. **Explorando_otros_modelos.ipynb** - Experimentación y Comparación de Modelos
+- Evaluación comparativa de diferentes algoritmos de clasificación
+- Análisis de desempeño de cada modelo candidato
+- Comparación de métricas (AUC-ROC, tiempo de entrenamiento, complejidad)
+- Selección del modelo final basada en balance desempeño/eficiencia
 
 <p align="center">
-  <img src="images/model_comparison.png" alt="Implementación CNN + XGBoost - Enfoque Alternativo" width="100%" />
+  <img src="images/model_comparison.png" alt="Comparación de Modelos Evaluados" width="100%" />
 </p>
 
 ---
