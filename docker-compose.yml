@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_DB: flight_on_time
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: spring_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/flight_on_time
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+      AI_SERVICE_URL: http://data-science:8000
+    depends_on:
+      - db
+      - data-science
+
+  data-science:
+    build: ./data-science
+    container_name: python_ai
+    ports:
+      - "8000:8000"
