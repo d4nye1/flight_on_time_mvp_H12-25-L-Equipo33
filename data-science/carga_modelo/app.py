@@ -121,6 +121,7 @@ def predict(request: FlightRequest):
             datos_prediccion = resultado_lista[0]
 
             resultado = datos_prediccion["Predicción"]
+            explicabilidad = datos_prediccion["Explicabilidad"]
             prob = datos_prediccion["Probabilidad de retraso"] / 100
 
             if request.distancia is not None:
@@ -131,7 +132,8 @@ def predict(request: FlightRequest):
             return {
                 "prevision": resultado,
                 "probabilidad": round(float(prob), 2),
-                "distancia": distancia_final
+                "distancia": distancia_final,
+                "explicabilidad": Explicabilidad
             }
     except Exception as e:
             print(f"DEBUG ERROR: {e}")
