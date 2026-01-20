@@ -41,6 +41,9 @@ public class FlightPredictionService {
     public FlightPredictionWithStatsDTO predecirVueloConStats(FlightRequestDTO request) {
 
       FlightPredictionDTO prediccion = predecirVuelo(request);
+        if (prediccion == null) {
+            throw new RemoteServiceException("No se pudo generar la predicción");
+        }
 
         long totalVuelosRuta = predictionRepository.countTotalPorRuta(
                 request.getAerolinea(), request.getOrigen(), request.getDestino(),
@@ -100,7 +103,7 @@ public class FlightPredictionService {
 
         } catch (Exception e) {
             manejarErrorIA(e);
-            return null;
+            throw e; // NUNCA devolver null
         }
     }
 

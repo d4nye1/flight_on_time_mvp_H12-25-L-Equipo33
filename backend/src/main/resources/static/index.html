@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">    <title>FlightOnTime - Operational Dashboard</title>
@@ -720,7 +720,7 @@
     <!-- Analytics & Trends -->
     <section class="card">
         <div class="card-header">ANALYTICS & TRENDS</div>
-        <label>Vuelos Consultados por Día</label>
+        <label>Historial de Puntualidad de la Ruta</label>
         <div class="chart-container" style="position: relative; height: 200px; width: 100%;">
             <canvas id="historico-vuelos"></canvas>
         </div>
@@ -778,6 +778,10 @@
         }
 
         const fechaISO = `${fecha}T${hora}:00`;
+        const fechaObj = new Date(fechaISO);
+        const departureHour = fechaObj.getHours();
+        const dayOfWeek = fechaObj.getDay(); // 0 = domingo
+
 
         showMsg(null, "CONSULTANDO...", "Analizando historial real...");
 
@@ -789,7 +793,7 @@
                     aerolinea,
                     origen,
                     destino,
-                    fecha_partida: fechaISO
+                    fecha_partida: `${fecha}T${hora}`
                 })
             });
 

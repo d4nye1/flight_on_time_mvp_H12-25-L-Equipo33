@@ -1,11 +1,13 @@
+version: "3.8"
+
 services:
   db:
     image: postgres:15
     container_name: postgres_db
     environment:
       POSTGRES_DB: flight_on_time
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: flightuser
+      POSTGRES_PASSWORD: flightpass
     ports:
       - "5432:5432"
 
@@ -16,8 +18,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/flight_on_time
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASS}
+      SPRING_DATASOURCE_USERNAME: flightuser
+      SPRING_DATASOURCE_PASSWORD: flightpass
       AI_SERVICE_URL: http://data-science:8000
     depends_on:
       - db

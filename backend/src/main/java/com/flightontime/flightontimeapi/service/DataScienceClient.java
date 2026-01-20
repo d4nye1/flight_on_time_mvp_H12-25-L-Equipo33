@@ -2,11 +2,11 @@ package com.flightontime.flightontimeapi.service;
 
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
 import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.format.DateTimeFormatter;
@@ -16,32 +16,22 @@ import java.util.Map;
 @Service
 public class DataScienceClient {
 
-    // Configuramos el RestTemplate con límites de tiempo (ej. 5 segundos)
-    //private final RestTemplate restTemplate = new RestTemplate();
     private final RestTemplate restTemplate;
+
+    @Value("${ai.service.url}")
+    private String aiServiceUrl;
 
     private static final DateTimeFormatter FORMATO_FECHA =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     public DataScienceClient() {
-        // Esto evita que Java se quede esperando "para siempre"
-        org.springframework.http.client.SimpleClientHttpRequestFactory factory =
-                new org.springframework.http.client.SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(5000); // 5 segundos para conectar
-        factory.setReadTimeout(5000);    // 5 segundos para recibir datos
+        var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(5000);
+        factory.setReadTimeout(5000);
         this.restTemplate = new RestTemplate(factory);
     }
 
     public FlightPredictionDTO llamarModelo(FlightRequestDTO request) {
-
-        if (request.getAerolinea() == null || request.getAerolinea().isBlank()
-                || request.getOrigen() == null || request.getOrigen().isBlank()
-                || request.getDestino() == null || request.getDestino().isBlank()
-                || request.getFechaPartida() == null) {
-            throw new IllegalArgumentException("Asegúrate de completar todos los campos");
-        }
-
-        String url = "http://127.0.0.1:8000/predict";
 
         Map<String, Object> body = new HashMap<>();
         body.put("aerolinea", request.getAerolinea().trim().toUpperCase());
@@ -55,15 +45,12 @@ public class DataScienceClient {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        //try {
-           return restTemplate.postForObject(
-                   url,
-                    entity,
-                   FlightPredictionDTO.class
-            );
+        String url = aiServiceUrl + "/predict";
 
-        //} catch (RestClientException ex) {
-          //  throw new IllegalStateException("Servicio de predicción no disponible: " + ex.getMessage());
-       }
-    //}
+        return restTemplate.postForObject(
+                url,
+                entity,
+                FlightPredictionDTO.class
+        );
+    }
 }
