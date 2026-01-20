@@ -133,7 +133,7 @@ def predict(request: FlightRequest):
                 "prevision": resultado,
                 "probabilidad": round(float(prob), 2),
                 "distancia": distancia_final,
-                "explicabilidad": Explicabilidad
+                "explicabilidad": explicabilidad
             }
     except Exception as e:
             print(f"DEBUG ERROR: {e}")
