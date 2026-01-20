@@ -1,21 +1,21 @@
-export function validarFormulario({ aerolinea, origen, destino, fecha }) {
-
-    if (!aerolinea || !origen || !destino || !fecha) {
-        return "Asegúrate de completar todos los campos";
+/* ===============================
+    FORMATEO INPUT HORA Y VALIDACIONES
+================================ */
+export function configurarInputHora() {
+    const horaInput = document.getElementById("hora");
+    if (horaInput) {
+        horaInput.addEventListener("input", (e) => {
+            let valor = e.target.value.replace(/\D/g, "");
+            if (valor.length > 4) valor = valor.slice(0, 4);
+            if (valor.length >= 3) valor = valor.slice(0, 2) + ":" + valor.slice(2);
+            e.target.value = valor;
+        });
     }
+}
 
-    if (aerolinea.length !== 2) {
-        return "El código de aerolínea debe tener 2 letras (IATA)";
+export function validarCampos(aerolinea, origen, destino, fecha, hora) {
+    if (!aerolinea || !origen || !destino || !fecha || !hora) {
+        return false;
     }
-
-    if (origen.length !== 3 || destino.length !== 3) {
-        return "Los aeropuertos deben tener 3 letras (IATA)";
-    }
-
-    const fechaSeleccionada = new Date(fecha);
-    if (fechaSeleccionada <= new Date()) {
-        return "No se pueden predecir vuelos pasados";
-    }
-
-    return null; // todo OK
+    return true;
 }
