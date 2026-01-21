@@ -443,6 +443,7 @@
         <div class="stats-container">
             <div class="circle-stat" id="puntualidad-global">--%</div>
             <div style="font-size: 0.7rem; color: var(--text-gray)">PUNTUALIDAD GLOBAL</div>
+
             <div class="data-boxes">
                 <div class="data-box">
                     TOTAL VUELOS:<br><strong id="total-vuelos">--</strong>
@@ -451,12 +452,21 @@
                     RETRASADOS:<br><strong id="vuelos-retrasados">--</strong>
                 </div>
             </div>
-            <div style="width: 80px; height: 80px; border-radius: 50%; border: 15px solid var(--accent-blue); border-top-color: var(--accent-orange); margin-top: 20px;"></div>
+
+            <div class="card-header" style="width: 100%; border-bottom: 1px solid #334155; margin-top: 10px; font-size: 0.7rem;">
+                METADATOS
+            </div>
+
+            <div id="contenedor-explicacion" class="explicacion-container">
+                <p style="color: var(--text-gray); font-size: 0.75rem; font-style: italic; text-align: center;">
+                    Esperando predicción para analizar factores clave...
+                </p>
+            </div>
         </div>
     </section>
 
     <section class="card">
-        <div class="card-header">ANALISIS Y TENDENCIAS</div>
+        <div class="card-header">ANALISIS Y TENDENCIAS HISTORICAS</div>
         <label>Historial de Puntualidad de la Ruta</label>
         <div class="chart-container" style="position: relative; height: 200px; width: 100%;">
             <canvas id="historico-vuelos"></canvas>
@@ -464,7 +474,7 @@
         <label>Top 5 Rutas con Más Retrasos</label>
         <ul id="top-rutas" class="top-rutas-list"></ul>
         <div style="margin-top: 25px;">
-            <div class="card-header" style="font-size: 0.7rem;">FACTORES CLAVE</div>
+            <div class="card-header" style="font-size: 0.7rem;">DATOS DEL VUELO</div>
             <div id="factores-clave" style="font-size: 0.8rem; color: var(--text-gray)"></div>
         </div>
     </section>

@@ -9,9 +9,16 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+// Imports fundamentales para el manejo de colecciones de errores
+import java.util.HashMap;
+import java.util.Map;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Maneja errores de formato (ej: enviar letras en campos numéricos o fechas inexistentes)
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleInvalidFormat(HttpMessageNotReadableException ex) {
         String mensaje = "Error en el formato de la solicitud. Verifique los datos ingresados.";
@@ -26,32 +33,31 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDTO(mensaje));
     }
 
+    /**
+     * Maneja las validaciones de los DTO (@NotBlank, @Pattern, @Future, etc.)
+     * Devuelve un Mapa para que el Dashboard pueda pintar los bordes rojos en campos específicos.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDTO> handleValidationError(MethodArgumentNotValidException ex) {
-        String mensaje = "Error de validación";
+    public ResponseEntity<Map<String, String>> handleValidationError(MethodArgumentNotValidException ex) {
+        Map<String, String> errores = new HashMap<>();
 
-        if (!ex.getBindingResult().getAllErrors().isEmpty()) {
-            mensaje = ex.getBindingResult().getAllErrors().get(0).getDefaultMessage();
-        }
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            // Clave: nombre del campo (ej: "aerolinea"), Valor: mensaje de error
+            errores.put(error.getField(), error.getDefaultMessage());
+        });
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponseDTO(mensaje));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errores);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDTO> handleBadRequest(
-            IllegalArgumentException ex
-    ) {
+    public ResponseEntity<ErrorResponseDTO> handleBadRequest(IllegalArgumentException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponseDTO> handleServiceUnavailable(
-            IllegalStateException ex
-    ) {
+    public ResponseEntity<ErrorResponseDTO> handleServiceUnavailable(IllegalStateException ex) {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponseDTO(ex.getMessage()));
@@ -64,19 +70,22 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDTO(ex.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handleGenericError() {
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponseDTO(
-                        "Ocurrió un error inesperado en el sistema"
-                ));
-    }
-
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponseDTO> handleBusinessValidation(ValidationException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponseDTO(ex.getMessage()));
+    }
+
+    /**
+     * Captura cualquier otra excepción no controlada para evitar exponer detalles internos
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseDTO> handleGenericError(Exception ex) {
+        // Logueamos el error para el desarrollador, pero enviamos mensaje genérico al cliente
+        ex.printStackTrace();
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponseDTO("Ocurrió un error inesperado en el sistema"));
     }
 }

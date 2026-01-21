@@ -6,7 +6,6 @@ import com.flightontime.flightontimeapi.dto.FlightPredictionWithStatsDTO;
 import com.flightontime.flightontimeapi.entity.Prediction;
 import com.flightontime.flightontimeapi.repository.PredictionRepository;
 import com.flightontime.flightontimeapi.exception.RemoteServiceException;
-import com.flightontime.flightontimeapi.service.DataScienceClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +26,8 @@ public class FlightPredictionService {
 
     @Transactional
     public FlightPredictionDTO predecirVuelo(FlightRequestDTO request) {
-      
-      LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
+
+        LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
 
         return predictionRepository
                 .findByAerolineaAndOrigenAndDestinoAndFechaPartida(
@@ -40,7 +39,7 @@ public class FlightPredictionService {
     @Transactional
     public FlightPredictionWithStatsDTO predecirVueloConStats(FlightRequestDTO request) {
 
-      FlightPredictionDTO prediccion = predecirVuelo(request);
+        FlightPredictionDTO prediccion = predecirVuelo(request);
         if (prediccion == null) {
             throw new RemoteServiceException("No se pudo generar la predicción");
         }
@@ -80,7 +79,8 @@ public class FlightPredictionService {
                 totalVuelosRuta <= 1 ? "Primer registro en esta ruta" : "Basado en historial",
                 prediccion.getDistancia(),
                 valores,
-                etiquetas
+                etiquetas,
+                prediccion.getExplicabilidad()
         );
     }
 
@@ -96,6 +96,7 @@ public class FlightPredictionService {
             pred.setPrevision(respuesta.getPrevision());
             pred.setProbabilidad(respuesta.getProbabilidad());
             pred.setDistancia(respuesta.getDistancia());
+            pred.setExplicabilidad(respuesta.getExplicabilidad()); // <--- Línea agregada para guardar en BD
             pred.setFechaConsulta(LocalDateTime.now());
 
             predictionRepository.save(pred);
@@ -103,16 +104,16 @@ public class FlightPredictionService {
 
         } catch (Exception e) {
             manejarErrorIA(e);
-            throw e; // NUNCA devolver null
+            throw e;
         }
     }
 
     private void manejarErrorIA(Exception e) {
         String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
         if (msg.contains("timeout") || msg.contains("timed out")) {
-            throw new RemoteServiceException("El motor de predicción está tardando demasiado. Intente nuevamente.");
+            throw new RemoteServiceException("El motor de predicción está tardando demasiado.");
         }
-        throw new RemoteServiceException("El motor de predicción no responde. Intente en unos minutos.");
+        throw new RemoteServiceException("El motor de predicción no responde.");
     }
 
     private FlightPredictionDTO mapToDTO(Prediction entity) {
@@ -120,6 +121,7 @@ public class FlightPredictionService {
         dto.setPrevision(entity.getPrevision());
         dto.setProbabilidad(entity.getProbabilidad());
         dto.setDistancia(entity.getDistancia());
+        dto.setExplicabilidad(entity.getExplicabilidad()); // <--- Línea agregada para recuperar de caché
         return dto;
     }
 }
