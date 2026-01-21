@@ -2,14 +2,16 @@ package com.flightontime.flightontimeapi.service;
 
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
 import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
+import com.flightontime.flightontimeapi.dto.FlightPredictionWithStatsDTO;
 import com.flightontime.flightontimeapi.entity.Prediction;
 import com.flightontime.flightontimeapi.repository.PredictionRepository;
+import com.flightontime.flightontimeapi.exception.RemoteServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
-import com.flightontime.flightontimeapi.exception.RemoteServiceException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class FlightPredictionService {
@@ -17,10 +19,7 @@ public class FlightPredictionService {
     private final DataScienceClient dataScienceClient;
     private final PredictionRepository predictionRepository;
 
-    public FlightPredictionService(
-            DataScienceClient dataScienceClient,
-            PredictionRepository predictionRepository
-    ) {
+    public FlightPredictionService(DataScienceClient dataScienceClient, PredictionRepository predictionRepository) {
         this.dataScienceClient = dataScienceClient;
         this.predictionRepository = predictionRepository;
     }
@@ -30,30 +29,65 @@ public class FlightPredictionService {
 
         LocalDateTime fechaPartida = request.getFechaPartida().withSecond(0).withNano(0);
 
-        boolean existe = predictionRepository
-                .existsByAerolineaAndOrigenAndDestinoAndFechaPartida(
-                        request.getAerolinea(),
-                        request.getOrigen(),
-                        request.getDestino(),
-                        fechaPartida
-                );
+        return predictionRepository
+                .findByAerolineaAndOrigenAndDestinoAndFechaPartida(
+                        request.getAerolinea(), request.getOrigen(), request.getDestino(), fechaPartida)
+                .map(this::mapToDTO)
+                .orElseGet(() -> consultarYGuardar(request, fechaPartida));
+    }
 
-        /*FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);*/
-        FlightPredictionDTO respuesta;
-        try {
-            respuesta = dataScienceClient.llamarModelo(request);
-        } catch (Exception e) {
-            String mensajeError = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
-            System.out.println("Error detectado: " + mensajeError); // Para que lo veas en consola
-            if (mensajeError.contains("timeout") || mensajeError.contains("timed out")) {
-                throw new RemoteServiceException("El motor de predicción está tardando demasiado en responder. Por favor, intente nuevamente.");
-            }
+    @Transactional
+    public FlightPredictionWithStatsDTO predecirVueloConStats(FlightRequestDTO request) {
 
-            // Si no es un problema de tiempo, asumimos que el servicio está fuera de línea
-            throw new RemoteServiceException("El motor de predicción no responde. Por favor, intente de nuevo en unos minutos.");
+        FlightPredictionDTO prediccion = predecirVuelo(request);
+        if (prediccion == null) {
+            throw new RemoteServiceException("No se pudo generar la predicción");
         }
 
-        if (!existe) {
+        long totalVuelosRuta = predictionRepository.countTotalPorRuta(
+                request.getAerolinea(), request.getOrigen(), request.getDestino(),
+                LocalDateTime.now().minusYears(1), LocalDateTime.now().plusYears(1));
+
+        long vuelosRetrasadosRuta = predictionRepository.countRetrasadosPorRuta(
+                request.getAerolinea(), request.getOrigen(), request.getDestino(),
+                LocalDateTime.now().minusYears(1), LocalDateTime.now().plusYears(1));
+
+        double porcentajeRetrasos = totalVuelosRuta == 0 ? 0 : (vuelosRetrasadosRuta * 100.0 / totalVuelosRuta);
+
+        List<String> etiquetas = new ArrayList<>();
+        List<Double> valores = new ArrayList<>();
+
+        List<Object[]> historialRaw = predictionRepository.findHistorialPuntualidadRuta(
+                request.getAerolinea(), request.getOrigen(), request.getDestino());
+
+        if (historialRaw != null && !historialRaw.isEmpty()) {
+            for (Object[] fila : historialRaw) {
+                etiquetas.add("Mes " + fila[0].toString());
+                valores.add(((Number) fila[1]).doubleValue());
+            }
+        } else {
+            etiquetas.add("Actual");
+            valores.add(prediccion.getProbabilidad() * 100);
+        }
+
+        return new FlightPredictionWithStatsDTO(
+                prediccion.getPrevision(),
+                prediccion.getProbabilidad(),
+                totalVuelosRuta,
+                vuelosRetrasadosRuta,
+                porcentajeRetrasos,
+                totalVuelosRuta <= 1 ? "Primer registro en esta ruta" : "Basado en historial",
+                prediccion.getDistancia(),
+                valores,
+                etiquetas,
+                prediccion.getExplicabilidad()
+        );
+    }
+
+    private FlightPredictionDTO consultarYGuardar(FlightRequestDTO request, LocalDateTime fechaPartida) {
+        try {
+            FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
+
             Prediction pred = new Prediction();
             pred.setAerolinea(request.getAerolinea());
             pred.setOrigen(request.getOrigen());
@@ -62,17 +96,32 @@ public class FlightPredictionService {
             pred.setPrevision(respuesta.getPrevision());
             pred.setProbabilidad(respuesta.getProbabilidad());
             pred.setDistancia(respuesta.getDistancia());
+            pred.setExplicabilidad(respuesta.getExplicabilidad()); // <--- Línea agregada para guardar en BD
             pred.setFechaConsulta(LocalDateTime.now());
 
-            try {
-                predictionRepository.save(pred);
-                System.out.println("Vuelo guardado correctamente.");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("El vuelo ya existe en la DB. No se guarda.");
+            predictionRepository.save(pred);
+            return respuesta;
+
+        } catch (Exception e) {
+            manejarErrorIA(e);
+            throw e;
         }
-        return respuesta;
+    }
+
+    private void manejarErrorIA(Exception e) {
+        String msg = (e.getMessage() != null) ? e.getMessage().toLowerCase() : "";
+        if (msg.contains("timeout") || msg.contains("timed out")) {
+            throw new RemoteServiceException("El motor de predicción está tardando demasiado.");
+        }
+        throw new RemoteServiceException("El motor de predicción no responde.");
+    }
+
+    private FlightPredictionDTO mapToDTO(Prediction entity) {
+        FlightPredictionDTO dto = new FlightPredictionDTO();
+        dto.setPrevision(entity.getPrevision());
+        dto.setProbabilidad(entity.getProbabilidad());
+        dto.setDistancia(entity.getDistancia());
+        dto.setExplicabilidad(entity.getExplicabilidad()); // <--- Línea agregada para recuperar de caché
+        return dto;
     }
 }

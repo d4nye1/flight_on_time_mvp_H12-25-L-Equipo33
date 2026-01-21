@@ -13,13 +13,17 @@ public class FlightPredictionDTO {
     @JsonProperty("distancia")
     private Double distancia;
 
+    @JsonProperty("explicabilidad") // <--- Agregado para recibir de Python
+    private String explicabilidad;
+
     public FlightPredictionDTO() {
     }
 
-    public FlightPredictionDTO(String prevision, Double probabilidad, Double distancia) {
+    public FlightPredictionDTO(String prevision, Double probabilidad, Double distancia, String explicabilidad) {
         this.prevision = prevision;
         this.probabilidad = probabilidad;
         this.distancia = distancia;
+        this.explicabilidad = explicabilidad;
     }
 
     public String getPrevision() {
@@ -44,5 +48,13 @@ public class FlightPredictionDTO {
 
     public void setDistancia(Double distancia) {
         this.distancia = distancia;
+    }
+
+    public String getExplicabilidad() {
+        return explicabilidad;
+    }
+
+    public void setExplicabilidad(String explicabilidad) {
+        this.explicabilidad = explicabilidad;
     }
 }
