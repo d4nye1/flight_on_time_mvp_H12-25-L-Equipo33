@@ -51,8 +51,8 @@ public class StatsService {
 
         double porcentajeRetrasosRuta = totalVuelosRuta == 0 ? 0 : (vuelosRetrasadosRuta * 100.0 / totalVuelosRuta);
 
-        // ✅ CORRECCIÓN: Agregamos el 7mo parámetro (0.0 para distancia) para que coincida con el DTO
-        // Debes agregar List.of(), List.of() al final para completar los 9 parámetros
+        // ✅ CORRECCIÓN: Se eliminó la variable inexistente 'prediccion'
+        // y se agregó el décimo parámetro (puedes poner un String vacío o el dato real)
         return new FlightPredictionWithStatsDTO(
                 "Procesado",
                 0.0,
@@ -60,9 +60,10 @@ public class StatsService {
                 vuelosRetrasadosRuta,
                 porcentajeRetrasosRuta,
                 totalVuelosRuta == 0 ? "Sin datos históricos" : "Basado en historial de 30 días",
-                0.0,          // Parámetro 7: Distancia
-                java.util.List.of(), // Parámetro 8: Historial vacío (NUEVO)
-                java.util.List.of()  // Parámetro 9: Etiquetas vacías (NUEVO)
+                0.0,                  // Parámetro 7: Distancia
+                java.util.List.of(),   // Parámetro 8: Historial vacío
+                java.util.List.of(),   // Parámetro 9: Etiquetas vacías
+                "Análisis de historial completado" // Parámetro 10: Explicabilidad (reemplaza a prediccion.getExplicabilidad())
         );
     }
 
@@ -94,7 +95,6 @@ public class StatsService {
 
         for (Object[] fila : resultados) {
             Map<String, Object> ruta = new HashMap<>();
-            // fila[0] es la ruta (Ej: JFK-LAX), fila[1] es el conteo
             ruta.put("nombre", fila[0] != null ? fila[0].toString() : "N/A");
             ruta.put("cantidad", fila[1] != null ? ((Number) fila[1]).intValue() : 0);
             topRutas.add(ruta);

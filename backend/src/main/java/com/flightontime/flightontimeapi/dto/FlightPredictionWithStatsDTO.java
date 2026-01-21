@@ -11,6 +11,7 @@ public class FlightPredictionWithStatsDTO {
     private double porcentajeRetrasosRuta;
     private String recomendacion;
     private double distancia;
+    private String explicabilidad; // <--- Campo mantenido
 
     // --- NUEVOS CAMPOS PARA LA GRÁFICA REAL ---
     private List<Double> historialPuntualidad;
@@ -18,10 +19,13 @@ public class FlightPredictionWithStatsDTO {
 
     public FlightPredictionWithStatsDTO() {
     }
+
+    // Constructor actualizado para incluir explicabilidad
     public FlightPredictionWithStatsDTO(String prevision, double probabilidad, long totalVuelosRuta,
                                         long vuelosRetrasadosRuta, double porcentajeRetrasosRuta,
                                         String recomendacion, double distancia,
-                                        List<Double> historialPuntualidad, List<String> etiquetasFechas) {
+                                        List<Double> historialPuntualidad, List<String> etiquetasFechas,
+                                        String explicabilidad) { // <--- Agregado al constructor
         this.prevision = prevision;
         this.probabilidad = probabilidad;
         this.totalVuelosRuta = totalVuelosRuta;
@@ -31,6 +35,7 @@ public class FlightPredictionWithStatsDTO {
         this.distancia = distancia;
         this.historialPuntualidad = historialPuntualidad;
         this.etiquetasFechas = etiquetasFechas;
+        this.explicabilidad = explicabilidad; // <--- Inicializado aquí
     }
 
     // Getters existentes
@@ -41,6 +46,9 @@ public class FlightPredictionWithStatsDTO {
     public double getPorcentajeRetrasosRuta() { return porcentajeRetrasosRuta; }
     public String getRecomendacion() { return recomendacion; }
     public double getDistancia() { return distancia; }
+
+    // Getter para Explicabilidad
+    public String getExplicabilidad() { return explicabilidad; }
 
     // --- NUEVOS GETTERS ---
     public List<Double> getHistorialPuntualidad() { return historialPuntualidad; }
@@ -72,6 +80,11 @@ public class FlightPredictionWithStatsDTO {
 
     public void setDistancia(double distancia) {
         this.distancia = distancia;
+    }
+
+    // Setter para Explicabilidad
+    public void setExplicabilidad(String explicabilidad) {
+        this.explicabilidad = explicabilidad;
     }
 
     public void setHistorialPuntualidad(List<Double> historialPuntualidad) {

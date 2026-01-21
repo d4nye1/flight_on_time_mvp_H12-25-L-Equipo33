@@ -1,42 +1,105 @@
-import { validarFormulario } from "./validaciones.js";
-import { predecirVuelo } from "./api.js";
-import { mostrarMensaje } from "./ui.js";
+import { fetchPrediccion, fetchTopRutas, fetchStatsSummary } from './api.js';
+import { showMsg, actualizarGrafica, renderTopRutas, mostrarExplicacionIA } from './ui.js';
+import { configurarInputHora, validarCampos } from './validaciones.js';
 
-document.getElementById("btnPredict").addEventListener("click", async () => {
+async function predecir() {
+    const aerolinea = document.getElementById("aerolinea").value.trim().toUpperCase();
+    const origen = document.getElementById("origen").value.trim().toUpperCase();
+    const destino = document.getElementById("destino").value.trim().toUpperCase();
+    const fecha = document.getElementById("fecha").value;
+    const hora = document.getElementById("hora").value.trim();
 
-    const data = {
-        aerolinea: document.getElementById("aerolinea").value.trim().toUpperCase(),
-        origen: document.getElementById("origen").value.trim().toUpperCase(),
-        destino: document.getElementById("destino").value.trim().toUpperCase(),
-        fecha_partida: document.getElementById("fecha").value
-    };
+    // 1. Validar campos localmente (Capa 1)
+    const resultadoValidacion = validarCampos(aerolinea, origen, destino, fecha, hora);
 
-    const error = validarFormulario({
-        aerolinea: data.aerolinea,
-        origen: data.origen,
-        destino: data.destino,
-        fecha: data.fecha_partida
-    });
-
-    if (error) {
-        mostrarMensaje("rojo", "Error", error);
+    if (!resultadoValidacion.valido) {
+        showMsg("#fb7185", "CAMPOS INCORRECTOS", resultadoValidacion.mensaje);
         return;
     }
 
-    mostrarMensaje("", "Consultando...", "Analizando datos del vuelo");
+    showMsg(null, "CONSULTANDO...", "Analizando historial real...");
 
     try {
-        const json = await predecirVuelo(data);
+        const json = await fetchPrediccion({
+            aerolinea,
+            origen,
+            destino,
+            fecha_partida: `${fecha}T${hora}`
+        });
 
-        const puntual = json.prevision === "Puntual";
+        // --- EXPLICABILIDAD (METADATOS) ---
+        mostrarExplicacionIA(json.explicabilidad || json.explicacion);
 
-        mostrarMensaje(
-            puntual ? "verde" : "rojo",
-            puntual ? "✅ Vuelo Puntual" : "⚠️ Posible Retraso",
-            `Ruta de ${json.distancia} Km. Confianza: ${(json.probabilidad * 100).toFixed(1)}%`
-        );
+        // 2. Lógica de Previsión
+        const esPuntual = json.prevision.toLowerCase().includes("tiempo");
+        showMsg(esPuntual ? "#4ade80" : "#fb7185", json.prevision.toUpperCase(), "");
+
+        // 3. Círculo de Puntualidad Global
+        const prob = json.porcentajeRetrasosRuta ?? 0;
+        const puntualidadGlobal = 100 - prob;
+        const circulo = document.getElementById("puntualidad-global");
+
+        circulo.textContent = puntualidadGlobal.toFixed(1) + "%";
+        circulo.style.borderColor = puntualidadGlobal >= 70 ? "#4ade80" : puntualidadGlobal >= 40 ? "#f97316" : "#fb7185";
+
+        // 4. Stats numéricas
+        document.getElementById("total-vuelos").textContent = json.totalVuelosRuta ?? "--";
+        document.getElementById("vuelos-retrasados").textContent = json.vuelosRetrasadosRuta ?? "--";
+
+        // 5. Factores clave
+        document.getElementById("factores-clave").innerHTML = `
+            <ul style="padding:0; list-style:none; margin:0;">
+                <li>Distancia: <strong>${json.distancia ?? "--"} km</strong></li>
+                <li>Ruta: <strong>${origen} → ${destino}</strong></li>
+                <li>Probabilidad de Retraso: <strong>${((json.probabilidad ?? 0) * 100).toFixed(1)}%</strong></li>
+                <li>Historial: ${json.recomendacion ?? "Sin datos suficientes"}</li>
+            </ul>`;
+
+        // 6. Actualizar UI adicional
+        actualizarGrafica(json);
+        const topData = await fetchTopRutas();
+        renderTopRutas(topData);
 
     } catch (err) {
-        mostrarMensaje("rojo", "Error de conexión", err.message);
+        console.error("Error capturado:", err);
+
+        // Capa 2: Manejo de errores que vienen del servidor (Java DTO)
+        if (err.detallesJava) {
+            const camposConError = Object.keys(err.detallesJava);
+
+            camposConError.forEach(campo => {
+                // Sincronización con el campo LocalDateTime de Java
+                if (campo === "fechaPartida") {
+                    document.getElementById("fecha").style.borderColor = "#fb7185";
+                    document.getElementById("hora").style.borderColor = "#fb7185";
+                } else {
+                    const input = document.getElementById(campo);
+                    if (input) input.style.borderColor = "#fb7185";
+                }
+            });
+
+            // Extraemos la leyenda exacta definida en el DTO de Java
+            const mensajeServidor = err.detallesJava[camposConError[0]];
+            showMsg("#fb7185", "RECHAZADO POR SERVIDOR", mensajeServidor);
+        } else {
+            showMsg("#fb7185", "ERROR", err.message);
+        }
     }
-});
+}
+
+// Carga inicial
+window.onload = async () => {
+    configurarInputHora();
+    try {
+        const stats = await fetchStatsSummary();
+        document.getElementById("total-vuelos").textContent = stats.totalVuelos ?? "0";
+        document.getElementById("vuelos-retrasados").textContent = stats.vuelosRetrasados ?? "0";
+
+        const top = await fetchTopRutas();
+        renderTopRutas(top);
+    } catch (e) {
+        console.error("Error inicial:", e);
+    }
+};
+
+window.predecir = predecir;

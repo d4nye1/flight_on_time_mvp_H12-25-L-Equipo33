@@ -4,6 +4,8 @@ import com.flightontime.flightontimeapi.entity.Prediction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.query.Param;
+
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -76,17 +78,25 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
     @Query(value = """
     SELECT mes, AVG(promedio_retraso) as promedio
     FROM (
-        SELECT 
-            CAST(MONTH(FECHA_PARTIDA) AS VARCHAR) as mes,
-            CASE WHEN PREVISION = 'Retrasado' THEN 100.0 ELSE 0.0 END as promedio_retraso
-        FROM PREDICTIONS
-        WHERE AEROLINEA = :aerolinea 
-          AND ORIGEN = :origen 
-          AND DESTINO = :destino
+        SELECT
+            CAST(EXTRACT(MONTH FROM fecha_partida) AS TEXT) as mes,
+            CASE
+                WHEN prevision = 'Retrasado' THEN 100.0
+                ELSE 0.0
+            END as promedio_retraso
+        FROM predictions
+        WHERE aerolinea = :aerolinea
+          AND origen = :origen
+          AND destino = :destino
     ) subquery
     GROUP BY mes
     ORDER BY mes ASC
     LIMIT 4
 """, nativeQuery = true)
-    List<Object[]> findHistorialPuntualidadRuta(String aerolinea, String origen, String destino);
+    List<Object[]> findHistorialPuntualidadRuta(
+            @Param("aerolinea") String aerolinea,
+            @Param("origen") String origen,
+            @Param("destino") String destino
+    );
+
 }

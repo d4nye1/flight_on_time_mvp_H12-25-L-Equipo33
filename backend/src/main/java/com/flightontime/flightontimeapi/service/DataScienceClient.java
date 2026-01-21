@@ -53,4 +53,5 @@ public class DataScienceClient {
                 FlightPredictionDTO.class
         );
     }
+
 }
