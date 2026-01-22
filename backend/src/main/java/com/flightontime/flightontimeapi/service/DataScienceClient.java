@@ -26,32 +26,35 @@ public class DataScienceClient {
 
     public DataScienceClient() {
         var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(5000);
-        factory.setReadTimeout(5000);
+        factory.setConnectTimeout(60000);
+        factory.setReadTimeout(60000);
         this.restTemplate = new RestTemplate(factory);
     }
 
     public FlightPredictionDTO llamarModelo(FlightRequestDTO request) {
+        try{
+            Map<String, Object> body = new HashMap<>();
+            body.put("aerolinea", request.getAerolinea().trim().toUpperCase());
+            body.put("origen", request.getOrigen().trim().toUpperCase());
+            body.put("destino", request.getDestino().trim().toUpperCase());
+            body.put("fecha_partida", request.getFechaPartida().format(FORMATO_FECHA));
+            body.put("distancia", request.getDistancia());
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("aerolinea", request.getAerolinea().trim().toUpperCase());
-        body.put("origen", request.getOrigen().trim().toUpperCase());
-        body.put("destino", request.getDestino().trim().toUpperCase());
-        body.put("fecha_partida", request.getFechaPartida().format(FORMATO_FECHA));
-        body.put("distancia", request.getDistancia());
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
+            String url = aiServiceUrl + "/predict";
 
-        String url = aiServiceUrl + "/predict";
-
-        return restTemplate.postForObject(
-                url,
-                entity,
-                FlightPredictionDTO.class
-        );
+            return restTemplate.postForObject(
+                    url,
+                    entity,
+                    FlightPredictionDTO.class
+            );
+        }catch (Exception e) {
+            System.err.println("ERROR LLAMANDO A LA IA: " + e.getMessage());
+            throw new RuntimeException("La IA no respondió a tiempo o falló: " + e.getMessage());
+        }
     }
-
 }
