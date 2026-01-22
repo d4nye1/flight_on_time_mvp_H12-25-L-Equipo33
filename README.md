@@ -1,6 +1,35 @@
-# FlightOnTime_mvp_H12-25-L-Equipo33
+# ✈️ FlightOnTime - MVP H12-25-L-Equipo33
 
-## Descripción del proyecto
+## 🏆 Insignias
+
+![Java](https://img.shields.io/badge/Java-17+-ED8B00?style=flat-square&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-6DB33F?style=flat-square&logo=springboot&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.9+-3776ab?style=flat-square&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)
+![XGBoost](https://img.shields.io/badge/XGBoost-ML-blue?style=flat-square&logo=xgboost&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Status](https://img.shields.io/badge/Status-En_Desarrollo-yellow?style=flat-square)
+
+---
+
+## 📌 Índice
+
+- [📙 Descripción del Proyecto](#-descripción-del-proyecto)
+- [🌳 Problemática](#-problemática)
+- [🎯 Objetivo del MVP](#-objetivo-del-mvp)
+- [📋 Alcance Funcional](#-alcance-funcional)
+- [🏗️ Arquitectura General](#️-arquitectura-general)
+- [🔌 Contrato de Integración](#-contrato-de-integración)
+- [👥 Reglas de Colaboración del Equipo](#-reglas-de-colaboración-del-equipo)
+- [🔄 Flujo de Trabajo Sugerido](#-flujo-de-trabajo-sugerido)
+- [📅 Semana 3 — Integración con Data Science](#-semana-3--integración-con-data-science)
+- [🚀 Cómo Levantar el Entorno](#-cómo-levantar-el-entorno)
+- [👨‍💻 Equipo de Desarrollo](#-equipo-de-desarrollo)
+- [📜 Licencia](#-licencia)
+
+---
+
+## 📙 Descripción del Proyecto
 
 FlightOnTime es una solución predictiva cuyo objetivo es estimar si un vuelo despegará de forma **puntual** o con **retraso**, a partir de información básica del vuelo como aerolínea, aeropuertos, fecha y hora de salida y distancia aproximada.
 
@@ -13,17 +42,29 @@ El sistema está pensado para apoyar la toma de decisiones de:
   <img src="images/project_overview.png" alt="FlightOnTime - Visión General del Proyecto" width="100%" />
 </p>
 
+---
 
+## 🌳 Problemática
 
-## Objetivo del MVP
+Los retrasos de vuelos representan un problema significativo que afecta a múltiples actores del ecosistema aeronáutico. El siguiente diagrama ilustra las **causas raíz** que originan los retrasos y los **efectos** que estos generan en pasajeros, aerolíneas y aeropuertos.
+
+<p align="center">
+  <img src="images/arbol.png" alt="Árbol de Problemas - Causas y Efectos de los Retrasos de Vuelos" width="80%" />
+</p>
+
+**FlightOnTime** busca mitigar estos efectos proporcionando **predicciones anticipadas** que permitan a todos los stakeholders tomar decisiones informadas antes de que el retraso ocurra.
+
+---
+
+## 🎯 Objetivo del MVP
 
 Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 - La previsión del estado del vuelo (`Puntual` o `Retrasado`)
 - La probabilidad asociada a dicha previsión
 
+---
 
-
-## Alcance funcional
+## 📋 Alcance Funcional
 
 - Clasificación binaria del estado del vuelo.
 - Predicción basada en:
@@ -34,22 +75,27 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
   - Distancia del vuelo
 - Comunicación mediante JSON.
 
+---
 
+## 🏗️ Arquitectura General
 
-## Arquitectura general
+| Componente | Tecnología |
+|------------|------------|
+| Backend | Java 17 + Spring Boot |
+| API | REST |
+| Modelo ML | XGBoost (Python + FastAPI) |
 
-- Backend: Java 17 + Spring Boot
-- API REST
-- Modelo de Machine Learning consumido por la API
+---
 
+## 🔌 Contrato de Integración
 
+### Endpoint Principal
 
-## Contrato de integración
+**`POST /predict`**
 
-### Endpoint principal
+### Entrada Esperada (JSON)
 
-### Entrada esperada
-### JSON
+```json
 {
   "aerolinea": "AZ",
   "origen": "GIG",
@@ -57,18 +103,24 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
   "fecha_partida": "2025-11-10T14:30:00",
   "distancia_km": 350
 }
-### Salida esperada
+```
+
+### Salida Esperada (JSON)
+
+```json
 {
   "prevision": "Puntual",
   "probabilidad": 0.22
-} 
+}
+```
 
 <p align="center">
   <img src="images/api_contract.png" alt="Contrato de API - Request/Response" width="100%" />
 </p>
 
 ---
-## Reglas de colaboración del equipo
+
+## 👥 Reglas de Colaboración del Equipo
 
 1. **No tocar `main` directamente.**  
    - Solo usar para versiones estables finales.
@@ -94,10 +146,12 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 8. **Mantener la misma estructura de carpetas en todas las ramas.**  
    - `data-science/`, `backend/`, `docs/`, `frontend/`, etc.
 
-9. **Sincronizar cambios de develop en tu feature antes de mergear si hubo actualizaciones.**     - Evita conflictos al integrar tu trabajo.
+9. **Sincronizar cambios de develop en tu feature antes de mergear si hubo actualizaciones.**  
+   - Evita conflictos al integrar tu trabajo.
 
+---
 
-## Flujo de trabajo sugerido
+## 🔄 Flujo de Trabajo Sugerido
 
 1. Crear rama feature desde `develop`.  
 2. Hacer commits en tu rama feature.  
@@ -110,43 +164,40 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
   <img src="images/git_workflow.png" alt="Flujo de Trabajo Git" width="100%" />
 </p>
 
-## Semana 3 — Integración con Data Science ##
+---
 
-**Objetivo de la semana**
+## 📅 Semana 3 — Integración con Data Science
+
+### Objetivo de la Semana
 
 Integrar el **modelo real de Data Science** al backend, garantizando:
 
 - Desacoplamiento de capas
 - Manejo de errores externos
 - Resiliencia del sistema
-- Estabilidad del endpoint /predict **sin modificar el controller**
------
-**Cambios clave respecto a Semana 2**
+- Estabilidad del endpoint `/predict` **sin modificar el controller**
 
-|**Aspecto**|**Semana 2**|**Semana 3**|
-| :-: | :-: | :-: |
-|Fuente de predicción|Mock|Modelo real|
-|Comunicación|Interna|HTTP REST|
-|Manejo de fallos DS|No aplica|Error controlado|
-|Controller|Mock|Sin cambios|
-|Arquitectura|Básica|Desacoplada|
+### Cambios Clave respecto a Semana 2
 
------
-**Arquitectura de integración**
+| Aspecto | Semana 2 | Semana 3 |
+|:-------:|:--------:|:--------:|
+| Fuente de predicción | Mock | Modelo real |
+| Comunicación | Interna | HTTP REST |
+| Manejo de fallos DS | No aplica | Error controlado |
+| Controller | Mock | Sin cambios |
+| Arquitectura | Básica | Desacoplada |
 
+### Arquitectura de Integración
+
+```
 Controller
-
-`   `↓
-
+    ↓
 Service
-
-`   `↓
-
+    ↓
 ModelClient (HTTP)
-
-`   `↓
-
+    ↓
 FlightOnTime Data Science Service (FastAPI)
+```
 
 - El controller **no conoce el origen de la predicción**.
 - El cliente de Data Science está **completamente aislado**.
@@ -156,65 +207,87 @@ FlightOnTime Data Science Service (FastAPI)
   <img src="images/architecture_integration_week3.png" alt="Arquitectura de Integración - Semana 3" width="50%" />
 </p>
 
------
-**Servicio de Data Science**
+### Servicio de Data Science
 
 - Implementado en **FastAPI**
 - Modelo cargado desde **joblib**
-- Endpoint expuesto:
+- Endpoint expuesto: `POST /predict`
 
-**Respuesta del servicio**
-
+**Respuesta del servicio:**
 - Predicción real del modelo
 - Probabilidad calculada por el modelo de Machine Learning
------
-**Manejo de errores externos**
+
+### Manejo de Errores Externos
 
 Cuando el servicio de Data Science:
-
 - Está caído
 - No responde
 - Retorna un error inesperado
 
--El backend **NO expone stacktrace**\
--Retorna un **error funcional y controlado**
+El backend **NO expone stacktrace** y retorna un **error funcional y controlado**:
 
-**Ejemplo de respuesta de error**
-
+```json
 {
-
-`  `"message": "Servicio de predicción no disponible",
-
-`  `"status": "ERROR"
-
+  "message": "Servicio de predicción no disponible",
+  "status": "ERROR"
 }
+```
 
 <p align="center">
   <img src="images/error_handling.png" alt="Manejo de Errores - Flujo de Resiliencia" width="100%" />
 </p>
 
------
-**Pruebas realizadas**
+### Pruebas Realizadas
 
-**Casos funcionales probados**
-
+**Casos funcionales probados:**
 - Vuelo puntual
 - Vuelo retrasado
 - Error del servicio de Data Science
 
-**Herramientas utilizadas**
-
+**Herramientas utilizadas:**
 - Postman
 - cURL
 - Pruebas manuales end-to-end
------
-**Cómo levantar el entorno**
 
-**Servicio Data Science**
+---
 
-uvicorn flightontime\_microservicio\_ds:app --reload
+## 🚀 Cómo Levantar el Entorno
 
-**Backend Spring Boot**
+### Servicio Data Science
 
+```bash
+uvicorn flightontime_microservicio_ds:app --reload
+```
+
+### Backend Spring Boot
+
+```bash
 mvn spring-boot:run
+```
 
+---
+
+## 👨‍💻 Equipo de Desarrollo
+
+| Integrante | Rol | LinkedIn | GitHub |
+|------------|-----|----------|--------|
+| Angeles Morales | Data Scientist | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/angeles-morales-ab0a7828a) | [@angelesGladin](https://github.com/angelesGladin) |
+| Edson Castañeda | Backend Developer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/edsoncasta%C3%B1eda/) | [@EdsonCasta](https://github.com/EdsonCasta) |
+| Juan Mesa | Data Scientist | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/jmesavergara/) | [@Juanmeve837](https://github.com/Juanmeve837) |
+| Enrique Oscar Contreras | Backend Developer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/enrique-oscar-contreras-ab6329b1/) | [@RickiContreras](https://github.com/RickiContreras) |
+| Rodrigo García López | Data Scientist | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rodrigo-garcia-lopez-165b99197/) | [@rogarlop](https://github.com/rogarlop) |
+| Ernesto Daniel López | Backend Developer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ernesto-l%C3%B3pez-bedolla-29548b1a2/) | [@d4nye1](https://github.com/d4nye1) |
+| Norma Noemí Salcedo | Backend Developer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/norma-salcedo/) | [@normins](https://github.com/normins) |
+| Sergio Alonso Bravo | Backend Developer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/sergio-alonso-bravo-858414286) | [@the-serch](https://github.com/the-serch) |
+| Oscar Fernando Paye Cahui | Data Engineer | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://pe.linkedin.com/in/oscar-paye01) | [@FerPaye01](https://github.com/FerPaye01) |
+| Zaida Donoso Valdivia | Data Scientist | [![LinkedIn](https://img.shields.io/badge/-LinkedIn-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/zaida-donoso-57949461/) | [@Saya-Sayita](https://github.com/Saya-Sayita) |
+
+---
+
+## 📜 Licencia
+
+Este proyecto está bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más detalles.
+
+---
+
+**¿Preguntas o sugerencias?** Abre un issue en GitHub o contacta al equipo de desarrollo.
