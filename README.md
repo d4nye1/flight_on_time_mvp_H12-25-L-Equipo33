@@ -15,14 +15,13 @@
 ## 📌 Índice
 
 - [📙 Descripción del Proyecto](#-descripción-del-proyecto)
+- [📚 Documentación Adicional](#-documentación-adicional)
 - [🌳 Problemática](#-problemática)
 - [🎯 Objetivo del MVP](#-objetivo-del-mvp)
 - [📋 Alcance Funcional](#-alcance-funcional)
 - [🏗️ Arquitectura General](#️-arquitectura-general)
 - [🔌 Contrato de Integración](#-contrato-de-integración)
-- [👥 Reglas de Colaboración del Equipo](#-reglas-de-colaboración-del-equipo)
-- [🔄 Flujo de Trabajo Sugerido](#-flujo-de-trabajo-sugerido)
-- [📅 Semana 3 — Integración con Data Science](#-semana-3--integración-con-data-science)
+- [� Integración y Arquitectura del Sistema](#-integración-y-arquitectura-del-sistema)
 - [🚀 Cómo Levantar el Entorno](#-cómo-levantar-el-entorno)
 - [👨‍💻 Equipo de Desarrollo](#-equipo-de-desarrollo)
 - [📜 Licencia](#-licencia)
@@ -38,9 +37,18 @@ El sistema está pensado para apoyar la toma de decisiones de:
 - Aerolíneas, optimizando su operación.
 - Aeropuertos, mejorando la planificación logística.
 
-<p align="center">
   <img src="images/project_overview.png" alt="FlightOnTime - Visión General del Proyecto" width="100%" />
 </p>
+
+---
+
+## 📚 Documentación Adicional
+
+Explora los detalles técnicos y operativos del proyecto en los siguientes enlaces:
+
+- 🧠 **[Documentación del Modelo de Machine Learning](data-science/Ejemplo_carga_modelo/documentacion_modelo.md)**: Explicación detallada del modelo XGBoost, variables y métricas.
+- 📊 **[Documentación Data Science](data-science/README.md)**: Visión general de los notebooks y análisis exploratorio.
+- 🧱 **[Documentación Backend](backend/README.md)**: Estructura y configuración del servicio Spring Boot.
 
 ---
 
@@ -120,72 +128,11 @@ Desarrollar una **API REST** que reciba información de un vuelo y devuelva:
 
 ---
 
-## 👥 Reglas de Colaboración del Equipo
-
-1. **No tocar `main` directamente.**  
-   - Solo usar para versiones estables finales.
-
-2. **Crear siempre ramas `feature/` desde `develop`.**  
-   - Cada funcionalidad o tarea tiene su propia rama feature.
-
-3. **Hacer commits solo en la rama feature asignada.**  
-   - Nunca subir cambios directamente a `develop` o `main`.
-
-4. **Abrir Pull Request (PR) de feature → develop.**  
-   - Todo cambio debe pasar por PR para revisión.
-
-5. **Revisar y aprobar PR antes de mergear.**  
-   - Al menos un integrante debe revisar y aprobar.
-
-6. **Borrar la rama feature después de mergear.**  
-   - Mantiene el repositorio limpio.
-
-7. **Merge de develop → main solo al final del sprint.**  
-   - Garantiza que `main` siempre tenga código estable.
-
-8. **Mantener la misma estructura de carpetas en todas las ramas.**  
-   - `data-science/`, `backend/`, `docs/`, `frontend/`, etc.
-
-9. **Sincronizar cambios de develop en tu feature antes de mergear si hubo actualizaciones.**  
-   - Evita conflictos al integrar tu trabajo.
-
 ---
 
-## 🔄 Flujo de Trabajo Sugerido
+## � Integración y Arquitectura del Sistema
 
-1. Crear rama feature desde `develop`.  
-2. Hacer commits en tu rama feature.  
-3. Abrir Pull Request → develop.  
-4. Revisar y aprobar PR.  
-5. Mergear cambios y borrar la rama feature.  
-6. Al final del sprint, mergear `develop` → `main`.
-
-<p align="center">
-  <img src="images/git_workflow.png" alt="Flujo de Trabajo Git" width="100%" />
-</p>
-
----
-
-## 📅 Semana 3 — Integración con Data Science
-
-### Objetivo de la Semana
-
-Integrar el **modelo real de Data Science** al backend, garantizando:
-
-- Desacoplamiento de capas
-- Manejo de errores externos
-- Resiliencia del sistema
-- Estabilidad del endpoint `/predict` **sin modificar el controller**
-
-### Cambios Clave respecto a Semana 2
-
-| Aspecto | Semana 2 | Semana 3 |
-|:-------:|:--------:|:--------:|
-| Fuente de predicción | Mock | Modelo real |
-| Comunicación | Interna | HTTP REST |
-| Manejo de fallos DS | No aplica | Error controlado |
-| Controller | Mock | Sin cambios |
-| Arquitectura | Básica | Desacoplada |
+El sistema implementa una arquitectura desacoplada que integra el modelo de Machine Learning mediante un servicio independiente, garantizando robustez y resiliencia.
 
 ### Arquitectura de Integración
 
@@ -253,17 +200,55 @@ El backend **NO expone stacktrace** y retorna un **error funcional y controlado*
 
 ## 🚀 Cómo Levantar el Entorno
 
-### Servicio Data Science
+Sigue estos pasos para ejecutar la aplicación completa en tu máquina local.
+
+### Prerrequisitos
+- **Java 17** o superior
+- **Maven 3.8**+
+- **Python 3.9**+
+
+### 1. Clonar el Repositorio
 
 ```bash
+git clone https://github.com/d4nye1/flight_on_time_mvp_H12-25-L-Equipo33.git
+cd flight_on_time_mvp_H12-25-L-Equipo33
+```
+
+### 2. Ejecutar el Servicio de Data Science (FastAPI)
+
+Este microservicio expone el modelo analítico.
+
+```bash
+# Navegar al directorio del servicio
+cd docs/fastapi
+
+# Crear entorno virtual (opcional pero recomendado)
+python -m venv venv
+# Windows:
+venv\Scripts\activate
+# Linux/Mac:
+# source venv/bin/activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Levantar el servidor
 uvicorn flightontime_microservicio_ds:app --reload
 ```
+*El servicio estará disponible en `http://localhost:8000`.*
 
-### Backend Spring Boot
+### 3. Ejecutar el Backend (Spring Boot)
+
+El backend orquesta las peticiones y se comunica con el servicio de DS.
 
 ```bash
+# En una nueva terminal, desde la raíz del proyecto:
+cd backend
+
+# Ejecutar con Maven
 mvn spring-boot:run
 ```
+*La API principal estará disponible en `http://localhost:8080`.*
 
 ---
 
