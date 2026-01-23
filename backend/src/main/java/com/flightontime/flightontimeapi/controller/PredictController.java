@@ -8,8 +8,6 @@ import com.flightontime.flightontimeapi.dto.ValidacionGrupos;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import java.util.Map;
 
 
 @RestController
@@ -29,25 +27,11 @@ public class PredictController {
         return service.predecirVuelo(request);
     }
     @PostMapping("/predict-with-stats")
-    public ResponseEntity<?> predictWithStats(
+    public ResponseEntity<FlightPredictionWithStatsDTO> predictWithStats(
             @Validated(ValidacionGrupos.SecuenciaOrdenada.class)
             @RequestBody FlightRequestDTO request) {
 
-        try {
-            FlightPredictionWithStatsDTO response =
-                    service.predecirVueloConStats(request);
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                            "status", "ERROR",
-                            "message", "Error al generar predicción con estadísticas"
-                    ));
-        }
+        FlightPredictionWithStatsDTO response = service.predecirVueloConStats(request);
+        return ResponseEntity.ok(response);
     }
-
-
 }

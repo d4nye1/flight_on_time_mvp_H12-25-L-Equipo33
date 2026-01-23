@@ -87,6 +87,13 @@ public class FlightPredictionService {
         try {
             FlightPredictionDTO respuesta = dataScienceClient.llamarModelo(request);
 
+            if (respuesta.getDistancia() == null || respuesta.getDistancia() <= 0) {
+                throw new com.flightontime.flightontimeapi.exception.FlightNotFoundException(
+                        "La ruta " + request.getOrigen() + " -> " + request.getDestino() +
+                                " no existe en los registros del modelo de IA."
+                );
+            }
+
             Prediction pred = new Prediction();
             pred.setAerolinea(request.getAerolinea());
             pred.setOrigen(request.getOrigen());
@@ -101,6 +108,9 @@ public class FlightPredictionService {
             predictionRepository.save(pred);
             return respuesta;
 
+        } catch (com.flightontime.flightontimeapi.exception.FlightNotFoundException e) {
+            // Relanzamos nuestra excepción específica para que no caiga en manejarErrorIA
+            throw e;
         } catch (Exception e) {
             manejarErrorIA(e);
             throw e;
