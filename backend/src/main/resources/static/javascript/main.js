@@ -27,35 +27,52 @@ async function predecir() {
             fecha_partida: `${fecha}T${hora}`
         });
 
-        // --- EXPLICABILIDAD (METADATOS) ---
         mostrarExplicacionIA(json.explicabilidad || json.explicacion);
 
-        // 2. Lógica de Previsión
         const esPuntual = json.prevision.toLowerCase().includes("tiempo");
         showMsg(esPuntual ? "#4ade80" : "#fb7185", json.prevision.toUpperCase(), "");
 
-        // 3. Círculo de Puntualidad Global
-        const prob = json.porcentajeRetrasosRuta ?? 0;
-        const puntualidadGlobal = 100 - prob;
-        const circulo = document.getElementById("puntualidad-global");
+        const porcentajeRetraso = Math.round(json.porcentajeRetrasosRuta ?? 0);
 
-        circulo.textContent = puntualidadGlobal.toFixed(1) + "%";
-        circulo.style.borderColor = puntualidadGlobal >= 70 ? "#4ade80" : puntualidadGlobal >= 40 ? "#f97316" : "#fb7185";
+        const punctualityCircle = document.getElementById("puntualidad-circle");
+        const punctualityText = document.getElementById("puntualidad-global");
 
-        // 4. Stats numéricas
+        if (punctualityCircle && punctualityText) {
+            const valor = porcentajeRetraso;
+
+            punctualityCircle.style.setProperty("--percent", valor);
+            punctualityText.textContent = `${valor}%`;
+
+            const color =
+                valor >= 70 ? "#fb7185" :
+                valor >= 40 ? "#f97316" :
+                "#4ade80";
+
+            punctualityCircle.style.background = `
+                conic-gradient(${color} calc(${valor} * 1%), #334155 0)
+            `;
+        }
+
         document.getElementById("total-vuelos").textContent = json.totalVuelosRuta ?? "--";
         document.getElementById("vuelos-retrasados").textContent = json.vuelosRetrasadosRuta ?? "--";
 
-        // 5. Factores clave
         document.getElementById("factores-clave").innerHTML = `
             <ul style="padding:0; list-style:none; margin:0;">
                 <li>Distancia: <strong>${json.distancia ?? "--"} km</strong></li>
                 <li>Ruta: <strong>${origen} → ${destino}</strong></li>
-                <li>Probabilidad de Retraso: <strong>${((json.probabilidad ?? 0) * 100).toFixed(1)}%</strong></li>
-                <li>Historial: ${json.recomendacion ?? "Sin datos suficientes"}</li>
             </ul>`;
 
-        // 6. Actualizar UI adicional
+        const delayCircle = document.getElementById("delay-circle");
+        const delayText = document.getElementById("delay-percent");
+
+        if (delayCircle && delayText) {
+            const probabilidad = (json.probabilidad ?? 0) * 100;
+            const valor = Math.round(probabilidad);
+
+            delayCircle.style.setProperty("--percent", valor);
+            delayText.textContent = `${valor}%`;
+        }
+
         actualizarGrafica(json);
         const topData = await fetchTopRutas();
         renderTopRutas(topData);
@@ -63,12 +80,10 @@ async function predecir() {
     } catch (err) {
         console.error("Error capturado:", err);
 
-        // Capa 2: Manejo de errores que vienen del servidor (Java DTO)
         if (err.detallesJava) {
             const camposConError = Object.keys(err.detallesJava);
 
             camposConError.forEach(campo => {
-                // Sincronización con el campo LocalDateTime de Java
                 if (campo === "fechaPartida") {
                     document.getElementById("fecha").style.borderColor = "#fb7185";
                     document.getElementById("hora").style.borderColor = "#fb7185";
@@ -77,8 +92,6 @@ async function predecir() {
                     if (input) input.style.borderColor = "#fb7185";
                 }
             });
-
-            // Extraemos la leyenda exacta definida en el DTO de Java
             const mensajeServidor = err.detallesJava[camposConError[0]];
             showMsg("#fb7185", "RECHAZADO POR SERVIDOR", mensajeServidor);
         } else {
@@ -87,7 +100,6 @@ async function predecir() {
     }
 }
 
-// Carga inicial
 window.onload = async () => {
     configurarInputHora();
     try {

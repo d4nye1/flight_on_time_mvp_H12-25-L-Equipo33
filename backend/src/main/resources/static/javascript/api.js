@@ -1,4 +1,6 @@
-const BASE_URL = "/api";
+const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:8080/api"
+    : "/api";
 
 export async function fetchPrediccion(data) {
     const res = await fetch(`${BASE_URL}/flights/predict-with-stats`, {
@@ -10,17 +12,13 @@ export async function fetchPrediccion(data) {
     const json = await res.json();
 
     if (!res.ok) {
-        // Si el error es 400, enviamos el JSON completo (el Mapa de errores)
-        // para que main.js pueda marcar los bordes rojos.
         if (res.status === 400) {
             const errorValidacion = new Error("Error de validación en servidor");
             errorValidacion.detallesJava = json;
             throw errorValidacion;
         }
-
         throw new Error(json.message || "Error en backend");
     }
-
     return json;
 }
 
@@ -32,6 +30,6 @@ export async function fetchTopRutas() {
 
 export async function fetchStatsSummary() {
     const res = await fetch(`${BASE_URL}/stats/summary`);
-    if (!res.ok) return { totalVuelos: 0, vuelosRetrasados: 0 }; // Manejo básico de error
+    if (!res.ok) return { totalVuelos: 0, vuelosRetrasados: 0 };
     return await res.json();
 }
