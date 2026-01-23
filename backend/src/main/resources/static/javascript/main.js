@@ -34,13 +34,29 @@ async function predecir() {
         const esPuntual = json.prevision.toLowerCase().includes("tiempo");
         showMsg(esPuntual ? "#4ade80" : "#fb7185", json.prevision.toUpperCase(), "");
 
-        // 3. Círculo de Puntualidad Global
-        const prob = json.porcentajeRetrasosRuta ?? 0;
-        const puntualidadGlobal = 100 - prob;
-        const circulo = document.getElementById("puntualidad-global");
+        // 3. Círculo de % de Retraso Global
+        const porcentajeRetraso = Math.round(json.porcentajeRetrasosRuta ?? 0);
 
-        circulo.textContent = puntualidadGlobal.toFixed(1) + "%";
-        circulo.style.borderColor = puntualidadGlobal >= 70 ? "#4ade80" : puntualidadGlobal >= 40 ? "#f97316" : "#fb7185";
+        const punctualityCircle = document.getElementById("puntualidad-circle");
+        const punctualityText = document.getElementById("puntualidad-global");
+
+        if (punctualityCircle && punctualityText) {
+            const valor = porcentajeRetraso;
+
+            punctualityCircle.style.setProperty("--percent", valor);
+            punctualityText.textContent = `${valor}%`;
+
+            const color =
+                valor >= 70 ? "#fb7185" :
+                valor >= 40 ? "#f97316" :
+                "#4ade80";
+
+            punctualityCircle.style.background = `
+                conic-gradient(${color} calc(${valor} * 1%), #334155 0)
+            `;
+        }
+
+
 
         // 4. Stats numéricas
         document.getElementById("total-vuelos").textContent = json.totalVuelosRuta ?? "--";
@@ -51,9 +67,21 @@ async function predecir() {
             <ul style="padding:0; list-style:none; margin:0;">
                 <li>Distancia: <strong>${json.distancia ?? "--"} km</strong></li>
                 <li>Ruta: <strong>${origen} → ${destino}</strong></li>
-                <li>Probabilidad de Retraso: <strong>${((json.probabilidad ?? 0) * 100).toFixed(1)}%</strong></li>
-                <li>Historial: ${json.recomendacion ?? "Sin datos suficientes"}</li>
             </ul>`;
+
+
+        // 7. Círculo de Probabilidad de Retraso (NUEVO)
+        const delayCircle = document.getElementById("delay-circle");
+        const delayText = document.getElementById("delay-percent");
+
+        if (delayCircle && delayText) {
+            const probabilidad = (json.probabilidad ?? 0) * 100;
+            const valor = Math.round(probabilidad);
+
+            delayCircle.style.setProperty("--percent", valor);
+            delayText.textContent = `${valor}%`;
+        }
+
 
         // 6. Actualizar UI adicional
         actualizarGrafica(json);
