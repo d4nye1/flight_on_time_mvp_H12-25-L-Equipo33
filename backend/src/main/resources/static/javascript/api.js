@@ -13,11 +13,12 @@ export async function fetchPrediccion(data) {
 
     if (!res.ok) {
         if (res.status === 400) {
-            const errorValidacion = new Error("Error de validación en servidor");
+            const errorValidacion = new Error("Error de validación");
             errorValidacion.detallesJava = json;
             throw errorValidacion;
         }
-        throw new Error(json.message || "Error en backend");
+        const errorBackend = new Error(json.message || "Error al generar predicción con estadísticas");
+        throw errorBackend;
     }
     return json;
 }

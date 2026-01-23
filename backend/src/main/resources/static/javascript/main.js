@@ -9,7 +9,6 @@ async function predecir() {
     const fecha = document.getElementById("fecha").value;
     const hora = document.getElementById("hora").value.trim();
 
-    // 1. Validar campos localmente (Capa 1)
     const resultadoValidacion = validarCampos(aerolinea, origen, destino, fecha, hora);
 
     if (!resultadoValidacion.valido) {
@@ -26,6 +25,15 @@ async function predecir() {
             destino,
             fecha_partida: `${fecha}T${hora}`
         });
+        actualizarPanelLateral({
+                aerolinea: aerolinea,
+                origen: origen,
+                destino: destino,
+                fecha: fecha,
+                hora: hora,
+                distancia: json.distancia || 1000, // Si el JSON no trae distancia, usa 1000 por defecto
+                prevision: json.prevision
+            });
 
         mostrarExplicacionIA(json.explicabilidad || json.explicacion);
 
@@ -115,3 +123,58 @@ window.onload = async () => {
 };
 
 window.predecir = predecir;
+
+window.toggleMenu = function() {
+    const menu = document.getElementById("side-menu");
+    // Si el menú está cerrado (ancho 0), ábrelo a 350px. Si no, ciérralo.
+    if (!menu.style.width || menu.style.width === "0px") {
+        menu.style.width = "350px";
+    } else {
+        menu.style.width = "0px";
+    }
+}
+
+function actualizarPanelLateral(datos) {
+    // 1. Info básica
+    document.getElementById("side-info-principal").textContent = `${datos.aerolinea}, Vuelo 1 | ${datos.origen} → ${datos.destino}`;
+    document.getElementById("side-fecha-vuelo").textContent = datos.fecha;
+    document.getElementById("side-origen-label").textContent = datos.origen;
+    document.getElementById("side-destino-label").textContent = datos.destino;
+    document.getElementById("side-hora-salida").textContent = datos.hora + " HRS";
+
+    // 2. Puerta aleatoria (Ejemplo: Gate B-5)
+    const gate = "ABC"[Math.floor(Math.random() * 3)] + "-" + (Math.floor(Math.random() * 15) + 1);
+    document.getElementById("side-puerta").textContent = "T1 / " + gate;
+
+    // 3. CALCULO DE LLEGADA (Física)
+    const velocidad = 800; // km/h
+    const horasDeVuelo = datos.distancia / velocidad;
+
+    // Convertimos la hora de salida (ej: "14:30") a minutos totales
+    const [h, m] = datos.hora.split(':').map(Number);
+    let minutosTotales = (h * 60) + m + Math.round(horasDeVuelo * 60);
+
+    // Convertimos esos minutos totales otra vez a formato reloj HH:mm
+    const horasLlegada = Math.floor((minutosTotales / 60) % 24);
+    const minsLlegada = minutosTotales % 60;
+    const horaFinal = `${horasLlegada.toString().padStart(2, '0')}:${minsLlegada.toString().padStart(2, '0')}`;
+
+    document.getElementById("side-hora-llegada").textContent = horaFinal + " HRS (Est.)";
+
+    // 4. Radar
+    const statusTag = document.getElementById("side-radar-status");
+    const radarIcon = document.getElementById("side-radar-icon");
+    const esPuntual = datos.prevision.toLowerCase().includes("tiempo") || datos.prevision.toLowerCase().includes("puntual");
+
+    statusTag.textContent = `${datos.aerolinea} - ${datos.prevision.toUpperCase()}`;
+    statusTag.className = esPuntual ? "airline-tag green" : "airline-tag red";
+    radarIcon.className = esPuntual ? "plane-icon green" : "plane-icon red";
+}
+// Función para mostrar/ocultar el equipo en el footer
+window.toggleTeam = function() {
+    const panel = document.getElementById('team-panel');
+    if (panel) {
+        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
