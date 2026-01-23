@@ -1,4 +1,6 @@
-const BASE_URL = "/api";
+const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:8080/api"  // Si estás en tu PC (Docker local)
+    : "/api";                      // Si estás en Render (Ruta relativa)
 
 export async function fetchPrediccion(data) {
     const res = await fetch(`${BASE_URL}/flights/predict-with-stats`, {
