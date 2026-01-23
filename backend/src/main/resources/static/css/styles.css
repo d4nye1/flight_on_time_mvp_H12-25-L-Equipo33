@@ -313,3 +313,295 @@ input:focus {
     color: var(--text-gray);
     letter-spacing: 1px;
 }
+
+/* --- MENÚ LATERAL --- */
+.side-overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    background-color: #1e293b;
+    overflow-x: hidden;
+    transition: 0.5s;
+    border-left: 2px solid var(--accent-blue);
+}
+
+.side-content { padding: 30px; width: 350px; color: white; }
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+.detail-section {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.detail-list { list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8; }
+.detail-list li strong { color: var(--accent-blue); }
+
+/* --- RADAR ANIMADO --- */
+.radar-container {
+    background: #020617;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.plane-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    animation: flightMove 6s infinite linear;
+}
+
+@keyframes flightMove {
+    0% { transform: translateX(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(150%); opacity: 0; }
+}
+
+.trail { height: 2px; width: 60px; margin-left: -60px; }
+.trail.green { background: linear-gradient(to right, transparent, #10b981); }
+.trail.orange { background: linear-gradient(to right, transparent, #f59e0b); }
+.trail.red { background: linear-gradient(to right, transparent, #ef4444); }
+.green { color: #10b981; } .orange { color: #f59e0b; } .red { color: #ef4444; }
+
+/* --- SECCIONES INFERIORES --- */
+.tech-info-section {
+    padding: 60px 20px;
+    background: #0f172a;
+    text-align: center;
+}
+
+.tech-content { max-width: 900px; margin: 0 auto; }
+.tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.main-footer {
+    background: #020617;
+    padding: 50px 20px 20px;
+    border-top: 1px solid #1e293b;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 40px;
+}
+
+.footer-col h5 {
+    color: var(--white);
+    margin-bottom: 15px; }
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    font-size: 0.8rem;
+    color: var(--text-gray); }
+.footer-col li { margin-bottom: 8px; }
+
+/* Estilo para el logo del footer (igual al navbar) */
+.footer-logo {
+    color: var(--white); /* Color base */
+    font-weight: 600;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+    text-transform: uppercase; /* Para asegurar que coincida el estilo visual */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.footer-logo span {
+    color: var(--accent-blue); /* El color azul solo para el texto "FlightOnTime" */
+}
+.main-footer {
+    background: #020617; /* Un negro casi puro, más elegante */
+    padding: 60px 40px 30px;
+    border-top: 1px solid #1e293b;
+    font-family: 'Inter', sans-serif; /* Si puedes usar Inter, es más ejecutiva */
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+
+.brand-tagline {
+    color: var(--text-gray);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+.footer-stats-summary {
+    display: flex;
+    gap: 40px;
+}
+
+.footer-stat-item {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.stat-value {
+    color: var(--accent-blue);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+}
+
+.stat-label {
+    color: #475569;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 4px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 30px;
+    font-size: 0.7rem;
+    color: #475569;
+    letter-spacing: 1px;
+}
+
+.footer-copyright {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.deployment-status {
+    color: #10b981; /* Verde esmeralda para estatus activo */
+    font-weight: bold;
+}
+
+.footer-legal {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-legal a {
+    color: #475569;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-legal a:hover {
+    color: var(--accent-blue);
+}
+
+.separator {
+    color: #1e293b;
+}
+
+@media (max-width: 768px) {
+    .footer-top { flex-direction: column; gap: 30px; }
+    .footer-stats-summary { width: 100%; justify-content: space-between; }
+    .footer-bottom { flex-direction: column; gap: 20px; text-align: center; }
+}
+
+.main-footer {
+    background: #020617; /* Negro profundo profesional */
+    padding: 50px 40px 30px;
+    border-top: 1px solid #1e293b;
+    margin-top: auto; /* Asegura que se vaya al fondo si hay poco contenido */
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+}
+
+.brand-tagline {
+    color: var(--text-gray);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+}
+
+.footer-stats-summary {
+    display: flex;
+    gap: 40px;
+}
+
+.footer-stat-item {
+    text-align: right;
+}
+
+.stat-value {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.stat-label {
+    color: #475569;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: center; /* Centrado para máxima sobriedad */
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.65rem;
+    color: #475569;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+    .footer-top {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+    .footer-stat-item {
+        text-align: center;
+    }
+}
