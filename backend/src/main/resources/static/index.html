@@ -18,13 +18,11 @@
 </header>
 
 <main class="dashboard-grid">
-
     <section class="card">
         <div class="card-header">PREDICCION DE VUELO</div>
         <div class="input-group">
             <label>Aerolínea</label>
             <input id="aerolinea" list="lista-aerolineas" placeholder="Buscar aerolínea..." />
-
             <datalist id="lista-aerolineas">
                 <option value="9E">Endeavor Air</option>
                 <option value="AA">American Airlines</option>
@@ -55,7 +53,6 @@
                             <label>Destino</label>
                             <input id="destino" list="lista-aeropuertos" placeholder="Buscar destino..." />
                         </div>
-
                         <datalist id="lista-aeropuertos">
                             <option value="ABE">Allentown/Bethlehem/Easton, PA</option>
                             <option value="ABI">Abilene, TX</option>
@@ -437,26 +434,22 @@
             <div style="font-size: 2.5rem; margin-left: auto;">✈</div>
         </div>
     </section>
-
     <section class="card">
-        <div class="card-header">ESTADISTICA EN TIEMPO REAL</div>
+        <div class="card-header">PROBABILIDAD EN TIEMPO REAL</div>
         <div class="stats-container">
-            <div class="circle-stat" id="puntualidad-global">--%</div>
-            <div style="font-size: 0.7rem; color: var(--text-gray)">PUNTUALIDAD GLOBAL</div>
-
-            <div class="data-boxes">
-                <div class="data-box">
-                    TOTAL VUELOS:<br><strong id="total-vuelos">--</strong>
-                </div>
-                <div class="data-box" style="border-color: var(--accent-orange)">
-                    RETRASADOS:<br><strong id="vuelos-retrasados">--</strong>
-                </div>
+            <div style="margin-top: 25px;">
+                <div class="card-header" ></div>
+                <div id="factores-clave" style="font-size: 0.8rem; color: var(--text-gray)"></div>
             </div>
-
+            <div class="delay-circle-wrapper">
+                <div class="delay-circle" id="delay-circle">
+                    <span id="delay-percent">--%</span>
+                </div>
+                <div class="delay-label">PROBABILIDAD DE RETRASO</div>
+            </div>
             <div class="card-header" style="width: 100%; border-bottom: 1px solid #334155; margin-top: 10px; font-size: 0.7rem;">
-                METADATOS
+                EXPLICABILIDAD
             </div>
-
             <div id="contenedor-explicacion" class="explicacion-container">
                 <p style="color: var(--text-gray); font-size: 0.75rem; font-style: italic; text-align: center;">
                     Esperando predicción para analizar factores clave...
@@ -464,18 +457,34 @@
             </div>
         </div>
     </section>
-
     <section class="card">
-        <div class="card-header">ANALISIS Y TENDENCIAS HISTORICAS</div>
-        <label>Historial de Puntualidad de la Ruta</label>
+        <div class="card-header">ESTADISTICA HISTORICAS</div>
+        <label>Historial de Puntualidad en la Ruta</label>
         <div class="chart-container" style="position: relative; height: 200px; width: 100%;">
             <canvas id="historico-vuelos"></canvas>
         </div>
+
         <label>Top 5 Rutas con Más Retrasos</label>
         <ul id="top-rutas" class="top-rutas-list"></ul>
-        <div style="margin-top: 25px;">
-            <div class="card-header" style="font-size: 0.7rem;">DATOS DEL VUELO</div>
-            <div id="factores-clave" style="font-size: 0.8rem; color: var(--text-gray)"></div>
+
+        <div style="display: flex; align-items: center; gap: 20px; margin-top: 15px;">
+
+            <div style="text-align: center;">
+                <div class="circle-stat" id="puntualidad-circle" style="margin: 0 auto;">
+                    <span id="puntualidad-global">--%</span>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;">PUNTUALIDAD</div>
+            </div>
+
+            <div class="data-boxes" style="display: flex; flex-direction: column; gap: 10px; flex: 1;">
+                <div class="data-box" style="margin: 0; width: 100%;">
+                    TOTAL VUELOS:<br><strong id="total-vuelos">--</strong>
+                </div>
+                <div class="data-box" style="border-color: var(--accent-orange); margin: 0; width: 100%;">
+                    RETRASADOS:<br><strong id="vuelos-retrasados">--</strong>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -484,4 +493,5 @@
 <script type="module" src="javascript/main.js"></script>
 
 </body>
+
 </html>

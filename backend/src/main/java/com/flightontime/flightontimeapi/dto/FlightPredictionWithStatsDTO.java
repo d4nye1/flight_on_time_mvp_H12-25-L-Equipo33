@@ -12,20 +12,17 @@ public class FlightPredictionWithStatsDTO {
     private String recomendacion;
     private double distancia;
     private String explicabilidad; // <--- Campo mantenido
-
-    // --- NUEVOS CAMPOS PARA LA GRÁFICA REAL ---
     private List<Double> historialPuntualidad;
     private List<String> etiquetasFechas;
 
     public FlightPredictionWithStatsDTO() {
     }
 
-    // Constructor actualizado para incluir explicabilidad
     public FlightPredictionWithStatsDTO(String prevision, double probabilidad, long totalVuelosRuta,
                                         long vuelosRetrasadosRuta, double porcentajeRetrasosRuta,
                                         String recomendacion, double distancia,
                                         List<Double> historialPuntualidad, List<String> etiquetasFechas,
-                                        String explicabilidad) { // <--- Agregado al constructor
+                                        String explicabilidad) {
         this.prevision = prevision;
         this.probabilidad = probabilidad;
         this.totalVuelosRuta = totalVuelosRuta;
@@ -35,10 +32,9 @@ public class FlightPredictionWithStatsDTO {
         this.distancia = distancia;
         this.historialPuntualidad = historialPuntualidad;
         this.etiquetasFechas = etiquetasFechas;
-        this.explicabilidad = explicabilidad; // <--- Inicializado aquí
+        this.explicabilidad = explicabilidad;
     }
 
-    // Getters existentes
     public String getPrevision() { return prevision; }
     public double getProbabilidad() { return probabilidad; }
     public long getTotalVuelosRuta() { return totalVuelosRuta; }
@@ -46,11 +42,7 @@ public class FlightPredictionWithStatsDTO {
     public double getPorcentajeRetrasosRuta() { return porcentajeRetrasosRuta; }
     public String getRecomendacion() { return recomendacion; }
     public double getDistancia() { return distancia; }
-
-    // Getter para Explicabilidad
     public String getExplicabilidad() { return explicabilidad; }
-
-    // --- NUEVOS GETTERS ---
     public List<Double> getHistorialPuntualidad() { return historialPuntualidad; }
     public List<String> getEtiquetasFechas() { return etiquetasFechas; }
 

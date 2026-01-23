@@ -17,9 +17,6 @@ import __main__
 import custom_class_copy as cc
 import feature_engineering_functions as func
 
-# =======================
-# APP Y CONFIGURACIÓN
-# =======================
 app = FastAPI(title="FlightOnTime DS API")
 
 app.add_middleware(
@@ -30,9 +27,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =======================
-# EXCEPTION HANDLER
-# =======================
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     first_error = exc.errors()[0]
@@ -44,20 +38,14 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"error": mensaje}
     )
 
-# =================
-# CARGA DEL MODELO
-# =================
 try:
     raw_pipeline = joblib.load("modelo_XGB_V2.1.joblib")
     model = cc.CustomPrediction(raw_pipeline)
-    print("✅ Modelo cargado y configurado con éxito")
+    print("Modelo cargado y configurado con éxito")
 except Exception as e:
     model = None
-    print(f"❌ Error crítico al cargar el modelo: {e}")
+    print(f"Error crítico al cargar el modelo: {e}")
 
-# =======================
-# MODELO DE ENTRADA
-# =======================
 class FlightRequest(BaseModel):
     aerolinea: str
     origen: str
@@ -100,9 +88,6 @@ class FlightRequest(BaseModel):
 
         return v
 
-# =======================
-# ENDPOINT
-# =======================
 @app.post("/predict")
 def predict(request: FlightRequest):
     if model is None:

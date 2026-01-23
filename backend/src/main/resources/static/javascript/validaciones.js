@@ -1,6 +1,3 @@
-/* ===============================
-    FORMATEO INPUT HORA Y VALIDACIONES
-================================ */
 export function configurarInputHora() {
     const horaInput = document.getElementById("hora");
     if (horaInput) {
@@ -24,10 +21,8 @@ export function validarCampos(aerolinea, origen, destino, fecha, hora) {
         hora: document.getElementById("hora")
     };
 
-    // 1. Limpiar estilos previos
     Object.values(campos).forEach(el => { if (el) el.style.borderColor = ""; });
 
-    // 2. Validaciones de presencia (Leyendas sincronizadas con Java DTO)
     if (!aerolinea) {
         marcarError(campos.aerolinea);
         return { valido: false, mensaje: "La aerolínea es obligatoria" };
@@ -45,20 +40,17 @@ export function validarCampos(aerolinea, origen, destino, fecha, hora) {
         return { valido: false, mensaje: "La fecha de partida es obligatoria" };
     }
 
-    // 3. Validación específica de Hora Partida (Evita error genérico en el servidor)
     if (!hora || hora.length < 5) {
         marcarError(campos.hora);
         return { valido: false, mensaje: "Ingrese el campo hora correctamente (HH:mm)" };
     }
 
-    // Validación extra de coherencia horaria (00:00 - 23:59)
     const [h, m] = hora.split(":").map(Number);
     if (h > 23 || m > 59) {
         marcarError(campos.hora);
         return { valido: false, mensaje: "Hora inválida: Use el formato 24h (00:00 - 23:59)" };
     }
 
-    // 4. Validación de Datalist (Coherencia de códigos IATA)
     const listaAero = document.getElementById("lista-aerolineas");
     const listaPuertos = document.getElementById("lista-aeropuertos");
 
@@ -80,7 +72,6 @@ export function validarCampos(aerolinea, origen, destino, fecha, hora) {
         }
     }
 
-    // 5. Validación de Negocio: No volar al mismo sitio
     if (origen === destino) {
         marcarError(campos.origen);
         marcarError(campos.destino);

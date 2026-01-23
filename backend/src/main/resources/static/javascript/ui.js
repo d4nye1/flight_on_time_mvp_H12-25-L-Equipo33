@@ -1,8 +1,6 @@
 export function mostrarExplicacionIA(texto) {
     const contenedor = document.getElementById("contenedor-explicacion");
     if (!contenedor || !texto) return;
-
-    // Se eliminó el span con la clase "ia-badge" para maximizar el espacio
     contenedor.innerHTML = `
         <div class="explicacion-narrativa">
             <p>${texto}</p>

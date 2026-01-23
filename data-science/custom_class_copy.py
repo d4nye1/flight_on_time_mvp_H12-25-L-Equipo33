@@ -22,7 +22,6 @@ class CustomPrediction:
         idx = np.argmax(probs, axis=1)
         labels = ['A tiempo', 'Retrasado']
 
-        # Convertimos a float estándar de Python para evitar errores en Postman/JSON
         max_prob = np.round(probs[:,1] * 100, 2)
 
         X_feat = self._transform_until_preprocess(X)
@@ -31,7 +30,6 @@ class CustomPrediction:
         for j in range(len(X)):
             explicacion_texto = self.get_detailed_explanation(X.iloc[[j]])
 
-            # Aseguramos tipos de datos nativos de Python aquí
             results.append({
                 "Predicción": str(labels[idx[j]]),
                 "Probabilidad de retraso": float(max_prob[j]),
@@ -68,7 +66,6 @@ class CustomPrediction:
         abs_values = row_values.abs()
         total_influence = abs_values.sum()
 
-        # Si no hay influencia detectada, evitamos división por cero
         if total_influence == 0:
             return "No hay factores significativos detectados para esta predicción."
 
@@ -79,13 +76,12 @@ class CustomPrediction:
 
         for feature in top_3:
             val = row_values[feature]
-            # IMPORTANTE: Convertimos a float nativo para compatibilidad JSON
             porcentaje = float((abs(val) / total_influence) * 100)
             tendencia = "aumentar" if val > 0 else "reducir"
             narrativa_partes.append(f"{feature} ({porcentaje:.2f}% de influencia con tendencia a {tendencia} la estimación de retraso)")
 
         restantes_num = len(sorted_indices) - 3
-        # IMPORTANTE: Convertimos a float nativo
+
         restantes_infl = float((abs_values[sorted_indices[3:]].sum() / total_influence) * 100) if restantes_num > 0 else 0.0
 
         final_text = (

@@ -21,9 +21,7 @@ public class StatsService {
         this.predictionRepository = predictionRepository;
     }
 
-    // ✅ Estadísticas del último día (Para que el Dashboard siempre tenga datos)
     public StatsResponseDTO obtenerEstadisticasDelDia() {
-        // Rango amplio para asegurar datos en la demo
         LocalDateTime inicio = LocalDateTime.of(2026, 1, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.now().plusMonths(6);
 
@@ -50,9 +48,6 @@ public class StatsService {
         long vuelosRetrasadosRuta = predictionRepository.countRetrasadosPorRuta(aerolinea, origen, destino, inicioHist, finHist);
 
         double porcentajeRetrasosRuta = totalVuelosRuta == 0 ? 0 : (vuelosRetrasadosRuta * 100.0 / totalVuelosRuta);
-
-        // ✅ CORRECCIÓN: Se eliminó la variable inexistente 'prediccion'
-        // y se agregó el décimo parámetro (puedes poner un String vacío o el dato real)
         return new FlightPredictionWithStatsDTO(
                 "Procesado",
                 0.0,
@@ -60,10 +55,10 @@ public class StatsService {
                 vuelosRetrasadosRuta,
                 porcentajeRetrasosRuta,
                 totalVuelosRuta == 0 ? "Sin datos históricos" : "Basado en historial de 30 días",
-                0.0,                  // Parámetro 7: Distancia
-                java.util.List.of(),   // Parámetro 8: Historial vacío
-                java.util.List.of(),   // Parámetro 9: Etiquetas vacías
-                "Análisis de historial completado" // Parámetro 10: Explicabilidad (reemplaza a prediccion.getExplicabilidad())
+                0.0,
+                java.util.List.of(),
+                java.util.List.of(),
+                "Análisis de historial completado"
         );
     }
 
