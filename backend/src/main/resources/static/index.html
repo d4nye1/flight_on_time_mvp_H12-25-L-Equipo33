@@ -18,13 +18,11 @@
 </header>
 
 <main class="dashboard-grid">
-    <!--bloque izquierda-->
     <section class="card">
         <div class="card-header">PREDICCION DE VUELO</div>
         <div class="input-group">
             <label>Aerolínea</label>
             <input id="aerolinea" list="lista-aerolineas" placeholder="Buscar aerolínea..." />
-
             <datalist id="lista-aerolineas">
                 <option value="9E">Endeavor Air</option>
                 <option value="AA">American Airlines</option>
@@ -55,7 +53,6 @@
                             <label>Destino</label>
                             <input id="destino" list="lista-aeropuertos" placeholder="Buscar destino..." />
                         </div>
-
                         <datalist id="lista-aeropuertos">
                             <option value="ABE">Allentown/Bethlehem/Easton, PA</option>
                             <option value="ABI">Abilene, TX</option>
@@ -437,7 +434,6 @@
             <div style="font-size: 2.5rem; margin-left: auto;">✈</div>
         </div>
     </section>
-    <!--bloque central-->
     <section class="card">
         <div class="card-header">PROBABILIDAD EN TIEMPO REAL</div>
         <div class="stats-container">
@@ -454,7 +450,6 @@
             <div class="card-header" style="width: 100%; border-bottom: 1px solid #334155; margin-top: 10px; font-size: 0.7rem;">
                 EXPLICABILIDAD
             </div>
-
             <div id="contenedor-explicacion" class="explicacion-container">
                 <p style="color: var(--text-gray); font-size: 0.75rem; font-style: italic; text-align: center;">
                     Esperando predicción para analizar factores clave...
@@ -462,7 +457,6 @@
             </div>
         </div>
     </section>
-    <!--bloque derecho-->
     <section class="card">
         <div class="card-header">ESTADISTICA HISTORICAS</div>
         <label>Historial de Puntualidad en la Ruta</label>

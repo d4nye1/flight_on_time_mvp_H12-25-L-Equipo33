@@ -27,14 +27,11 @@ async function predecir() {
             fecha_partida: `${fecha}T${hora}`
         });
 
-        // --- EXPLICABILIDAD (METADATOS) ---
         mostrarExplicacionIA(json.explicabilidad || json.explicacion);
 
-        // 2. Lógica de Previsión
         const esPuntual = json.prevision.toLowerCase().includes("tiempo");
         showMsg(esPuntual ? "#4ade80" : "#fb7185", json.prevision.toUpperCase(), "");
 
-        // 3. Círculo de % de Retraso Global
         const porcentajeRetraso = Math.round(json.porcentajeRetrasosRuta ?? 0);
 
         const punctualityCircle = document.getElementById("puntualidad-circle");
@@ -56,21 +53,15 @@ async function predecir() {
             `;
         }
 
-
-
-        // 4. Stats numéricas
         document.getElementById("total-vuelos").textContent = json.totalVuelosRuta ?? "--";
         document.getElementById("vuelos-retrasados").textContent = json.vuelosRetrasadosRuta ?? "--";
 
-        // 5. Factores clave
         document.getElementById("factores-clave").innerHTML = `
             <ul style="padding:0; list-style:none; margin:0;">
                 <li>Distancia: <strong>${json.distancia ?? "--"} km</strong></li>
                 <li>Ruta: <strong>${origen} → ${destino}</strong></li>
             </ul>`;
 
-
-        // 7. Círculo de Probabilidad de Retraso (NUEVO)
         const delayCircle = document.getElementById("delay-circle");
         const delayText = document.getElementById("delay-percent");
 
@@ -82,8 +73,6 @@ async function predecir() {
             delayText.textContent = `${valor}%`;
         }
 
-
-        // 6. Actualizar UI adicional
         actualizarGrafica(json);
         const topData = await fetchTopRutas();
         renderTopRutas(topData);
@@ -91,12 +80,10 @@ async function predecir() {
     } catch (err) {
         console.error("Error capturado:", err);
 
-        // Capa 2: Manejo de errores que vienen del servidor (Java DTO)
         if (err.detallesJava) {
             const camposConError = Object.keys(err.detallesJava);
 
             camposConError.forEach(campo => {
-                // Sincronización con el campo LocalDateTime de Java
                 if (campo === "fechaPartida") {
                     document.getElementById("fecha").style.borderColor = "#fb7185";
                     document.getElementById("hora").style.borderColor = "#fb7185";
@@ -105,8 +92,6 @@ async function predecir() {
                     if (input) input.style.borderColor = "#fb7185";
                 }
             });
-
-            // Extraemos la leyenda exacta definida en el DTO de Java
             const mensajeServidor = err.detallesJava[camposConError[0]];
             showMsg("#fb7185", "RECHAZADO POR SERVIDOR", mensajeServidor);
         } else {
@@ -115,7 +100,6 @@ async function predecir() {
     }
 }
 
-// Carga inicial
 window.onload = async () => {
     configurarInputHora();
     try {

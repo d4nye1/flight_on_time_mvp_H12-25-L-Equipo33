@@ -8,7 +8,6 @@ import com.flightontime.flightontimeapi.repository.PredictionRepository;
 import com.flightontime.flightontimeapi.exception.RemoteServiceException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,7 @@ public class FlightPredictionService {
             pred.setPrevision(respuesta.getPrevision());
             pred.setProbabilidad(respuesta.getProbabilidad());
             pred.setDistancia(respuesta.getDistancia());
-            pred.setExplicabilidad(respuesta.getExplicabilidad()); // <--- Línea agregada para guardar en BD
+            pred.setExplicabilidad(respuesta.getExplicabilidad());
             pred.setFechaConsulta(LocalDateTime.now());
 
             predictionRepository.save(pred);
@@ -121,7 +120,7 @@ public class FlightPredictionService {
         dto.setPrevision(entity.getPrevision());
         dto.setProbabilidad(entity.getProbabilidad());
         dto.setDistancia(entity.getDistancia());
-        dto.setExplicabilidad(entity.getExplicabilidad()); // <--- Línea agregada para recuperar de caché
+        dto.setExplicabilidad(entity.getExplicabilidad());
         return dto;
     }
 }

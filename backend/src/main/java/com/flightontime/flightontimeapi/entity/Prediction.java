@@ -12,7 +12,6 @@ public class Prediction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String aerolinea;
     private String origen;
     private String destino;
@@ -20,9 +19,8 @@ public class Prediction {
     private Double probabilidad;
     private Double distancia;
 
-    @Column(columnDefinition = "TEXT") // Permite explicaciones largas
+    @Column(columnDefinition = "TEXT")
     private String explicabilidad;
-
     private LocalDateTime fechaPartida;
     private LocalDateTime fechaConsulta;
 

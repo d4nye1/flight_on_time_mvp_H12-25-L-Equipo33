@@ -13,7 +13,7 @@ public class FlightPredictionDTO {
     @JsonProperty("distancia")
     private Double distancia;
 
-    @JsonProperty("explicabilidad") // <--- Agregado para recibir de Python
+    @JsonProperty("explicabilidad")
     private String explicabilidad;
 
     public FlightPredictionDTO() {

@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
-
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
@@ -21,10 +19,8 @@ public interface PredictionRepository extends JpaRepository<Prediction, Long> {
             LocalDateTime fechaPartida
     );
 
-    // 🔹 Contar todos los vuelos por fechaPartida
     long countByFechaPartidaBetween(LocalDateTime inicio, LocalDateTime fin);
 
-    // 🔹 Contar vuelos retrasados por fechaPartida
     @Query("""
         SELECT COUNT(p)
         FROM Prediction p

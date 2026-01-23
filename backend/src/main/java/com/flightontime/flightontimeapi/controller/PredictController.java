@@ -36,12 +36,10 @@ public class PredictController {
         try {
             FlightPredictionWithStatsDTO response =
                     service.predecirVueloConStats(request);
-
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            e.printStackTrace(); // 👈 CLAVE para ver el error real
-
+            e.printStackTrace();
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of(
