@@ -1,0 +1,12 @@
+# Ignorar entornos virtuales de Python
+**/venv/
+**/.venv/
+**/__pycache__/
+
+# Ignorar archivos de Java
+**/target/
+
+# Ignorar datos pesados si no los necesitas en la imagen
+data/
+*.csv
+*.pkl

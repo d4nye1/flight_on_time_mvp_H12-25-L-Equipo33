@@ -15,7 +15,11 @@ fuera de este país, sería incorrecto al no contar con datos para desarrollar u
 ### **Arquitectura del Sistema**
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
+=======
+  <img src="../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -37,7 +41,11 @@ El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7
 #### **Flujo del Pipeline de Datos**
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
+=======
+  <img src="../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -97,7 +105,11 @@ El objetivo del proyecto es predecir retrasos antes del despegue, por lo que la 
 </p>
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
+=======
+  <img src="../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -271,7 +283,11 @@ imposible de saber a priori por el usuario final.
 </p>
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
+=======
+  <img src="../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -294,7 +310,11 @@ de una manera aleatoria, para igualar la cantidad de ejemplos de la clase minori
 </p>
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
+=======
+  <img src="../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -306,6 +326,7 @@ Para la parte de preprocesamiento de datos, previo al entrenamiento del modelo, 
 </p>
 
 <p align="center">
+<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
 </p>
 
@@ -319,16 +340,31 @@ El StandardScaler transforma todas las variables numéricas a una escala común 
 
 <p align="justify">
 El OrdinalEncoder convierte variables categóricas (aerolíneas, aeropuertos) en valores numéricos, evitando la alta dimensionalidad que generaría One-Hot Encoding con 15 aerolíneas y cientos de aeropuertos.
+=======
+  <img src="../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
+>>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
-Se probaron distintos modelos durante el entrenamiento inicial como candidatos para servir como modelo a mejorar. Estos incluyeron pero no se limitaron, a random forest, regresión logística, XGB Classifier y LGBM Classifier. En la notebook "Optimizando_modelos_NoRNN.ipynb" también se realizaron pruebas con distintas proporciones de datos y modelos. En ella se determinó y se realizó un análisis muestral en el que se determinó que a partir de ciertas muestras, el incremento en el desempeño del modelo dejaba de ser significativamente mejor (350000 registros bastan para entrenar un modelo lo suficientemente potente), alcanzando resultados similares en la métrica primaria definida (Área AUC-ROC) en ambas propuestas. 
+El StandardScaler transforma todas las variables numéricas a una escala común (media=0, desviación estándar=1), evitando que features con rangos grandes dominen el entrenamiento del modelo.
+</p>
+
+<p align="center">
+  <img src="../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
+</p>
+
+<p align="justify">
+El OrdinalEncoder convierte variables categóricas (aerolíneas, aeropuertos) en valores numéricos, evitando la alta dimensionalidad que generaría One-Hot Encoding con 15 aerolíneas y cientos de aeropuertos.
+</p>
+
+<p align="justify">
+Se probaron distintos modelos durante el entrenamiento inicial como candidatos para servir como modelo a mejorar. Estos incluyeron pero no se limitaron, a random forest, regresión logística, XGB Classifier y LGBM Classifier. En la notebook "Optimizando_modelos_NoRNN.ipynb" también se realizaron pruebas con distintas proporciones de datos y modelos. En ella se determinó y se realizó un análisis muestral en el que se determinó que a partir de ciertas muestras, el incremento en el desempeño del modelo dejaba de ser significativamente mejor (350000 registros bastan para entrenar un modelo lo suficientemente potente), alcanzando resultados similares en la métrica primaria definida (Área AUC-ROC) en ambas propuestas. En la notebook "Explorando_otros_modelos" se explora la idoneidad en el uso de redes neuronales para la clasificación, aunque por la excesiva complejidad y obtener un AUC-ROC mayor con modelos clásicos de Machine Learning, se descartó su uso.
 </p>
 <p align="justify">
 Retomando la libreta "DataScience_ModelosML.ipynb", se determinó que el mejor modelo base sin ajuste fue XGBoost. Este modelo fue el que fue optimizado en hiperparámetros, y se validó su desempeño mediante validación cruzada. Se realizó una búsqueda de hiperparámetros en un espacio de parámetros definido y se realizó un ajuste de hiperparámetros aleatorio. Esto no asegura contar con el mejor modelo, pero al contar con una gran cantidad de hiperparámetros a ajustar, otras estrategias de ajuste (por ejemplo, grid search, la cual realiza todas las combinaciones posibles definidas) son más costosas computacionalmente. El ajuste aleatorio permite un balance entre un modelo lo suficientemente potente y una disminución en el tiempo de entrenamiento al disminuir las combinaciones probadas. En particular, durante este ajuste, se probaron 30 combinaciones aleatorias de hiperparámetros diferentes y se validó su desempeño con una validación cruzada con k = 3, es decir, con tres iteraciones o entrenamientos del modelo sobre distintas particiones de datos.
 </p>
 <p align="justify">
-Con esta estrategia se logró alcanzar un modelo que alcanzó un AUC-ROC de 0.718 en el conjunto de prueba, después de recuperar el modelo con hiperparámetros ajustados. Finalmente, se probó que el modelo generara predicciones completamente aleatorias (a esta prueba se le llamó Dummy model) y se validó que la métrica de AUC-ROC superara el umbral alcanzado por ese modelo "Dummy". También se realizó una prueba para "envolver" el modelo desarrollado en una clase que personalizara las salidas de dicho modelo, en las que se retornaran las etiquetas como variable string de datos, en lugar de 0s y 1s (es decir, retornar a tiempo y retrasado) así como la probabilidad de ocurrencia de la clase seleccionada. Cabe mencionar que dicha probabilidad de ocurrencia depende de la etiqueta de clase. Es decir, si la etiqueta de clase es "A tiempo", la probabilidad estará en el rango de 0.5-1 y si la etiqueta de clase es "Retrasado", la probabilidad también estará en el rango de 0.5-1. Esto es de esta forma pues la probabilidad de clase representa la probabilidad o la confiabilidad con la que el modelo predice una etiqueta en particular, y siempre se muestra la etiqueta predicha por el modelo y la confianza del modelo para esa predicción en particular (esto representa un porcentaje donde 0.5 representa el 50% de confianza, 0.65 el 65%, 0.78 el 78% y 1 el 100%).
+Con esta estrategia se logró alcanzar un modelo que alcanzó un AUC-ROC de 0.718 en el conjunto de prueba, después de recuperar el modelo con hiperparámetros ajustados. Finalmente, se probó que el modelo generara predicciones completamente aleatorias (a esta prueba se le llamó Dummy model) y se validó que la métrica de AUC-ROC superara el umbral alcanzado por ese modelo "Dummy". También se realizó una prueba para "envolver" el modelo desarrollado en una clase que personalizara las salidas de dicho modelo, en las que se retornaran las etiquetas como variable string de datos, en lugar de 0s y 1s (es decir, retornar a tiempo y retrasado) así como la probabilidad de ocurrencia de la clase seleccionada. Cabe mencionar que dicha probabilidad de ocurrencia depende de la etiqueta de clase, y se denomina "probabilidad de retraso". Es decir, si la etiqueta de clase es "A tiempo", la probabilidad estará en el rango de 0-0.4999 y si la etiqueta de clase es "Retrasado", la probabilidad estará en el rango de 0.5-1. Esto es de esta forma pues la probabilidad de clase representa la probabilidad o la confiabilidad con la que el modelo predice el riesgo de retraso (siendo que un riesgo menor al 50% se traduce en un vuelo llegando a tiempo), y siempre se muestra la etiqueta predicha por el modelo y la confianza del modelo para esa predicción en particular.
 </p>
 <p align="center">
 <img width="994" height="466" alt="imagen3" src="https://github.com/user-attachments/assets/e722d583-0ee6-4d0e-a0d0-c4b3bdcf3c8e" />
@@ -344,7 +380,7 @@ La serialización del modelo consistió en las siguientes actividades:
 - Serialización del modelo entrenado en formato .joblib
 - Generación de archivo requirements.txt
 - Escritura de archivo custom_class.py
-- Generación de notebook "Ejemplo_carga_modelo_ML.ipynb"
+- Generación de notebook "Carga_modelo_ML.ipynb"
 
 #### **5.1) feature_engineering_functions.py**
 
@@ -357,16 +393,24 @@ La segunda función, denominada "extraer_features_fecha" lo que realiza es la ex
 
 #### **5.2) Serialización del modelo**
 <p align="justify">
-La serialización del modelo consistió en guardar el modelo entrenado en un archivo .joblib. Para lograr cargar y utilizar el modelo correctamente, es necesario contar con las mismas librerías y el entorno de Python utilizado durante el entrenamiento del modelo. Para asegurar consistencia y evitar errores en la carga del modelo, se generó un archivo denominado "requirements.txt" en el cual se encuentran definidas las versiones de las librerías mínimas a instalar para poder consumir el modelo correctamente. Este archivo, denominado requirements.txt, simplemente debe instalarse en el entorno utilizado para desarrollar la aplicación de FastAPI, lo que puede realizarsem mediante la línea de comandos (pip install -requirements.txt). En este mismo directorio se encuentra el modelo utilizado .joblib, el cual es la versión ajustada en hiperparámetros del modelo para ser cargado por la aplicación (modelo entrenado con hiperparámetros óptimos obtenidos en el archivo DataScience_ModelosML.ipynb".
+La serialización del modelo consistió en guardar el modelo entrenado en un archivo .joblib. Para lograr cargar y utilizar el modelo correctamente, es necesario contar con las mismas librerías y el entorno de Python utilizado durante el entrenamiento del modelo. Para asegurar consistencia y evitar errores en la carga del modelo, se generó un archivo denominado "requirements.txt" en el cual se encuentran definidas las versiones de las librerías mínimas a instalar para poder consumir el modelo correctamente. Este archivo, denominado requirements.txt, simplemente debe instalarse en el entorno utilizado para desarrollar la aplicación de FastAPI, lo que puede realizarsem mediante la línea de comandos (pip install -requirements.txt) adicional a la versión de Python 3.12.12 o similar. Ésta fue la usada para entrenar el modelo. En este mismo directorio se encuentra el modelo utilizado .joblib, el cual es la versión ajustada en hiperparámetros del modelo para ser cargado por la aplicación (modelo entrenado con hiperparámetros óptimos obtenidos en el archivo "DataScience_ModelosML.ipynb".
 </p>
 
 #### **5.3) custom_class.py**
 <p align="justify">
-Finalmente, se decidió "envolver" el modelo serializado en una clase personalizada, la cual puede ser modificada, escalada, o formateada en sus salidas para entregar la información en el formato en el que el equipo considere más adecuado y útil. La clase hace uso de una función .predict que funciona como una forma de sobrecarga de la función original de los modelos de scikit-learn. Dicha función debe recibir el registro o la información del vuelo de la que se pretende determinar o predecir y ésta retorna la predicción ("A tiempo", "Retrasado") del modelo, la probabilidad o la confianza con la que asegura que exista un retraso o no (formato decimal) y a petición del equipo de backend, la distancia, para mostrarla o trabajarla en el frontend o en la API. Cabe mencionar que la probabilidad que muestra el modelo, siempre irá de 0.5-1, 0.5 representando el 50% de probabilidad o la confianza de predecir que un vuelo se retrasará o no y 1 representando el 100%. No puede visuailzarse menos del 50% de probabilidad, pues la etiqueta que se retorna por parte del modelo solamente es la clase elegida por el modelo y por consiguiente, la de mayor probabilidad. En otras palabras, el modelo solo muestra la clase ganadora. La probabilidad asociada no puede ser menor a 0.5 porque, al tratarse de un problema binario, las probabilidades de ambas clases suman 1. El modelo elige como predicción la clase con mayor probabilidad, y esa será siempre ≥ 0.5.
+Finalmente, se decidió "envolver" el modelo serializado en una clase personalizada, la cual puede ser modificada, escalada, o formateada en sus salidas para entregar la información en el formato en el que el equipo considere más adecuado y útil. La clase hace uso de una función .predict que funciona como una forma de sobrecarga de la función original de los modelos de scikit-learn. Dicha función debe recibir el registro o la información del vuelo de la que se pretende determinar o predecir y ésta retorna la predicción ("A tiempo", "Retrasado") del modelo, la probabilidad o la confianza con la que asegura que exista un retraso o no (formato decimal) y a petición del equipo de backend, la distancia calculada por el modelo, para mostrarla o trabajarla en el frontend o en la API. Cabe mencionar que la probabilidad que muestra el modelo, es la probabilidad de retraso, y de ser menor al 50% o 0.5, el vuelo estará predicho como llegando a tiempo.
 </p>
 
 <p align="justify">
-En caso de que se requiera producir una explicación de cómo decide el modelo, se proporciona la función explain, la cual recibe el registro a revisar, y regresa, de forma ordenada por importancia, las características que utiliza el modelo como las más relevantes para determinar si un vuelo se retrasa o llega a tiempo. En este primer intento de explicación, se usan los coeficientes shap, los cuales entre más grandes sean, indican una mayor importancia de dicha variable, en una consulta en particular. A mayor coeficiente, mayor relevancia de dicha característica para determinar retrasos. Esta importancia u orden será variable o cambiante entre cada consulta particular, lo que permite realizar una explicación por evento, en lugar de una explicación global o invariante. La función retorna tanto los nombres de las características usadas como los coeficientes shap en un dataframe. Se deja a discreción de los equipos la forma en la que se debe entregar esa información para aprovecharla de mejor manera, si es de utilidad para el análisis o se debería descartar.
+A petición del equipo de backend, y para mantener el flujo de información del modelo a la API en un solo JSON, la explicabilidad se retornó como llave adicional del JSON. La lógica funciona de la siguiente manera: Teniendo el registro a revisar (o la consulta, en este caso), se calculan los coeficientes SHAP de cada variable involucrada en la predicción. Teniendo esto, se calcula el porcentaje de dichos coeficientes SHAP y se mantiene el signo. Estos porcentajes se ordenan de mayor a menor (ignorando en primera instancia el signo) y las características con mayor valor son las determinadas como más influyentes o relevantes para la predicción particular. El signo sirve para determinar si dicha característica "empuja" la predicción hacia 1 o 100 % (retraso) o la empuja hacia 0 (a tiempo). Con la finalidad de mostrar esto de una forma sencilla de leer y entender, la clave "Explicabilidad" del JSON retorna un párrafo de texto que muestra la importancia/influencia de las 3 características más relevantes en porcentaje, y la dirección en la que empujó la predicción (si empujó en la misma dirección de la predicción, y la predicción es retrasado, dicha característica influyó positivamente o contribuyó a que la predicción fuera retrasado. Si por el contrario, la predicción fuera retrasado y la característica empujó en sentido contrario a la predicción, esto es indicativo de que la característica trató de prevenir, o frenó la predicción que emitió el modelo). De esta manera, se interpretan internamente los coeficientes SHAP y al usuario de la API o del frontend se entregará solamente la explicación verbal de cómo funciona el modelo internamente.
+</p>
+
+<p align="center">
+  <img src="../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
+</p>
+
+<p align="justify">
+El diagrama muestra el flujo completo del Custom Flight Model: desde la entrada de datos del vuelo, pasando por el procesamiento interno (carga del modelo, extracción de features, encoding cíclico, cálculo de distancias), hasta la salida con la predicción, probabilidad y distancia.
 </p>
 
 <p align="center">
@@ -379,7 +423,7 @@ El diagrama muestra el flujo completo del Custom Flight Model: desde la entrada 
 
 #### **5.4) Ejemplo de uso y consumo del modelo**
 <p align="justify">
- En el archivo "Ejemplo_carga_modelo_ML.ipynb" se encuentra la demostración, mediante un ejemplo, de cómo consumir en Python el modelo entrenado. Basta con instalar los requerimientos, importar las librerías de dicho archivo, cargar e importar las clases y funciones definidas, definir uno o varios ejemplos para consultar al modelo, crear un objeto de la clase personalizada a partir del modelo cargado con joblib y llamar a la función de la clase personalizada (ya sea predict o explain) para obtener los resultados del modelo entrenado. Cabe mencionar que el modelo maneja errores en la entrada. Es decir, si la aerolínea, el aeropuerto origen o el aeropuerto destino no existen, los acepta y genera una distancia de 0 por defecto, y los codifica internamente para el modelo como -1. Esto permite manejar errores al predecir incluso con aeropuertos desconocidos, aunque la predicción sería errónea o inexacta, ya que el modelo está desarrollado para usarse con códigos IATA de aeropuertos de USA así como las 15 aerolíneas de USA presentes en la base de datos original.
+ En el archivo "Carga_modelo_ML.ipynb" se encuentra la demostración, mediante un ejemplo, de cómo consumir en Python el modelo entrenado. Basta con instalar los requerimientos, importar las librerías de dicho archivo, cargar e importar las clases y funciones definidas, definir uno o varios ejemplos para consultar al modelo, crear un objeto de la clase personalizada a partir del modelo cargado con joblib y llamar a la función de la clase personalizada (predict) para obtener los resultados del modelo entrenado. Cabe mencionar que el modelo maneja errores en la entrada. Es decir, si la aerolínea, el aeropuerto origen o el aeropuerto destino no existen, o la ruta entre ellos no existe, los acepta y genera una distancia de 0 por defecto, y los codifica internamente para el modelo como -1. Esto permite manejar errores al predecir incluso con aeropuertos desconocidos, aunque la predicción sería errónea o inexacta, ya que el modelo está desarrollado para usarse con códigos IATA de aeropuertos de USA así como las 15 aerolíneas de USA presentes en la base de datos original.
 </p>
 
 

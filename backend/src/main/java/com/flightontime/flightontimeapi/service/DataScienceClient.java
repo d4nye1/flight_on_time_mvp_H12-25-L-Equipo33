@@ -2,13 +2,12 @@ package com.flightontime.flightontimeapi.service;
 
 import com.flightontime.flightontimeapi.dto.FlightPredictionDTO;
 import com.flightontime.flightontimeapi.dto.FlightRequestDTO;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,53 +15,45 @@ import java.util.Map;
 @Service
 public class DataScienceClient {
 
-    // Configuramos el RestTemplate con límites de tiempo (ej. 5 segundos)
-    //private final RestTemplate restTemplate = new RestTemplate();
     private final RestTemplate restTemplate;
+
+    @Value("${ai.service.url}")
+    private String aiServiceUrl;
 
     private static final DateTimeFormatter FORMATO_FECHA =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 
     public DataScienceClient() {
-        // Esto evita que Java se quede esperando "para siempre"
-        org.springframework.http.client.SimpleClientHttpRequestFactory factory =
-                new org.springframework.http.client.SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(5000); // 5 segundos para conectar
-        factory.setReadTimeout(5000);    // 5 segundos para recibir datos
+        var factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(60000);
+        factory.setReadTimeout(60000);
         this.restTemplate = new RestTemplate(factory);
     }
 
     public FlightPredictionDTO llamarModelo(FlightRequestDTO request) {
+        try{
+            Map<String, Object> body = new HashMap<>();
+            body.put("aerolinea", request.getAerolinea().trim().toUpperCase());
+            body.put("origen", request.getOrigen().trim().toUpperCase());
+            body.put("destino", request.getDestino().trim().toUpperCase());
+            body.put("fecha_partida", request.getFechaPartida().format(FORMATO_FECHA));
+            body.put("distancia", request.getDistancia());
 
-        if (request.getAerolinea() == null || request.getAerolinea().isBlank()
-                || request.getOrigen() == null || request.getOrigen().isBlank()
-                || request.getDestino() == null || request.getDestino().isBlank()
-                || request.getFechaPartida() == null) {
-            throw new IllegalArgumentException("Asegúrate de completar todos los campos");
-        }
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        String url = "http://127.0.0.1:8000/predict";
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("aerolinea", request.getAerolinea().trim().toUpperCase());
-        body.put("origen", request.getOrigen().trim().toUpperCase());
-        body.put("destino", request.getDestino().trim().toUpperCase());
-        body.put("fecha_partida", request.getFechaPartida().format(FORMATO_FECHA));
+            String url = aiServiceUrl + "/predict";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-
-        //try {
-           return restTemplate.postForObject(
-                   url,
+            return restTemplate.postForObject(
+                    url,
                     entity,
-                   FlightPredictionDTO.class
+                    FlightPredictionDTO.class
             );
-
-        //} catch (RestClientException ex) {
-          //  throw new IllegalStateException("Servicio de predicción no disponible: " + ex.getMessage());
-       }
-    //}
+        }catch (Exception e) {
+            System.err.println("ERROR LLAMANDO A LA IA: " + e.getMessage());
+            throw new RuntimeException("La IA no respondió a tiempo o falló: " + e.getMessage());
+        }
+    }
 }

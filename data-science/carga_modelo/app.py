@@ -1,8 +1,10 @@
 import os
-import jaydebeapi
 import pandas as pd
 import joblib
 import re
+import numpy as np
+import shap
+from typing import Optional
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,56 +14,8 @@ from fastapi.responses import JSONResponse
 from fastapi import Request
 import __main__
 
-# --- CONFIGURACIÓN DE ENTORNO ---
-os.environ['JAVA_HOME'] = r'C:\Program Files\Java\jdk-17'
-os.environ['PATH'] = os.path.join(os.environ['JAVA_HOME'], 'bin', 'server') + os.pathsep + os.environ['PATH']
-
-# ===========================
-# 1. FUNCIONES DE INGENIERÍA 
-# ===========================
-def calcular_distancia(df, diccionario=None, default=0):
-    df = df.copy()
-    df['origen-destino'] = df['aeropuerto_origen'] + df['aeropuerto_destino']
-
-    if 'distancia_millas' not in df.columns:
-        df['distancia_millas'] = 0 
-    return df
-
-def extraer_features_fecha(df):
-    df = df.copy()
-    cyclical_columns = ['mes', 'dia_semana', 'hora_salida']
-    df['hora_salida'] = df['fecha_vuelo'].dt.hour
-    df['mes'] = df['fecha_vuelo'].dt.month
-    df['dia_semana'] = df['fecha_vuelo'].dt.weekday + 1
-    df['fin_de_semana'] = df['dia_semana'].isin([6, 7]).astype(bool)
-
-    for column in cyclical_columns:
-        max_val = df[column].max() if not df[column].empty else 1
-        if max_val == 0: max_val = 1
-        df[column + '_sin'] = np.sin(2 * np.pi * df[column] / max_val)
-        df[column + '_cos'] = np.cos(2 * np.pi * df[column] / max_val)
-        df = df.drop(columns=[column])
-    df = df.drop(columns=['fecha_vuelo'])
-    return df
-
-__main__.calcular_distancia = calcular_distancia
-__main__.extraer_features_fecha = extraer_features_fecha
-
-# ==========================================
-# 2. WRAPPER PARA EXTRACCIÓN DE DATOS
-# ==========================================
-class FlightModelWrapper:
-    def __init__(self, pipeline):
-        self.pipeline = pipeline
-        self.gen_dist = pipeline.named_steps["gen-dist"]
-
-    def predict_data(self, X):
-        prob = self.pipeline.predict_proba(X)[0][1]
-        
-        X_transformed = self.gen_dist.transform(X)
-        dist_millas = X_transformed['distancia_millas'].iloc[0]
-        
-        return prob, dist_millas
+import custom_class_copy as cc
+import feature_engineering_functions as func
 
 # =======================
 # APP Y CONFIGURACIÓN
@@ -90,11 +44,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"error": mensaje}
     )
 
-
+# =================
 # CARGA DEL MODELO
+# =================
 try:
-    raw_pipeline = joblib.load("modelo_XGB.joblib")
-    model = FlightModelWrapper(raw_pipeline)
+    raw_pipeline = joblib.load("modelo_XGB_V2.1.joblib")
+    model = cc.CustomPrediction(raw_pipeline)
     print("✅ Modelo cargado y configurado con éxito")
 except Exception as e:
     model = None
@@ -108,6 +63,7 @@ class FlightRequest(BaseModel):
     origen: str
     destino: str
     fecha_partida: str
+    distancia: Optional[float] = None
 
     @field_validator("aerolinea")
     @classmethod
@@ -160,18 +116,28 @@ def predict(request: FlightRequest):
     }])
 
     try:
-        prob, dist_millas = model.predict_data(df_input)
-        
-        dist_km = round(float(dist_millas * 1.60934), 2)
-        resultado = "Retrasado" if prob >= 0.5 else "Puntual"
+            resultado_lista = model.predict(df_input)
 
-        return {
-            "prevision": resultado,
-            "probabilidad": round(float(prob), 2),
-            "distancia": dist_km
-        }
+            datos_prediccion = resultado_lista[0]
+
+            resultado = datos_prediccion["Predicción"]
+            explicabilidad = datos_prediccion["Explicabilidad"]
+            prob = datos_prediccion["Probabilidad de retraso"] / 100
+
+            if request.distancia is not None:
+                distancia_final = request.distancia
+            else:
+                distancia_final = round(float(datos_prediccion["Distancia"]), 2)
+
+            return {
+                "prevision": resultado,
+                "probabilidad": round(float(prob), 2),
+                "distancia": distancia_final,
+                "explicabilidad": explicabilidad
+            }
     except Exception as e:
-        raise HTTPException(500, f"Error en la predicción: {str(e)}")
+            print(f"DEBUG ERROR: {e}")
+            raise HTTPException(500, f"Error en la predicción: {str(e)}")
 
 if __name__ == "__main__":
     import uvicorn

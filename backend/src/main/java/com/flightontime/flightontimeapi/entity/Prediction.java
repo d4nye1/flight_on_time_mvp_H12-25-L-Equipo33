@@ -4,22 +4,25 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "predictions")
+@Table(name = "predictions", indexes = {
+        @Index(name = "idx_flight_cache", columnList = "aerolinea, origen, destino, fechaPartida")
+})
 public class Prediction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String aerolinea;
     private String origen;
     private String destino;
     private String prevision;
     private Double probabilidad;
     private Double distancia;
+
+    @Column(columnDefinition = "TEXT")
+    private String explicabilidad;
     private LocalDateTime fechaPartida;
     private LocalDateTime fechaConsulta;
-
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -41,6 +44,9 @@ public class Prediction {
 
     public Double getDistancia() { return distancia; }
     public void setDistancia(Double distancia) { this.distancia = distancia; }
+
+    public String getExplicabilidad() { return explicabilidad; }
+    public void setExplicabilidad(String explicabilidad) { this.explicabilidad = explicabilidad; }
 
     public LocalDateTime getFechaPartida() { return fechaPartida; }
     public void setFechaPartida(LocalDateTime fechaPartida) { this.fechaPartida = fechaPartida; }
