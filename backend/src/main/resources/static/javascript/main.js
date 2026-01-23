@@ -9,7 +9,6 @@ async function predecir() {
     const fecha = document.getElementById("fecha").value;
     const hora = document.getElementById("hora").value.trim();
 
-    // 1. Validar campos localmente (Capa 1)
     const resultadoValidacion = validarCampos(aerolinea, origen, destino, fecha, hora);
 
     if (!resultadoValidacion.valido) {
