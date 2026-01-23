@@ -8,15 +8,49 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <header class="navbar">
+        <div class="logo-area">
+            <span class="dashboard-title">FLIGHTONTIME - INTELIGENCIA PREDICTIVA</span>
+        </div>
+        <div class="menu-icon" onclick="toggleMenu()" style="cursor:pointer; font-size: 1.5rem;">☰</div>
+    </header>
+    <div id="side-menu" class="side-overlay">
+        <div class="side-content">
+            <span class="close-btn" onclick="toggleMenu()">×</span>
 
-<header class="navbar">
-    <div class="logo-area">
-        <span class="logo-icon">✈</span>
-        <span class="dashboard-title">FLIGHTONTIME - INTELIGENCIA PREDICTIVA</span>
+            <div class="flight-details-header">
+                <h2 style="color: var(--accent-blue); margin-bottom: 5px;">DETALLES DEL VUELO</h2>
+                <p class="route-badge" id="side-info-principal">--</p>
+                <small style="color: #10b981;">● Confirmado - <span id="side-fecha-vuelo">--</span></small>
+            </div>
+
+            <div class="detail-section">
+                <h4>🛫 SALIDA (<span id="side-origen-label">--</span>)</h4>
+                <ul class="detail-list">
+                    <li><strong>Programada:</strong> <span id="side-hora-salida">--</span></li>
+                    <li><strong>Terminal/Puerta:</strong> <span id="side-puerta">--</span></li>
+                </ul>
+            </div>
+
+            <div class="detail-section">
+                <h4>🛬 LLEGADA (<span id="side-destino-label">--</span>)</h4>
+                <ul class="detail-list">
+                    <li><strong>Aproximada:</strong> <span id="side-hora-llegada">--</span></li>
+                </ul>
+            </div>
+
+            <hr style="border: 0.5px solid #334155; margin: 20px 0;">
+
+            <h4 style="font-size: 0.7rem; color: var(--accent-blue); text-transform: uppercase;">Radar de Puntualidad</h4>
+            <div class="radar-container">
+                <div class="plane-row">
+                    <div class="plane-icon" id="side-radar-icon">✈</div>
+                    <div class="trail" id="side-radar-trail"></div>
+                    <span class="airline-tag" id="side-radar-status">--</span>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="menu-icon">☰</div>
-</header>
-
 <main class="dashboard-grid">
     <section class="card">
         <div class="card-header">PREDICCION DE VUELO</div>
@@ -490,6 +524,92 @@
 
 </main>
 
+    <section class="tech-info-section">
+        <div class="tech-content">
+            <div class="ia-badge" style="margin-bottom: 20px;">XGBOOST CORE</div>
+            <h2 style="font-size: 2.2rem; margin-bottom: 15px; color: var(--white);">Arquitectura Predictiva de Alto Nivel</h2>
+            <p style="color: var(--text-gray); max-width: 800px; margin: 0 auto 40px; line-height: 1.6;">
+                FlightOnTime implementa una infraestructura desacoplada donde la precisión de <strong>Data Science (Python)</strong> se orquesta con la robustez de <strong>Spring Boot</strong> para entregar predicciones en tiempo real.
+            </p>
+
+            <div class="tech-grid">
+                <div class="tech-item" style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #334155; text-align: left;">
+                    <span class="tech-icon" style="font-size: 2rem; color: #4285F4;">📊</span>
+                    <h4 style="margin: 15px 0; color: var(--white);">Modelo XGBoost</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-gray);">
+                        Clasificación binaria optimizada mediante Gradient Boosting para predecir puntualidad con alta precisión y manejo de variables complejas.
+                    </p>
+                </div>
+
+                <div class="tech-item" style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #334155; text-align: left;">
+                    <span class="tech-icon" style="font-size: 2rem; color: #009485;">⚡</span>
+                    <h4 style="margin: 15px 0; color: var(--white);">FastAPI Microservice</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-gray);">
+                        Servicio independiente en Python que expone el modelo analítico, permitiendo un escalamiento ágil y mantenimiento aislado.
+                    </p>
+                </div>
+
+                <div class="tech-item" style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #334155; text-align: left;">
+                    <span class="tech-icon" style="font-size: 2rem; color: #6DB33F;">🍃</span>
+                    <h4 style="margin: 15px 0; color: var(--white);">Orquestación Java</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-gray);">
+                        Backend en Spring Boot que gestiona el flujo de datos, validaciones y la comunicación segura con el motor predictivo.
+                    </p>
+                </div>
+
+                <div class="tech-item" style="background: var(--card-bg); padding: 30px; border-radius: 12px; border: 1px solid #334155; text-align: left;">
+                    <span class="tech-icon" style="font-size: 2rem; color: #FBBC04;">🛡️</span>
+                    <h4 style="margin: 15px 0; color: var(--white);">Manejo de Errores</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-gray);">
+                        Sistema de resiliencia ante fallos externos, garantizando respuestas funcionales controladas incluso si el servicio de IA no está disponible.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="logo-area">
+                        <span class="dashboard-title">FLIGHTONTIME</span>
+                    </div>
+                    <p class="brand-tagline">H12-25-L | Equipo 33 - Soluciones Aeronáuticas Predictivas.</p>
+                </div>
+
+                <div class="footer-stats-summary">
+                    <button onclick="toggleTeam()" style="background: transparent; border: 1px solid #334155; color: var(--text-gray); padding: 8px 15px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; transition: 0.3s;">
+                        EQUIPO DE DESARROLLO
+                    </button>
+                    <div class="footer-stat-item">
+                        <span class="stat-value">XGBOOST</span>
+                        <span class="stat-label">Model Engine</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="team-panel" style="display: none; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Angeles Morales</strong><br><span style="color:#64748b">Data Scientist</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Edson Castañeda</strong><br><span style="color:#64748b">Backend Developer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Juan Mesa</strong><br><span style="color:#64748b">Data Scientist</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Enrique Contreras</strong><br><span style="color:#64748b">Backend Developer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Rodrigo García</strong><br><span style="color:#64748b">Data Scientist</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Ernesto López</strong><br><span style="color:#64748b">Backend Developer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Norma Salcedo</strong><br><span style="color:#64748b">Backend Developer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Sergio Bravo</strong><br><span style="color:#64748b">Backend Developer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Oscar Paye</strong><br><span style="color:#64748b">Data Engineer</span></div>
+                    <div style="font-size: 0.75rem;"><strong style="color: var(--accent-blue);">Zaida Donoso</strong><br><span style="color:#64748b">Data Scientist</span></div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <span>© 2026 FLIGHTONTIME | H12-25-L-EQUIPO 33</span>
+                </div>
+            </div>
+        </div>
+    </footer>
 <script type="module" src="javascript/main.js"></script>
 
 </body>

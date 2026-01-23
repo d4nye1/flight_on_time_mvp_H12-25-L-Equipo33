@@ -313,3 +313,164 @@ input:focus {
     color: var(--text-gray);
     letter-spacing: 1px;
 }
+
+/* --- MENÚ LATERAL --- */
+.side-overlay {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    background-color: #1e293b;
+    overflow-x: hidden;
+    transition: 0.5s;
+    border-left: 2px solid var(--accent-blue);
+}
+
+.side-content { padding: 30px; width: 350px; color: white; }
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+.detail-section {
+    background: rgba(15, 23, 42, 0.5);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.detail-list { list-style: none; padding: 0; font-size: 0.85rem; line-height: 1.8; }
+.detail-list li strong { color: var(--accent-blue); }
+
+/* --- RADAR ANIMADO --- */
+.radar-container {
+    background: #020617;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.plane-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    animation: flightMove 6s infinite linear;
+}
+
+@keyframes flightMove {
+    0% { transform: translateX(-100%); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(150%); opacity: 0; }
+}
+
+.trail { height: 2px; width: 60px; margin-left: -60px; }
+.trail.green { background: linear-gradient(to right, transparent, #10b981); }
+.trail.orange { background: linear-gradient(to right, transparent, #f59e0b); }
+.trail.red { background: linear-gradient(to right, transparent, #ef4444); }
+.green { color: #10b981; } .orange { color: #f59e0b; } .red { color: #ef4444; }
+
+/* --- SECCIONES INFERIORES --- */
+.tech-info-section {
+    padding: 60px 20px;
+    background: #0f172a;
+    text-align: center;
+}
+
+.tech-content { max-width: 900px; margin: 0 auto; }
+.tech-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+}
+/* --- FOOTER UNIFICADO Y LIMPIO --- */
+.main-footer {
+    background: #020617;
+    padding: 50px 40px 30px;
+    border-top: 1px solid #1e293b;
+    margin-top: auto; /* Empuja el footer al fondo si hay poco contenido */
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(51, 65, 85, 0.2); /* Línea divisoria sutil */
+}
+
+.brand-tagline {
+    color: var(--text-gray);
+    font-size: 0.8rem;
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+}
+
+.footer-stats-summary {
+    display: flex;
+    gap: 40px;
+}
+
+.footer-stat-item {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.stat-value {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    display: block;
+}
+
+.stat-label {
+    color: #475569;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 2px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: center; /* Centrado para estilo Hackathon */
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 0.65rem;
+    color: #475569;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* --- RESPONSIVO PARA FOOTER --- */
+@media (max-width: 768px) {
+    .footer-top {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+    }
+    .footer-stats-summary {
+        width: 100%;
+        justify-content: space-around;
+    }
+    .footer-stat-item {
+        text-align: center;
+    }
+}}
