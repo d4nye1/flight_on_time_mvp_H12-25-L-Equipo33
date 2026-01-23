@@ -62,7 +62,7 @@ body {
     min-height: 450px;
     height: 100%;
     /* Permite scroll si el contenido interno excede la tarjeta */
-    overflow-y: auto; 
+    overflow-y: auto;
 }
 
 .card-header {
@@ -72,7 +72,7 @@ body {
     color: var(--text-gray);
     margin-bottom: 10px;
     font-weight: bold;
-    border-bottom: 1px solid #334155;
+   /* border-bottom: 1px solid #334155;*/
     padding-bottom: 8px;
 }
 
@@ -159,22 +159,48 @@ input:focus {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 12px;
+    gap: 3px;
     height: 100%;
 }
 
 .circle-stat {
-    width: 100px;
-    height: 100px;
+    --percent: 0;
+    --ring-color: #fb7185;
+
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
-    border: 6px solid var(--accent-blue);
+
+    background: conic-gradient(
+        var(--ring-color) calc(var(--percent) * 1%),
+        #334155 0
+    );
+
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-bottom: 5px;
 }
+
+/* 👇 ESTE ES EL HUECO REAL */
+.circle-stat::after {
+    content: "";
+    width: 100px;          /* controla grosor del borde */
+    height: 100px;
+    background: #1e293b;  /* fondo de la tarjeta */
+    border-radius: 50%;
+    position: absolute;
+}
+
+/* texto siempre arriba */
+.circle-stat span {
+    position: relative;
+    z-index: 2;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: white;
+}
+
 
 .data-boxes {
     display: grid;
@@ -269,4 +295,38 @@ input:focus {
 /* ---------- RESPONSIVE ---------- */
 @media (max-width: 1000px) {
     .dashboard-grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- CÍRCULO PROBABILIDAD DE RETRASO ---------- */
+.delay-circle-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.delay-circle {
+    width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 6px solid var(--accent-blue);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+}
+
+.delay-circle span {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+}
+
+.delay-label {
+    margin-top: 6px;
+    font-size: 0.65rem;
+    color: var(--text-gray);
+    letter-spacing: 1px;
 }
