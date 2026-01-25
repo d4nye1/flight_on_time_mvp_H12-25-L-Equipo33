@@ -219,11 +219,14 @@ Una vez entrenado el modelo, se implementó un sistema de **clasificación de ri
 - **F1-Score máximo:** 0.4313
 - **Validación:** 6,965,266 vuelos reales (2024)
 
+  
+
+
 <p align="center">
   <img src="../images/risk_stratification.png" alt="Estratificación de Riesgo Operativo - Niveles y Umbrales" width="100%" />
 </p>
 
----
+***Se exploró esta alternativa para implementarla de forma adicional al MVP, sin embargo le dimos foco a otro adicional que consideramos mas potente que es la explicabilidad.**
 
 ## Documentación Completa
 
