@@ -72,6 +72,206 @@ El detalle de las columnas originales y su significado se desglosa a continuaci�
 
 34) late_aircraft_delay &rarr; retraso debido a que el vuelo anterior llegó tarde (minutos)
 
-## Análisis exploratorio de datos
+---
 
-## Selección y entrenamiento de modelo
+## Estructura del Proyecto
+
+### 📊 Notebooks de Análisis y Modelado
+
+El proyecto sigue un flujo estructurado de trabajo, dividido en notebooks especializados:
+
+#### 1. **DataScience.ipynb** - Análisis Exploratorio de Datos (EDA)
+- Limpieza inicial del dataset (7M+ registros)
+- Análisis de valores nulos y tipos de datos
+- Visualizaciones exploratorias
+- Identificación de variables con data leakage
+- Definición de la variable objetivo (retraso > 15 min)
+
+<p align="center">
+  <img src="../images/eda_overview.png" alt="Panel EDA - Análisis Exploratorio de Datos" width="100%" />
+</p>
+
+---
+
+#### 2. **DataScience_seleccion-features.ipynb** - Selección de Características
+- Matriz de correlación para variables numéricas
+- Prueba de Cramers V para variables categóricas
+- Selección de features con mayor poder predictivo
+- Justificación de encoding cíclico para variables temporales
+
+<p align="center">
+  <img src="../images/feature_selection_matrix.png" alt="Matriz de Selección de Features - Correlación y Cramers V" width="100%" />
+</p>
+
+---
+
+#### 3. **Criterios (1).ipynb** - Estratificación de Riesgo y Umbrales de Decisión
+- Análisis de deciles de riesgo basados en probabilidades del modelo
+- Cálculo de métricas de Lift para cada segmento de riesgo
+- Definición de umbrales críticos para clasificación operativa:
+  - **Alto Riesgo (P80):** Probabilidad ≥ 0.6209 → Top 20% de vuelos con mayor riesgo (Lift > 1.6)
+  - **Riesgo Medio (P50-P80):** 0.4555 ≤ Probabilidad < 0.6209 → 30% siguiente (Lift ~ 1.0)
+  - **Bajo Riesgo (<P50):** Probabilidad < 0.4555 → Bottom 50% (Lift < 0.8)
+- Recomendaciones de acción por nivel de riesgo (contingencia, monitoreo, operación estándar)
+- Optimización del umbral F1-Score (0.5196 para F1 = 0.4313)
+
+<p align="center">
+  <img src="../images/evaluation_criteria.png" alt="Estratificación de Riesgo - Umbrales y Niveles de Decisión" width="100%" />
+</p>
+
+---
+
+#### 4. **Explorando_otros_modelos.ipynb** - Experimentación y Comparación de Modelos
+- Evaluación comparativa de diferentes algoritmos de clasificación
+- Análisis de desempeño de cada modelo candidato
+- Comparación de métricas (AUC-ROC, tiempo de entrenamiento, complejidad)
+- Selección del modelo final basada en balance desempeño/eficiencia
+
+<p align="center">
+  <img src="../images/model_comparison.png" alt="Comparación de Modelos Evaluados" width="100%" />
+</p>
+
+---
+
+#### 5. **DataScience_ModelosML.ipynb** - Entrenamiento del Modelo Final
+- Selección de XGBoost como modelo ganador
+- Balanceo de clases mediante random undersampling
+- Preprocessing pipeline (StandardScaler + OrdinalEncoder)
+- Hyperparameter tuning con RandomizedSearchCV (30 combinaciones, k=3)
+- Validación cruzada
+- Serialización del modelo final
+
+<p align="center">
+  <img src="../images/xgboost_training_flow.png" alt="Pipeline de Entrenamiento XGBoost" width="100%" />
+</p>
+
+---
+
+#### 6. **Optimizando_modelos_NoRNN.ipynb** - Análisis de Tamaño Muestral
+- Experimentos con diferentes tamaños de muestra
+- Curva de aprendizaje (performance vs. cantidad de datos)
+- Determinación del tamaño óptimo: 350,000 registros
+- Análisis costo-beneficio de usar más datos
+
+<p align="center">
+  <img src="../images/sample_size_analysis.png" alt="Análisis de Tamaño Muestral Óptimo" width="100%" />
+</p>
+
+---
+
+## Análisis Exploratorio de Datos
+
+El EDA completo se encuentra en `DataScience.ipynb` e incluye:
+
+- **Revisión inicial:** 7M registros, 34 columnas, 1.8 GB
+- **Limpieza:** Eliminación de vuelos cancelados/desviados, variables con data leakage
+- **Dataset final:** ~5.6M registros útiles para modelado
+- **Desbalance de clases:** 80% puntuales, 20% retrasados
+- **Variables clave identificadas:** aerolínea, origen, destino, hora de salida, distancia, mes, día de semana
+
+<p align="center">
+  <img src="../images/data_pipeline_summary.png" alt="Resumen del Pipeline de Datos" width="100%" />
+</p>
+
+---
+
+## Selección y Entrenamiento de Modelo
+
+### Proceso de Selección
+
+1. **Evaluación de múltiples modelos** (`Explorando_otros_modelos.ipynb`)
+2. **Aplicación de criterios** (`Criterios (1).ipynb`)
+3. **Selección de XGBoost** por mejor balance AUC-ROC/tiempo
+4. **Optimización de hiperparámetros** (`DataScience_ModelosML.ipynb`)
+
+### Modelo Final: XGBoost
+
+- **AUC-ROC:** 0.718 (conjunto de prueba)
+- **Validación cruzada:** k=3
+- **Features:** 7 variables (aerolínea, origen, destino, distancia, hora_sin, hora_cos, mes_sin, mes_cos, dia_semana_sin, dia_semana_cos, fin_de_semana)
+- **Preprocessing:** StandardScaler + OrdinalEncoder
+- **Balanceo:** Random undersampling (50/50)
+
+<p align="center">
+  <img src="../images/final_model_card.png" alt="Ficha Técnica del Modelo Final" width="100%" />
+</p>
+
+### Estratificación de Riesgo Operativo
+
+Una vez entrenado el modelo, se implementó un sistema de **clasificación de riesgo basado en umbrales de probabilidad** para facilitar la toma de decisiones operativas. Este proceso está documentado en `Criterios (1).ipynb`.
+
+#### Proceso de Estratificación:
+
+1. **Análisis de Deciles:** Se segmentó el conjunto de validación (6.9M vuelos) en 10 deciles según la probabilidad predicha
+2. **Cálculo de Lift:** Para cada decil se calculó el Lift (tasa de riesgo del segmento / tasa global)
+3. **Definición de Umbrales:** Se establecieron 3 niveles de riesgo basados en percentiles y Lift
+
+#### Umbrales Críticos Establecidos:
+
+| Nivel de Riesgo | Umbral de Probabilidad | Cobertura | Lift | Acción Recomendada |
+|------------------|------------------------|-----------|------|-------------------|
+| 🔴 **Alto** | P ≥ 0.6209 (P80) | 20% vuelos | > 1.6x | Activar Contingencia / Priorizar Reasignación |
+| 🟡 **Medio** | 0.4555 ≤ P < 0.6209 | 30% vuelos | 1.0-1.6x | Monitoreo Activo |
+| 🟢 **Bajo** | P < 0.4555 (P50) | 50% vuelos | < 0.8x | Operación Estándar |
+
+#### Optimización F1-Score:
+- **Umbral óptimo:** 0.5196
+- **F1-Score máximo:** 0.4313
+- **Validación:** 6,965,266 vuelos reales (2024)
+
+  
+
+
+<p align="center">
+  <img src="../images/risk_stratification.png" alt="Estratificación de Riesgo Operativo - Niveles y Umbrales" width="100%" />
+</p>
+
+***Se exploró esta alternativa para implementarla de forma adicional al MVP, sin embargo le dimos foco a otro adicional que consideramos mas potente que es la explicabilidad.**
+
+## Documentación Completa
+
+Para documentación técnica detallada del modelo final, incluyendo:
+- Arquitectura del sistema
+- Pipeline de datos completo
+- Feature engineering detallado
+- Serialización y deployment
+- Uso de la clase CustomFlightModel
+
+**Consultar:** [documentacion_modelo.md](Ejemplo_carga_modelo/documentacion_modelo.md)
+
+---
+
+## Archivos Importantes
+
+| Archivo | Descripción |
+|---------|-------------|
+| `modelo_XGB.joblib` | Modelo XGBoost serializado (listo para producción) |
+| `feature_engineering_functions.py` | Funciones de extracción de features y cálculo de distancias |
+| `custom_class_copy.py` | Wrapper del modelo con funciones `predict()` y `explain()` |
+| `requirements.txt` | Dependencias necesarias para ejecutar el modelo |
+| `distancias.csv` | Diccionario de distancias aeropuerto origen-destino |
+
+---
+
+## Imágenes del Proyecto
+
+Todas las visualizaciones se encuentran en la carpeta `images/`:
+
+1. `arquitectura_diagrama.png` - Arquitectura completa del sistema
+2. `fases.png` - Flujo del pipeline de datos
+3. `variable_objetivo.png` - Definición del umbral de 15 minutos
+4. `ciclic encoding.png` - Encoding cíclico de variables temporales
+5. `class imbalance.png` - Proceso de balanceo de clases
+6. `transformation.png` - StandardScaler
+7. `encoding.png` - OrdinalEncoder
+8. `custom flight model.png` - Diagrama del wrapper del modelo
+
+**Nuevas imágenes a generar:**
+- `eda_overview.png`
+- `feature_selection_matrix.png`
+- `evaluation_criteria.png`
+- `model_comparison.png`
+- `xgboost_training_flow.png`
+- `sample_size_analysis.png`
+- `data_pipeline_summary.png`
+- `final_model_card.png`
