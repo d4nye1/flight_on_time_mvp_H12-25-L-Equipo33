@@ -340,6 +340,29 @@ services:
 
 La base de datos en producción está gestionada por **Render PostgreSQL**, con configuración automática de conexión mediante variables de entorno internas.
 
+### Esquema de Base de Datos
+
+#### Tabla `predictions`
+
+Almacena el historial de predicciones realizadas por el sistema.
+
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| `id` | BIGINT (PK, auto) | Identificador único |
+| `aerolinea` | VARCHAR | Código IATA de aerolínea (ej: AA, DL) |
+| `origen` | VARCHAR | Código IATA aeropuerto origen (ej: JFK) |
+| `destino` | VARCHAR | Código IATA aeropuerto destino (ej: LAX) |
+| `prevision` | VARCHAR | Resultado: "Puntual" o "Retrasado" |
+| `probabilidad` | DOUBLE | Probabilidad de retraso (0.0 - 1.0) |
+| `distancia` | DOUBLE | Distancia del vuelo en km |
+| `explicabilidad` | TEXT | Explicación SHAP del modelo ML |
+| `fechaPartida` | TIMESTAMP | Fecha/hora programada del vuelo |
+| `fechaConsulta` | TIMESTAMP | Fecha/hora de la consulta al sistema |
+
+**Índice:** `idx_flight_cache` sobre `(aerolinea, origen, destino, fechaPartida)` para optimizar búsquedas y evitar consultas duplicadas.
+
+> **Nota:** La tabla se crea automáticamente mediante Hibernate (`spring.jpa.hibernate.ddl-auto=update`).
+
 ---
 
 ## 👨‍💻 Equipo de Desarrollo
