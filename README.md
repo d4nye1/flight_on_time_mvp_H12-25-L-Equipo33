@@ -8,7 +8,10 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![XGBoost](https://img.shields.io/badge/XGBoost-ML-blue?style=flat-square&logo=xgboost&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-![Status](https://img.shields.io/badge/Status-En_Desarrollo-yellow?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Producción-brightgreen?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat-square&logo=postgresql&logoColor=white)
+![Render](https://img.shields.io/badge/Deploy-Render-46E3B7?style=flat-square&logo=render&logoColor=white)
 
 ---
 
@@ -21,8 +24,11 @@
 - [📋 Alcance Funcional](#-alcance-funcional)
 - [🏗️ Arquitectura General](#️-arquitectura-general)
 - [🔌 Contrato de Integración](#-contrato-de-integración)
-- [� Integración y Arquitectura del Sistema](#-integración-y-arquitectura-del-sistema)
+- [🔌 Integración y Arquitectura del Sistema](#-integración-y-arquitectura-del-sistema)
 - [🚀 Cómo Levantar el Entorno](#-cómo-levantar-el-entorno)
+- [🐳 Deployment con Docker](#-deployment-con-docker)
+- [🌐 Servicios en Producción (Render)](#-servicios-en-producción-render)
+- [🗄️ Base de Datos](#️-base-de-datos)
 - [👨‍💻 Equipo de Desarrollo](#-equipo-de-desarrollo)
 - [📜 Licencia](#-licencia)
 
@@ -249,6 +255,90 @@ cd backend
 mvn spring-boot:run
 ```
 *La API principal estará disponible en `http://localhost:8080`.*
+
+---
+
+## 🐳 Deployment con Docker
+
+El proyecto incluye un `docker-compose.yml` que levanta todos los servicios necesarios.
+
+### Servicios Definidos
+
+| Servicio | Contenedor | Puerto | Descripción |
+|----------|------------|--------|-------------|
+| **PostgreSQL** | `postgres_db` | 5432 | Base de datos principal |
+| **Backend** | `spring_backend` | 8080 | API REST (Spring Boot) |
+| **Data Science** | `python_ai` | 8000 | Microservicio ML (FastAPI) |
+
+### Levantar con Docker
+
+```bash
+# Desde la raíz del proyecto
+docker-compose up -d
+
+# Verificar que los servicios estén corriendo
+docker-compose ps
+
+# Ver logs
+docker-compose logs -f
+
+# Detener servicios
+docker-compose down
+```
+
+### Variables de Entorno
+
+```env
+# Base de Datos
+POSTGRES_DB=flight_on_time
+POSTGRES_USER=flightuser
+POSTGRES_PASSWORD=flightpass
+
+# Conexión Spring Boot → PostgreSQL
+SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/flight_on_time
+SPRING_DATASOURCE_USERNAME=flightuser
+SPRING_DATASOURCE_PASSWORD=flightpass
+
+# Conexión Backend → Microservicio ML
+AI_SERVICE_URL=http://data-science:8000
+```
+
+---
+
+## 🌐 Servicios en Producción (Render)
+
+La aplicación está desplegada en **Render** y disponible públicamente:
+
+| Servicio | URL | Estado |
+|----------|-----|--------|
+| 🌐 **Aplicación Web** | [flight-on-time-mvp-h12-25-l-equipo33-1.onrender.com](https://flight-on-time-mvp-h12-25-l-equipo33-1.onrender.com/) | ✅ Activo |
+| 🗄️ **Base de Datos** | Render PostgreSQL (interno) | ✅ Activo |
+
+> **Nota:** Los servicios en Render pueden tardar ~30 segundos en "despertar" si han estado inactivos.
+
+---
+
+## 🗄️ Base de Datos
+
+El sistema utiliza **PostgreSQL 15** para persistencia de datos.
+
+### Configuración Local (Docker)
+
+```yaml
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: flight_on_time
+      POSTGRES_USER: flightuser
+      POSTGRES_PASSWORD: flightpass
+    ports:
+      - "5432:5432"
+```
+
+### Producción (Render)
+
+La base de datos en producción está gestionada por **Render PostgreSQL**, con configuración automática de conexión mediante variables de entorno internas.
 
 ---
 
