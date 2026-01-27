@@ -15,11 +15,7 @@ fuera de este país, sería incorrecto al no contar con datos para desarrollar u
 ### **Arquitectura del Sistema**
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
-=======
-  <img src="../images/arquitectura_diagrama.png" alt="Arquitectura del Sistema FlightOnTime" width="100%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -41,11 +37,7 @@ El EDA se realizó sobre la base de datos de vuelos 2024, que contiene más de 7
 #### **Flujo del Pipeline de Datos**
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
-=======
-  <img src="../images/fases.png" alt="Flujo del Pipeline de Procesamiento de Datos" width="100%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -105,11 +97,7 @@ El objetivo del proyecto es predecir retrasos antes del despegue, por lo que la 
 </p>
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
-=======
-  <img src="../images/variable_objetivo.png" alt="Definición de Variable Objetivo - Umbral de 15 minutos" width="80%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -283,11 +271,7 @@ imposible de saber a priori por el usuario final.
 </p>
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
-=======
-  <img src="../images/ciclic encoding.png" alt="Codificación Cíclica de Variables Temporales" width="85%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -310,11 +294,7 @@ de una manera aleatoria, para igualar la cantidad de ejemplos de la clase minori
 </p>
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
-=======
-  <img src="../images/class imbalance.png" alt="Balanceo de Clases mediante Random Undersampling" width="85%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
 </p>
 
 <p align="justify">
@@ -326,7 +306,6 @@ Para la parte de preprocesamiento de datos, previo al entrenamiento del modelo, 
 </p>
 
 <p align="center">
-<<<<<<< HEAD:data-science/Ejemplo_carga_modelo/documentacion_modelo.md
   <img src="../../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
 </p>
 
@@ -336,21 +315,6 @@ El StandardScaler transforma todas las variables numéricas a una escala común 
 
 <p align="center">
   <img src="../../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
-</p>
-
-<p align="justify">
-El OrdinalEncoder convierte variables categóricas (aerolíneas, aeropuertos) en valores numéricos, evitando la alta dimensionalidad que generaría One-Hot Encoding con 15 aerolíneas y cientos de aeropuertos.
-=======
-  <img src="../images/transformation.png" alt="StandardScaler - Normalización de Features" width="85%" />
->>>>>>> origin/develop:data-science/carga_modelo/documentacion_modelo.md
-</p>
-
-<p align="justify">
-El StandardScaler transforma todas las variables numéricas a una escala común (media=0, desviación estándar=1), evitando que features con rangos grandes dominen el entrenamiento del modelo.
-</p>
-
-<p align="center">
-  <img src="../images/encoding.png" alt="OrdinalEncoder para Variables Categóricas" width="85%" />
 </p>
 
 <p align="justify">
@@ -411,14 +375,7 @@ A petición del equipo de backend, y para mantener el flujo de información del 
 
 <p align="justify">
 El diagrama muestra el flujo completo del Custom Flight Model: desde la entrada de datos del vuelo, pasando por el procesamiento interno (carga del modelo, extracción de features, encoding cíclico, cálculo de distancias), hasta la salida con la predicción, probabilidad y distancia.
-</p>
-
-<p align="center">
   <img src="../../images/customflightmodel.png" alt="Diagrama del Custom Flight Model Wrapper" width="85%" />
-</p>
-
-<p align="justify">
-El diagrama muestra el flujo completo del Custom Flight Model: desde la entrada de datos del vuelo, pasando por el procesamiento interno (carga del modelo, extracción de features, encoding cíclico, cálculo de distancias), hasta la salida con la predicción, probabilidad y distancia.
 </p>
 
 #### **5.4) Ejemplo de uso y consumo del modelo**
